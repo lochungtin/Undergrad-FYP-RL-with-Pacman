@@ -13,7 +13,7 @@ class App:
         self.main.bind('<Down>', self.keyDown)
         self.main.bind('<Left>', self.keyRight)
         self.main.bind('<Right>', self.keyLeft)
-        self.main.bind('<space>', self.keyDown)
+        self.main.bind('<space>', self.keySpace)
         # create canvas object
         self.canvas = Canvas(
             self.main,
@@ -44,7 +44,10 @@ class App:
         print('S')
 
     def handleKey(self, keyID):
-        print(keyID)
+        self.game.pacman.setDir(keyID)
+        self.game.nextState()
+
+        self.updateCanvas()
 
     # update canvas
     def updateCanvas(self):
@@ -61,19 +64,7 @@ class App:
                 x1 = x0 + DIM.CELL
                 y1 = y0 + DIM.CELL
 
-                if rep == REP.ORB:
-                    self.canvas.create_rectangle(
-                        x0, y0, x1, y1, fill=REP.COLOR_MAP[REP.EMPTY], outline=''
-                    )
-                    self.canvas.create_rectangle(
-                        x0 + DIM.PAD_ORB,
-                        y0 + DIM.PAD_ORB,
-                        x1 - DIM.PAD_ORB,
-                        y1 - DIM.PAD_ORB,
-                        fill=REP.COLOR_MAP[rep],
-                        outline='',
-                    )
-                elif rep == REP.PWRPLT:
+                if rep == REP.PWRPLT:
                     self.canvas.create_rectangle(
                         x0, y0, x1, y1, fill=REP.COLOR_MAP[REP.EMPTY], outline=''
                     )
@@ -106,4 +97,5 @@ class App:
     def run(self):
         # run main loop of application
         self.updateCanvas()
+        self.game.nextState()
         self.main.mainloop()

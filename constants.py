@@ -24,12 +24,15 @@ class DIR:
     RT = 2
     LF = 3
 
+# initial position of objects
+class POS:
+    PACMAN = (23, 13)
 
 # state representations
 class REP:
     EMPTY = 0
     WALL = 1
-    ORB = 2
+    DOOR = 2
     PWRPLT = 3
     CHERRY = 4
     PACMAN = 5
@@ -37,12 +40,11 @@ class REP:
     INKY = 7
     PINKY = 8
     CLYDE = 9
-    DOOR = 10
 
     COLOR_MAP = {
         0: "#0E0E0E",
         1: "#3A60DE",
-        2: "#F5DAF7",
+        2: "#F255C8",
         3: "#F5DAF7",
         4: "#E3398B",
         5: "#E8D22A",
@@ -50,5 +52,4 @@ class REP:
         7: "#27EBF2",
         8: "#F255C8",
         9: "#FF9F29",
-        10: "#F255C8",
     }
