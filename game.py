@@ -48,8 +48,6 @@ class Game:
     def nextState(self):
         # update pacman pos
         prev, cur = self.pacman.nextPos(self.state)
-
-        print(prev, cur)
         
         self.state[prev[0]][prev[1]] = REP.EMPTY
         self.state[cur[0]][cur[1]] = REP.PACMAN

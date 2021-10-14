@@ -11,7 +11,7 @@ class Pacman:
         self.direction = direction
 
     def isValidPos(self, pos):
-        return pos[0] > -1 and pos[0] < BOARD.col and pos[1] > -1 and pos[1] < BOARD.row
+        return pos[1] > -1 and pos[1] < BOARD.col and pos[0] > -1 and pos[0] < BOARD.row
 
     def nextPos(self, state):
         if self.direction == DIR.UP:
