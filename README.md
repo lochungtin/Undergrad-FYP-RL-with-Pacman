@@ -18,7 +18,7 @@
 
 ### General
 
-- Refresh after G.O. or completion
+- Documentations
 
 ### Control Group (Classic behaviour)
 
