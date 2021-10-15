@@ -2,9 +2,9 @@ from constants import *
 
 
 class Movable:
-    def __init__(self, x, y):
-        self.pos = (x, y)
-        self.prevPos = (x, y)
+    def __init__(self, pos):
+        self.pos = pos
+        self.prevPos = pos
         self.direction = DIR.UP
 
         self.moved = False

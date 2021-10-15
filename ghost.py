@@ -3,8 +3,8 @@ from movable import Movable
 
 
 class Ghost(Movable):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, pos):
+        super().__init__(pos)
 
         self.mode = GHOST_MODE.CHASE
 

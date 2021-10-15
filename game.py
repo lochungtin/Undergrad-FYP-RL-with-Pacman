@@ -39,8 +39,7 @@ class Game:
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ],
         ]
 
-        px, py = POS.PACMAN
-        self.pacman = Pacman(px, py)
+        self.pacman = Pacman(POS.PACMAN)
 
     def setState(self, row, col, rep):
         self.state[row][col] = rep
