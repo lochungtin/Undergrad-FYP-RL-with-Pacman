@@ -1,5 +1,9 @@
+from blinky import Blinky
+from clyde import Clyde
 from constants import *
+from inky import Inky
 from pacman import Pacman
+from pinky import Pinky
 
 
 class Game:
@@ -41,8 +45,16 @@ class Game:
 
         self.pacman = Pacman(POS.PACMAN)
 
-    def setState(self, row, col, rep):
-        self.state[row][col] = rep
+        self.blinky = Blinky(POS.BLINKY)
+
+        self.inky = Inky(POS.INKY)
+
+        self.clyde = Clyde(POS.CLYDE)
+
+        self.pinky = Pinky(POS.PINKY)
+
+    def setState(self, pos, rep):
+        self.state[pos[0]][pos[1]] = rep
 
     def nextState(self):
         # update pacman pos

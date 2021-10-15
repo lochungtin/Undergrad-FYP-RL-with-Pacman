@@ -35,6 +35,10 @@ class GHOST_MODE:
 # initial position of objects
 class POS:
     PACMAN = (23, 13)
+    BLINKY = (11, 13)
+    INKY = (14, 11)
+    CLYDE = (14, 15)
+    PINKY = (14, 13)
 
 
 # state representations

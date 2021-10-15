@@ -37,7 +37,7 @@ class App:
             for col in range(BOARD.col):
                 rep = self.game.state[row][col]
 
-                x0, y0, x1, y1 = self.calPxPos(row, col)
+                x0, y0, x1, y1 = self.calPxPos((row, col))
 
                 if rep == 2:
                     self.canvas.create_rectangle(
@@ -56,16 +56,43 @@ class App:
                         x0, y0, x1, y1, fill=REP.COLOR_MAP[rep], outline=""
                     )
 
-        # draw pacman
-        pacmanRow, pacmanCol = POS.PACMAN
+        # draw movables
         self.game.pacman.setDiplayObj(
             self.canvas.create_rectangle(
-                self.calPxPos(pacmanRow, pacmanCol),
-                fill=REP.COLOR_MAP[REP.PACMAN],
-                outline="",
+                self.calPxPos(POS.PACMAN), fill=REP.COLOR_MAP[REP.PACMAN], outline=""
             )
         )
-        self.game.setState(pacmanRow, pacmanCol, REP.PACMAN)
+
+        self.game.blinky.setDiplayObj(
+            self.canvas.create_rectangle(
+                self.calPxPos(POS.BLINKY), fill=REP.COLOR_MAP[REP.BLINKY], outline=""
+            )
+        )
+
+        self.game.inky.setDiplayObj(
+            self.canvas.create_rectangle(
+                self.calPxPos(POS.INKY), fill=REP.COLOR_MAP[REP.INKY], outline=""
+            )
+        )
+
+        self.game.clyde.setDiplayObj(
+            self.canvas.create_rectangle(
+                self.calPxPos(POS.CLYDE), fill=REP.COLOR_MAP[REP.CLYDE], outline=""
+            )
+        )
+
+        self.game.pinky.setDiplayObj(
+            self.canvas.create_rectangle(
+                self.calPxPos(POS.PINKY), fill=REP.COLOR_MAP[REP.PINKY], outline=""
+            )
+        )
+
+        # update state
+        self.game.setState(POS.PACMAN, REP.PACMAN)
+        self.game.setState(POS.BLINKY, REP.BLINKY)
+        self.game.setState(POS.INKY, REP.INKY)
+        self.game.setState(POS.CLYDE, REP.CLYDE)
+        self.game.setState(POS.PINKY, REP.PINKY)
 
         # start update loop
         self.playing = True
@@ -74,9 +101,9 @@ class App:
         t.start()
 
     # calculate pixel positions
-    def calPxPos(self, row, col):
-        x0 = col * DIM.JUMP
-        y0 = row * DIM.JUMP
+    def calPxPos(self, pos):
+        x0 = pos[1] * DIM.JUMP
+        y0 = pos[0] * DIM.JUMP
         return x0, y0, x0 + DIM.CELL, y0 + DIM.CELL
 
     # update canvas
@@ -109,6 +136,5 @@ class App:
     # start app
     def run(self):
         # run main loop of application
-        self.main.mainloop()    
+        self.main.mainloop()
         sys.exit()
-        
