@@ -17,7 +17,7 @@ class Movable(Displayable):
             row, col = self.pos
             pRow, pCol = self.prevPos
 
-            return (pCol - col) * DIM.JUMP, -(pRow - row) * DIM.JUMP
+            return (col - pCol) * DIM.JUMP, (row - pRow) * DIM.JUMP
 
         return 0, 0
 

@@ -43,4 +43,9 @@ class Game:
         self.state[prev[0]][prev[1]] = REP.EMPTY
         self.state[cur[0]][cur[1]] = REP.PACMAN
 
+        cellObj = self.pelletState[cur[0]][cur[1]];
+        if cellObj != None and cellObj.valid:
+            print(cur)
+            cellObj.destroy()
+
         #

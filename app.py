@@ -65,10 +65,6 @@ class App:
                 )
             )
 
-            self.canvas.create_rectangle(
-                    self.calPxPos(movable.pos), fill=REP.COLOR_MAP[movable.rep], outline=""
-            )
-
         for row in self.game.pelletState:
             for pellet in row:
                 if pellet == None:
@@ -109,6 +105,13 @@ class App:
         for movable in self.game.movables:
             dx, dy = movable.getDisplayDelta()
             self.canvas.move(movable.display, dx, dy)
+
+            if movable.rep == REP.PACMAN:
+                row, col = movable.pos
+
+                cellObj = self.game.pelletState[row][col]
+                if cellObj != None and not cellObj.valid:
+                    self.canvas.delete(cellObj.display)
 
     # time controller
     def tCtrl(self):

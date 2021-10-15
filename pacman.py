@@ -16,7 +16,7 @@ class Pacman(Movable):
             nextPos = (self.pos[0] - 1, self.pos[1])
         elif self.direction == DIR.DW:
             nextPos = (self.pos[0] + 1, self.pos[1])
-        elif self.direction == DIR.RT:
+        elif self.direction == DIR.LF:
             nextPos = (self.pos[0], self.pos[1] - 1)
         else:
             nextPos = (self.pos[0], self.pos[1] + 1)
@@ -40,8 +40,8 @@ class Pacman(Movable):
         # default movement
         self.moved = (
             self.isValidPos(nextPos)
-            and state[nextPos[0]][nextPos[1]] != 1
-            and state[nextPos[0]][nextPos[1]] != 2
+            and state[nextPos[0]][nextPos[1]] != REP.WALL
+            and state[nextPos[0]][nextPos[1]] != REP.DOOR
         )
         if self.moved:
             self.prevPos = self.pos
