@@ -19,7 +19,7 @@ class App:
         self.main.bind("<Down>", lambda _: self.game.pacman.setDir(DIR.DW))
         self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
         self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
-        self.main.bind("<space>", lambda _: self.game.togglePause())
+        self.main.bind("<space>", self.togglePause)
         # handle kill event
         self.main.protocol("WM_DELETE_WINDOW", self.kill)
         # create canvas object
@@ -68,6 +68,7 @@ class App:
         self.game.setState(pacmanRow, pacmanCol, REP.PACMAN)
 
         # start update loop
+        self.playing = True
         self.running = True
         t = Thread(target=self.tCtrl)
         t.start()
@@ -87,14 +88,20 @@ class App:
     # time controller
     def tCtrl(self):
         while self.running:
-            time.sleep(0.1)
+            if self.playing:
+                time.sleep(0.1)
 
-            try:
-                self.game.nextState()
-                self.updateCanvas()
-            except:
-                sys.exit()
+                try:
+                    self.game.nextState()
+                    self.updateCanvas()
+                except:
+                    sys.exit()
 
+    # pause program
+    def togglePause(self, event):
+        self.playing = not self.playing
+
+    # kill program
     def kill(self):
         self.running = False
         self.main.destroy()

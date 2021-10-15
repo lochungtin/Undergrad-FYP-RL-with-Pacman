@@ -42,17 +42,8 @@ class Game:
         px, py = POS.PACMAN
         self.pacman = Pacman(px, py)
 
-        self.pause = False
-
-    def getState(self):
-        return self.state
-
     def setState(self, row, col, rep):
         self.state[row][col] = rep
-
-    def togglePause(self):
-        print('Toggled Pause State')
-        self.pause = not self.pause
 
     def nextState(self):
         # update pacman pos
