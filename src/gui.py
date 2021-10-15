@@ -7,7 +7,7 @@ from .data.constants import *
 from .game.game import Game
 
 
-class App:
+class GUI:
     def __init__(self):
         # create game object
         self.game = Game()
