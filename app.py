@@ -9,10 +9,10 @@ from game import Game
 
 class App:
     def __init__(self):
-        # initialise game object
+        # create game object
         self.game = Game()
 
-        # create application object
+        # create application
         self.main = Tk()
         self.main.title('Pacman')
         # bind key hanlders
@@ -33,15 +33,15 @@ class App:
         )
         self.canvas.pack()
 
-        self.init()
+        # initialise game
+        self.initialGame()
 
         # start update loop
         self.playing = True
         self.running = True
-        t = Thread(target=self.tCtrl)
-        t.start()
+        Thread(target=self.timeController).start()
 
-    def init(self):
+    def initialGame(self):
         # draw grid
         for row in range(BOARD.row):
             for col in range(BOARD.col):
@@ -118,7 +118,7 @@ class App:
                     self.canvas.delete(cellObj.display)
 
     # time controller
-    def tCtrl(self):
+    def timeController(self):
         while self.running:
             if self.playing:
                 time.sleep(0.1)
@@ -128,11 +128,11 @@ class App:
                     self.canvas.delete('all')
 
                     self.game = Game()
-                    self.init()
+                    self.initialGame()
 
                 self.updateCanvas()
 
-    # pause program
+    # pause game
     def togglePause(self, event):
         self.playing = not self.playing
 
