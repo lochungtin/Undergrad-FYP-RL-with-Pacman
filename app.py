@@ -14,6 +14,7 @@ class App:
 
         # create application object
         self.main = Tk()
+        self.main.title('Pacman')
         # bind key hanlders
         self.main.bind("<Up>", lambda _: self.game.pacman.setDir(DIR.UP))
         self.main.bind("<Down>", lambda _: self.game.pacman.setDir(DIR.DW))
@@ -32,6 +33,15 @@ class App:
         )
         self.canvas.pack()
 
+        self.init()
+
+        # start update loop
+        self.playing = True
+        self.running = True
+        t = Thread(target=self.tCtrl)
+        t.start()
+
+    def init(self):
         # draw grid
         for row in range(BOARD.row):
             for col in range(BOARD.col):
@@ -64,6 +74,7 @@ class App:
                 )
             )
 
+        # draw pellets
         for row in self.game.pelletState:
             for pellet in row:
                 if pellet == None:
@@ -85,12 +96,6 @@ class App:
                         outline="",
                     )
                 )
-
-        # start update loop
-        self.playing = True
-        self.running = True
-        t = Thread(target=self.tCtrl)
-        t.start()
 
     # calculate pixel positions
     def calPxPos(self, pos):
@@ -120,7 +125,11 @@ class App:
 
                 done = self.game.nextState()
                 if done:
-                    print("d")
+                    self.canvas.delete('all')
+
+                    self.game = Game()
+                    self.init()
+
                 self.updateCanvas()
 
     # pause program
