@@ -33,6 +33,9 @@ class Game:
 
             self.pelletState.append(pelletRow)
 
+        self.pelletCount = DATA.TOTAL_PELLET_COUNT
+        self.pwrpltCount = DATA.TOTAL_PWRPLT_COUNT
+
     def setState(self, pos, rep):
         self.state[pos[0]][pos[1]] = rep
 
@@ -48,4 +51,14 @@ class Game:
         if cellObj != None and cellObj.valid:
             cellObj.destroy()
 
+            if cellObj.rep == REP.PELLET:
+                self.pelletCount -= 1
+            else:
+                self.pwrpltCount -= 1
+
         #
+
+        if self.pelletCount + self.pwrpltCount == 0:
+            return True
+
+        return False

@@ -3,6 +3,9 @@ class BOARD:
     row = 31
     col = 27
 
+class DATA:
+    TOTAL_PELLET_COUNT = 238
+    TOTAL_PWRPLT_COUNT = 4
 
 # pixel values of components
 class DIM:

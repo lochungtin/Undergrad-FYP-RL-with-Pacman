@@ -27,7 +27,7 @@ class App:
             self.main,
             width=DIM.GBL_W,
             height=DIM.GBL_H,
-            background="#1E1E1E",
+            background="#1e1e1e",
             highlightthickness=0,
         )
         self.canvas.pack()
@@ -61,7 +61,9 @@ class App:
             self.game.setState(movable.pos, movable.rep)
             movable.setDiplayObj(
                 self.canvas.create_rectangle(
-                    self.calPxPos(movable.pos), fill=REP.COLOR_MAP[movable.rep], outline=""
+                    self.calPxPos(movable.pos),
+                    fill=REP.COLOR_MAP[movable.rep],
+                    outline="",
                 )
             )
 
@@ -119,7 +121,9 @@ class App:
             if self.playing:
                 time.sleep(0.1)
 
-                self.game.nextState()
+                done = self.game.nextState()
+                if done:
+                    print('d')
                 self.updateCanvas()
 
     # pause program
