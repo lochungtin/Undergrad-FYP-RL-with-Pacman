@@ -19,12 +19,19 @@ class Game:
 
         self.movables = [self.pacman, self.blinky, self.inky, self.clyde, self.pinky]
 
-        self.pwrpltTL = Pellet(POS.PWRPLTTL)
-        self.pwrpltTR = Pellet(POS.PWRPLTTR)
-        self.pwrpltBL = Pellet(POS.PWRPLTBL)
-        self.pwrpltBR = Pellet(POS.PWRPLTBR)
+        self.pelletState = []
 
-        self.pwrplts = [self.pwrpltTL, self.pwrpltTR, self.pwrpltBL, self.pwrpltBR]
+        for y, row in enumerate(REP.PELLET_BOARD):
+            pelletRow = []
+            for x, cell in enumerate(row):
+                if cell == REP.EMPTY:
+                    pelletRow.append(None)
+                elif cell == REP.PELLET:
+                    pelletRow.append(Pellet((y, x), REP.PELLET))
+                else:
+                    pelletRow.append(Pellet((y, x), REP.PWRPLT))
+
+            self.pelletState.append(pelletRow)
 
     def setState(self, pos, rep):
         self.state[pos[0]][pos[1]] = rep

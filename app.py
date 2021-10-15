@@ -69,20 +69,27 @@ class App:
                     self.calPxPos(movable.pos), fill=REP.COLOR_MAP[movable.rep], outline=""
             )
 
-        for pwrplt in self.game.pwrplts:
-            self.game.setState(pwrplt.pos, pwrplt.rep)
+        for row in self.game.pelletState:
+            for pellet in row:
+                if pellet == None:
+                    continue
 
-            x0, y0, x1, y1 = self.calPxPos(pwrplt.pos)
-            pwrplt.setDiplayObj(
-                self.canvas.create_rectangle(
-                    x0 + DIM.PAD_PWRPLT,
-                    y0 + DIM.PAD_PWRPLT,
-                    x1 - DIM.PAD_PWRPLT,
-                    y1 - DIM.PAD_PWRPLT,
-                    fill=REP.COLOR_MAP[pwrplt.rep],
-                    outline="",
+                x0, y0, x1, y1 = self.calPxPos(pellet.pos)
+
+                padding = DIM.PAD_PELLET
+                if pellet.rep == REP.PWRPLT:
+                    padding = DIM.PAD_PWRPLT
+
+                pellet.setDiplayObj(
+                    self.canvas.create_rectangle(
+                        x0 + padding,
+                        y0 + padding,
+                        x1 - padding,
+                        y1 - padding,
+                        fill=REP.COLOR_MAP[pellet.rep],
+                        outline="",
+                    )
                 )
-            )
 
         # start update loop
         self.playing = True
