@@ -1,3 +1,9 @@
+# PACMAN with modified ghost AI
+
+<p align='center'>
+    <img src='./img/grid.png' width='450'/>
+</p>
+
 # TODO LIST
 
 ## Research
