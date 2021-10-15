@@ -9,9 +9,6 @@ class Movable(Displayable):
         self.prevPos = pos
         self.moved = False
 
-    def setDir(self, direction):
-        self.direction = direction
-
     def isValidPos(self, pos):
         return pos[1] > -1 and pos[1] < BOARD.col and pos[0] > -1 and pos[0] < BOARD.row
 

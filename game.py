@@ -4,7 +4,7 @@ from constants import *
 from inky import Inky
 from pacman import Pacman
 from pinky import Pinky
-from pwrpellet import PwrPlt
+from pellet import Pellet
 
 
 class Game:
@@ -19,10 +19,10 @@ class Game:
 
         self.movables = [self.pacman, self.blinky, self.inky, self.clyde, self.pinky]
 
-        self.pwrpltTL = PwrPlt(POS.PWRPLTTL)
-        self.pwrpltTR = PwrPlt(POS.PWRPLTTR)
-        self.pwrpltBL = PwrPlt(POS.PWRPLTBL)
-        self.pwrpltBR = PwrPlt(POS.PWRPLTBR)
+        self.pwrpltTL = Pellet(POS.PWRPLTTL)
+        self.pwrpltTR = Pellet(POS.PWRPLTTR)
+        self.pwrpltBL = Pellet(POS.PWRPLTBL)
+        self.pwrpltBR = Pellet(POS.PWRPLTBR)
 
         self.pwrplts = [self.pwrpltTL, self.pwrpltTR, self.pwrpltBL, self.pwrpltBR]
 

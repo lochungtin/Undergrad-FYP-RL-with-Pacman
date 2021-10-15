@@ -65,6 +65,10 @@ class App:
                 )
             )
 
+            self.canvas.create_rectangle(
+                    self.calPxPos(movable.pos), fill=REP.COLOR_MAP[movable.rep], outline=""
+            )
+
         for pwrplt in self.game.pwrplts:
             self.game.setState(pwrplt.pos, pwrplt.rep)
 
