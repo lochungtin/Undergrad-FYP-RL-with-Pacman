@@ -39,10 +39,11 @@ class App:
 
                 x0, y0, x1, y1 = self.calPxPos((row, col))
 
-                if rep == REP.DOOR:
+                if rep == REP.WALL:
                     self.canvas.create_rectangle(
-                        x0, y0, x1, y1, fill=REP.COLOR_MAP[REP.EMPTY], outline=""
+                        x0, y0, x1, y1, fill=REP.COLOR_MAP[rep], outline=""
                     )
+                elif rep == REP.DOOR:
                     self.canvas.create_rectangle(
                         x0,
                         y0 + DIM.PAD_DOOR,
@@ -50,10 +51,6 @@ class App:
                         y1 - DIM.PAD_DOOR,
                         fill=REP.COLOR_MAP[rep],
                         outline="",
-                    )
-                else:
-                    self.canvas.create_rectangle(
-                        x0, y0, x1, y1, fill=REP.COLOR_MAP[rep], outline=""
                     )
 
         # draw displayables and update state
@@ -123,7 +120,7 @@ class App:
 
                 done = self.game.nextState()
                 if done:
-                    print('d')
+                    print("d")
                 self.updateCanvas()
 
     # pause program

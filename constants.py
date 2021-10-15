@@ -65,7 +65,6 @@ class REP:
 
     # classic colors
     # COLOR_MAP = {
-    #     0: "#0E0E0E",
     #     1: "#3A60DE",
     #     2: "#F255C8",
     #     3: "#F1F2DA",
@@ -79,7 +78,6 @@ class REP:
 
     # my colors
     COLOR_MAP = {
-        0: "#1e1e1e",
         1: "#292929",
         2: "#292929",
         3: "#52756a",
