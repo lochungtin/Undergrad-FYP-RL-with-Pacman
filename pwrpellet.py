@@ -1,6 +1,6 @@
 from displayable import Displayable
 
-class PwrPellet(Displayable):
+class PwrPlt(Displayable):
     def __init__(self, pos):
         super().__init__(pos)
 

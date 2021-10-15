@@ -56,43 +56,56 @@ class App:
                         x0, y0, x1, y1, fill=REP.COLOR_MAP[rep], outline=""
                     )
 
-        # draw movables
+        # draw displayables and update state
+        self.game.setState(POS.PACMAN, REP.PACMAN)
         self.game.pacman.setDiplayObj(
             self.canvas.create_rectangle(
                 self.calPxPos(POS.PACMAN), fill=REP.COLOR_MAP[REP.PACMAN], outline=""
             )
         )
 
+        self.game.setState(POS.BLINKY, REP.BLINKY)
         self.game.blinky.setDiplayObj(
             self.canvas.create_rectangle(
                 self.calPxPos(POS.BLINKY), fill=REP.COLOR_MAP[REP.BLINKY], outline=""
             )
         )
 
+        self.game.setState(POS.INKY, REP.INKY)
         self.game.inky.setDiplayObj(
             self.canvas.create_rectangle(
                 self.calPxPos(POS.INKY), fill=REP.COLOR_MAP[REP.INKY], outline=""
             )
         )
 
+        self.game.setState(POS.CLYDE, REP.CLYDE)
         self.game.clyde.setDiplayObj(
             self.canvas.create_rectangle(
                 self.calPxPos(POS.CLYDE), fill=REP.COLOR_MAP[REP.CLYDE], outline=""
             )
         )
 
+        self.game.setState(POS.PINKY, REP.PINKY)
         self.game.pinky.setDiplayObj(
             self.canvas.create_rectangle(
                 self.calPxPos(POS.PINKY), fill=REP.COLOR_MAP[REP.PINKY], outline=""
             )
         )
 
-        # update state
-        self.game.setState(POS.PACMAN, REP.PACMAN)
-        self.game.setState(POS.BLINKY, REP.BLINKY)
-        self.game.setState(POS.INKY, REP.INKY)
-        self.game.setState(POS.CLYDE, REP.CLYDE)
-        self.game.setState(POS.PINKY, REP.PINKY)
+        for pwrplt in self.game.pwrplts:
+            self.game.setState(pwrplt.pos, REP.PWRPLT)
+
+            x0, y0, x1, y1 = self.calPxPos(pwrplt.pos)
+            pwrplt.setDiplayObj(
+                self.canvas.create_rectangle(
+                    x0 + DIM.PAD_PWRPLT,
+                    y0 + DIM.PAD_PWRPLT,
+                    x1 - DIM.PAD_PWRPLT,
+                    y1 - DIM.PAD_PWRPLT,
+                    fill=REP.COLOR_MAP[REP.PWRPLT],
+                    outline="",
+                )
+            )
 
         # start update loop
         self.playing = True
