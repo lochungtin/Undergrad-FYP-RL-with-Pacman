@@ -1,4 +1,4 @@
-from constants import *
+from .....data.constants import *
 from movable import Movable
 
 

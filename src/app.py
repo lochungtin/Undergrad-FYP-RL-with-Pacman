@@ -3,7 +3,7 @@ from tkinter import *
 import sys
 import time
 
-from constants import *
+from data.constants import *
 from game import Game
 
 

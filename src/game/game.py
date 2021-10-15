@@ -1,10 +1,10 @@
-from blinky import Blinky
-from clyde import Clyde
-from constants import *
-from inky import Inky
-from pacman import Pacman
-from pinky import Pinky
-from pellet import Pellet
+from ..data.constants import *
+from components.movables.ghosts.blinky import Blinky
+from components.movables.ghosts.clyde import Clyde
+from components.movables.ghosts.inky import Inky
+from components.movables.ghosts.pinky import Pinky
+from components.movables.pacman import Pacman
+from components.pellet import Pellet
 
 
 class Game:
@@ -47,7 +47,7 @@ class Game:
         self.state[cur[0]][cur[1]] = REP.PACMAN
 
         # update pellet validity
-        cellObj = self.pelletState[cur[0]][cur[1]];
+        cellObj = self.pelletState[cur[0]][cur[1]]
         if cellObj != None and cellObj.valid:
             cellObj.destroy()
 
