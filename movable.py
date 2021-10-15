@@ -3,8 +3,8 @@ from displayable import Displayable
 
 
 class Movable(Displayable):
-    def __init__(self, pos):
-        super().__init__(pos)
+    def __init__(self, pos, rep):
+        super().__init__(pos, rep)
         
         self.prevPos = pos
         self.moved = False

@@ -4,7 +4,7 @@ from movable import Movable
 
 class Pacman(Movable):
     def __init__(self, pos):
-        super().__init__(pos)
+        super().__init__(pos, REP.PACMAN)
 
         self.direction = DIR.UP
 

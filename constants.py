@@ -13,7 +13,6 @@ class DIM:
     CELL = 25
     GAP = 5
 
-    PAD_ORB = 9
     PAD_PWRPLT = 5
     PAD_DOOR = 8
 
@@ -53,24 +52,22 @@ class REP:
     WALL = 1
     DOOR = 2
     PWRPLT = 3
-    CHERRY = 4
-    PACMAN = 5
-    BLINKY = 6
-    INKY = 7
-    PINKY = 8
-    CLYDE = 9
+    PACMAN = 4
+    BLINKY = 5
+    INKY = 6
+    PINKY = 7
+    CLYDE = 8
 
     COLOR_MAP = {
         0: "#0E0E0E",
         1: "#3A60DE",
         2: "#F255C8",
-        3: "#F5DAF7",
-        4: "#E3398B",
-        5: "#E8D22A",
-        6: "#E62C4E",
-        7: "#27EBF2",
-        8: "#F255C8",
-        9: "#FF9F29",
+        3: "#FAFF6E",
+        4: "#E8D22A",
+        5: "#E62C4E",
+        6: "#27EBF2",
+        7: "#F255C8",
+        8: "#FF9F29",
     }
 
     BOARD = [

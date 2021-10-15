@@ -39,7 +39,7 @@ class App:
 
                 x0, y0, x1, y1 = self.calPxPos((row, col))
 
-                if rep == 2:
+                if rep == REP.DOOR:
                     self.canvas.create_rectangle(
                         x0, y0, x1, y1, fill=REP.COLOR_MAP[REP.EMPTY], outline=""
                     )
@@ -57,43 +57,16 @@ class App:
                     )
 
         # draw displayables and update state
-        self.game.setState(POS.PACMAN, REP.PACMAN)
-        self.game.pacman.setDiplayObj(
-            self.canvas.create_rectangle(
-                self.calPxPos(POS.PACMAN), fill=REP.COLOR_MAP[REP.PACMAN], outline=""
+        for movable in self.game.movables:
+            self.game.setState(movable.pos, movable.rep)
+            movable.setDiplayObj(
+                self.canvas.create_rectangle(
+                    self.calPxPos(movable.pos), fill=REP.COLOR_MAP[movable.rep], outline=""
+                )
             )
-        )
-
-        self.game.setState(POS.BLINKY, REP.BLINKY)
-        self.game.blinky.setDiplayObj(
-            self.canvas.create_rectangle(
-                self.calPxPos(POS.BLINKY), fill=REP.COLOR_MAP[REP.BLINKY], outline=""
-            )
-        )
-
-        self.game.setState(POS.INKY, REP.INKY)
-        self.game.inky.setDiplayObj(
-            self.canvas.create_rectangle(
-                self.calPxPos(POS.INKY), fill=REP.COLOR_MAP[REP.INKY], outline=""
-            )
-        )
-
-        self.game.setState(POS.CLYDE, REP.CLYDE)
-        self.game.clyde.setDiplayObj(
-            self.canvas.create_rectangle(
-                self.calPxPos(POS.CLYDE), fill=REP.COLOR_MAP[REP.CLYDE], outline=""
-            )
-        )
-
-        self.game.setState(POS.PINKY, REP.PINKY)
-        self.game.pinky.setDiplayObj(
-            self.canvas.create_rectangle(
-                self.calPxPos(POS.PINKY), fill=REP.COLOR_MAP[REP.PINKY], outline=""
-            )
-        )
 
         for pwrplt in self.game.pwrplts:
-            self.game.setState(pwrplt.pos, REP.PWRPLT)
+            self.game.setState(pwrplt.pos, pwrplt.rep)
 
             x0, y0, x1, y1 = self.calPxPos(pwrplt.pos)
             pwrplt.setDiplayObj(
@@ -102,7 +75,7 @@ class App:
                     y0 + DIM.PAD_PWRPLT,
                     x1 - DIM.PAD_PWRPLT,
                     y1 - DIM.PAD_PWRPLT,
-                    fill=REP.COLOR_MAP[REP.PWRPLT],
+                    fill=REP.COLOR_MAP[pwrplt.rep],
                     outline="",
                 )
             )
