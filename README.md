@@ -18,16 +18,11 @@
 
 ### Control Group (Classic behaviour)
 
-- Power Pellet mechanics
-    - respawning
-
 - Classic pacman AI
     - Blinky
     - Inky
     - Clyde
     - Pinky
-
-- Scoring system
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
