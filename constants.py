@@ -9,6 +9,7 @@ class DIM:
     GBL_H = 925
     GBL_W = 805
 
+    JUMP = 30
     CELL = 25
     GAP = 5
 

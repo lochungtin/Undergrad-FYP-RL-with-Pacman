@@ -14,10 +14,10 @@ class App:
         # create application object
         self.main = Tk()
         # bind key hanlders
-        self.main.bind("<Up>", lambda _: self.handleKey(DIR.UP))
-        self.main.bind("<Down>", lambda _: self.handleKey(DIR.DW))
-        self.main.bind("<Left>", lambda _: self.handleKey(DIR.LF))
-        self.main.bind("<Right>", lambda _: self.handleKey(DIR.RT))
+        self.main.bind("<Up>", lambda _: self.game.pacman.setDir(DIR.UP))
+        self.main.bind("<Down>", lambda _: self.game.pacman.setDir(DIR.DW))
+        self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
+        self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
         self.main.bind("<space>", lambda _: self.game.togglePause())
         # handle kill event
         self.main.protocol("WM_DELETE_WINDOW", self.kill)
@@ -72,32 +72,26 @@ class App:
 
     # calculate pixel positions
     def calPxPos(self, row, col):
-        positioner = DIM.CELL + DIM.GAP
-
-        x0 = col * positioner
-        y0 = row * positioner
-
+        x0 = col * DIM.JUMP
+        y0 = row * DIM.JUMP
         return x0, y0, x0 + DIM.CELL, y0 + DIM.CELL
-
-    # keystroke handlers
-    def handleKey(self, keyID):
-        self.game.pacman.setDir(keyID)
-
-        print("pressed: {}".format(keyID))
 
     # update canvas
     def updateCanvas(self):
-        dx, dy = self.game.pacman.getDisplayDelta()
-        self.canvas.move(self.game.pacman.diplay, dx, dy)
-        return
+        # update pacman position
+        pacmanDX, pacmanDY = self.game.pacman.getDisplayDelta()
+        self.canvas.move(self.game.pacman.diplay, pacmanDX, pacmanDY)
 
     # time controller
     def tCtrl(self):
         while self.running:
             time.sleep(0.1)
 
-            self.game.nextState()
-            self.updateCanvas()
+            try:
+                self.game.nextState()
+                self.updateCanvas()
+            except:
+                pass
 
     def kill(self):
         self.running = False
@@ -107,3 +101,4 @@ class App:
     def run(self):
         # run main loop of application
         self.main.mainloop()
+        

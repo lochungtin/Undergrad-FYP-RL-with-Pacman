@@ -7,7 +7,6 @@ class Pacman:
         self.prevPos = (x, y)
         self.direction = DIR.UP
 
-        self.calDisplay = False
         self.displayDx = 0
         self.displayDy = 0
 
@@ -16,7 +15,6 @@ class Pacman:
 
     def setDiplayObj(self, obj):
         self.diplay = obj
-        self.calDisplay = True
 
     def getDisplayDelta(self):
         return self.displayDx, self.displayDy
@@ -28,21 +26,21 @@ class Pacman:
         if self.direction == DIR.UP:
             nextPos = (self.pos[0] - 1, self.pos[1])
             self.displayDx = 0
-            self.displayDy = -(DIM.CELL + DIM.GAP)
+            self.displayDy = -DIM.JUMP
 
         elif self.direction == DIR.DW:
             nextPos = (self.pos[0] + 1, self.pos[1])
             self.displayDx = 0
-            self.displayDy = (DIM.CELL + DIM.GAP)
+            self.displayDy = DIM.JUMP
 
         elif self.direction == DIR.RT:
             nextPos = (self.pos[0], self.pos[1] - 1)
-            self.displayDx = (DIM.CELL + DIM.GAP)
+            self.displayDx = DIM.JUMP
             self.displayDy = 0
 
         else:
             nextPos = (self.pos[0], self.pos[1] + 1)
-            self.displayDx = -(DIM.CELL + DIM.GAP)
+            self.displayDx = -DIM.JUMP
             self.displayDy = 0
 
         # loop case left
@@ -50,7 +48,7 @@ class Pacman:
             self.prevPos = (14, 0)
             self.pos = (14, 26)
 
-            self.displayDx = -(DIM.CELL + DIM.GAP) * 26
+            self.displayDx = -DIM.JUMP * 26
             self.displayDy = 0
 
             return self.prevPos, self.pos
@@ -60,7 +58,7 @@ class Pacman:
             self.prevPos = (14, 26)
             self.pos = (14, 0)
 
-            self.displayDx = (DIM.CELL + DIM.GAP) * 26
+            self.displayDx = DIM.JUMP * 26
             self.displayDy = 0
 
             return self.prevPos, self.pos
