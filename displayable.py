@@ -3,4 +3,4 @@ class Displayable():
         self.pos = pos
         
     def setDiplayObj(self, obj):
-        self.display = obj
+        self.display = obj    
