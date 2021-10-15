@@ -108,9 +108,10 @@ class App:
 
     # update canvas
     def updateCanvas(self):
-        # update pacman position
-        pacmanDX, pacmanDY = self.game.pacman.getDisplayDelta()
-        self.canvas.move(self.game.pacman.diplay, pacmanDX, pacmanDY)
+        # update positions of movables
+        for movable in self.game.movables:
+            dx, dy = movable.getDisplayDelta()
+            self.canvas.move(movable.display, dx, dy)
 
     # time controller
     def tCtrl(self):
@@ -118,11 +119,8 @@ class App:
             if self.playing:
                 time.sleep(0.1)
 
-                try:
-                    self.game.nextState()
-                    self.updateCanvas()
-                except:
-                    sys.exit()
+                self.game.nextState()
+                self.updateCanvas()
 
     # pause program
     def togglePause(self, event):

@@ -1,19 +1,16 @@
 from constants import *
+from displayable import Displayable
 
 
-class Movable:
+class Movable(Displayable):
     def __init__(self, pos):
-        self.pos = pos
+        super().__init__(pos)
         self.prevPos = pos
-        self.direction = DIR.UP
 
         self.moved = False
 
     def setDir(self, direction):
         self.direction = direction
-
-    def setDiplayObj(self, obj):
-        self.diplay = obj
 
     def isValidPos(self, pos):
         return pos[1] > -1 and pos[1] < BOARD.col and pos[0] > -1 and pos[0] < BOARD.row

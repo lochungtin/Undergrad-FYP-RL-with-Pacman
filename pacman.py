@@ -6,6 +6,8 @@ class Pacman(Movable):
     def __init__(self, pos):
         super().__init__(pos)
 
+        self.direction = DIR.UP
+
     def nextPos(self, state):
         if self.direction == DIR.UP:
             nextPos = (self.pos[0] - 1, self.pos[1])

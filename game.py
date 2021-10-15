@@ -53,6 +53,8 @@ class Game:
 
         self.pinky = Pinky(POS.PINKY)
 
+        self.movables = [self.pacman, self.blinky, self.inky, self.clyde, self.pinky]
+
     def setState(self, pos, rep):
         self.state[pos[0]][pos[1]] = rep
 
