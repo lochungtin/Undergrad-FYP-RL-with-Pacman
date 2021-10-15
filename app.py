@@ -1,5 +1,6 @@
 from threading import *
 from tkinter import *
+import sys
 import time
 
 from constants import *
@@ -68,7 +69,8 @@ class App:
 
         # start update loop
         self.running = True
-        Thread(target=self.tCtrl).start()
+        t = Thread(target=self.tCtrl)
+        t.start()
 
     # calculate pixel positions
     def calPxPos(self, row, col):
@@ -91,7 +93,7 @@ class App:
                 self.game.nextState()
                 self.updateCanvas()
             except:
-                pass
+                sys.exit()
 
     def kill(self):
         self.running = False
@@ -100,5 +102,6 @@ class App:
     # start app
     def run(self):
         # run main loop of application
-        self.main.mainloop()
+        self.main.mainloop()    
+        sys.exit()
         
