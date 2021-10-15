@@ -1,7 +1,7 @@
 # PACMAN with modified ghost AI
 
 <p align='center'>
-    <img src='./img/grid.png' width='450'/>
+    <img src='./img/grid.png' width='500'/>
 </p>
 
 # TODO LIST
@@ -15,6 +15,10 @@
 ---
 
 ## Implementation
+
+### General
+
+- Refresh after G.O. or completion
 
 ### Control Group (Classic behaviour)
 
