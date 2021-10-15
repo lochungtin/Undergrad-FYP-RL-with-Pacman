@@ -26,3 +26,6 @@ class Movable:
             return (pCol - col) * DIM.JUMP, -(pRow - row) * DIM.JUMP
 
         return 0, 0
+
+    def nextPos(self, state):
+        return self.prevPos, self.pos

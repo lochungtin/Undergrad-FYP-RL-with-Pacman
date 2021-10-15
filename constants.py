@@ -25,9 +25,17 @@ class DIR:
     RT = 2
     LF = 3
 
+
+# ghost ai modes
+class GHOST_MODE:
+    CHASE = 0
+    SCATTER = 1
+
+
 # initial position of objects
 class POS:
     PACMAN = (23, 13)
+
 
 # state representations
 class REP:
