@@ -1,5 +1,5 @@
 from ....data.constants import *
-from displayable import Displayable
+from ..displayable import Displayable
 
 
 class Movable(Displayable):

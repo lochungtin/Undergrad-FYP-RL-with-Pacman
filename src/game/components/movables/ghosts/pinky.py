@@ -1,5 +1,5 @@
 from .....data.constants import *
-from ghost import Ghost
+from .ghost import Ghost
 
 
 class Pinky(Ghost):

@@ -1,5 +1,5 @@
 from .....data.constants import *
-from movable import Movable
+from ..movable import Movable
 
 
 class Ghost(Movable):

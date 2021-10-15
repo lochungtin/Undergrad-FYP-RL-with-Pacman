@@ -3,8 +3,8 @@ from tkinter import *
 import sys
 import time
 
-from data.constants import *
-from game import Game
+from .data.constants import *
+from .game.game import Game
 
 
 class App:
