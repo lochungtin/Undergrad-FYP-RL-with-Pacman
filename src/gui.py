@@ -28,7 +28,7 @@ class GUI:
             self.main,
             width=DIM.GBL_W,
             height=DIM.GBL_H,
-            background="#1e1e1e",
+            background=REP.COLOR_MAP[REP.BG],
             highlightthickness=0,
         )
         self.canvas.pack()
@@ -41,6 +41,7 @@ class GUI:
         self.running = True
         Thread(target=self.timeController).start()
 
+    # create canvas objects from displayable list
     def initialGame(self):
         # draw grid
         for row in range(BOARD.row):
@@ -110,6 +111,7 @@ class GUI:
             dx, dy = movable.getDisplayDelta()
             self.canvas.move(movable.display, dx, dy)
 
+            # destroy pellet object if cell is visited
             if movable.rep == REP.PACMAN:
                 row, col = movable.pos
 
@@ -123,8 +125,9 @@ class GUI:
             if self.playing:
                 time.sleep(0.1)
 
-                done = self.game.nextState()
-                if done:
+                gameover = self.game.nextState()
+                # reset game and grid after gameover
+                if gameover:
                     self.canvas.delete('all')
 
                     self.game = Game()

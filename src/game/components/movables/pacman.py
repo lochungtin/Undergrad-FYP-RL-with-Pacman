@@ -8,10 +8,12 @@ class Pacman(Movable):
 
         self.direction = DIR.UP
 
+    # set direction of travel
     def setDir(self, direction):
         self.direction = direction
 
     def nextPos(self, state):
+        # calculate next position
         if self.direction == DIR.UP:
             nextPos = (self.pos[0] - 1, self.pos[1])
         elif self.direction == DIR.DW:

@@ -9,13 +9,16 @@ class DATA:
 
 # pixel values of components
 class DIM:
+    # canvas pixel count
     GBL_H = 925
     GBL_W = 805
 
+    # grid cell and gap size
     JUMP = 30
     CELL = 25
     GAP = 5
 
+    # padding for objects
     PAD_PELLET = 9
     PAD_PWRPLT = 5
     PAD_DOOR = 8
@@ -33,6 +36,12 @@ class DIR:
 class GHOST_MODE:
     CHASE = 0
     SCATTER = 1
+    FRIGHTENED = 2
+
+    # ghost specific modes
+    # blinky
+    ELROY1 = 3
+    ELROY2 = 4
 
 
 # initial position of displayables
@@ -52,6 +61,7 @@ class POS:
 
 # state representations
 class REP:
+    BG = 0
     EMPTY = 0
     WALL = 1
     DOOR = 2
@@ -65,6 +75,7 @@ class REP:
 
     # classic colors
     # COLOR_MAP = {
+    #     0: "#1e1e1e",
     #     1: "#3A60DE",
     #     2: "#F255C8",
     #     3: "#F1F2DA",
@@ -78,6 +89,7 @@ class REP:
 
     # my colors
     COLOR_MAP = {
+        0: "#1e1e1e",
         1: "#292929",
         2: "#292929",
         3: "#52756a",
@@ -89,6 +101,7 @@ class REP:
         9: "#edb974",
     }
 
+    # board pattern for path and walls
     BOARD = [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -123,6 +136,7 @@ class REP:
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]
 
+    # board pattern for pellets and power pellets
     PELLET_BOARD = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],

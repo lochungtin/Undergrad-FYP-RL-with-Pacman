@@ -9,8 +9,10 @@ from .components.pellet import Pellet
 
 class Game:
     def __init__(self):
+        # set state to board layout
         self.state = REP.BOARD
 
+        # create pacman and ghosts
         self.pacman = Pacman(POS.PACMAN)
         self.blinky = Blinky(POS.BLINKY)
         self.inky = Inky(POS.INKY)
@@ -19,8 +21,8 @@ class Game:
 
         self.movables = [self.pacman, self.blinky, self.inky, self.clyde, self.pinky]
 
+        # create pellet objects
         self.pelletState = []
-
         for y, row in enumerate(REP.PELLET_BOARD):
             pelletRow = []
             for x, cell in enumerate(row):
@@ -46,7 +48,7 @@ class Game:
         self.state[prev[0]][prev[1]] = REP.EMPTY
         self.state[cur[0]][cur[1]] = REP.PACMAN
 
-        # update pellet validity
+        # set pellet to not valid after visiting celL
         cellObj = self.pelletState[cur[0]][cur[1]]
         if cellObj != None and cellObj.valid:
             cellObj.destroy()
@@ -56,8 +58,9 @@ class Game:
             else:
                 self.pwrpltCount -= 1
 
-        #
+        # update ghost positions
 
+        # return gameover boolean
         if self.pelletCount + self.pwrpltCount == 0:
             return True
 

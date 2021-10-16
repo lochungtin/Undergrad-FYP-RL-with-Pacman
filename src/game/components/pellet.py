@@ -9,6 +9,7 @@ class Pellet(Displayable):
         self.isSpecial = rep == REP.PWRPLT
         self.valid = True
 
+    # set validity to false
     def destroy(self):
         self.valid = False
     

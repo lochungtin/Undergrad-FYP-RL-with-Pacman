@@ -3,5 +3,6 @@ class Displayable():
         self.pos = pos
         self.rep = rep
         
+    # store canvas item id
     def setDiplayObj(self, obj):
         self.display = obj
