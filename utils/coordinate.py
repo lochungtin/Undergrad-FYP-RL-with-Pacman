@@ -1,7 +1,9 @@
+from __future__ import annotations
 from typing import List
 
-from data import BOARD
-
+class BOARD:
+    row = 31
+    col = 27
 
 class CPair:
     def __init__(self, row: int, col: int) -> None:

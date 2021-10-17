@@ -53,10 +53,9 @@ class App:
         while self.running:
             if self.playing:
                 time.sleep(0.1)
-
-                gameover = self.game.nextState()
+                
                 # reset game and grid after gameover
-                if gameover:
+                if self.game.nextStep():
                     self.canvas.delete('all')
 
                     self.game = Game()

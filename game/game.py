@@ -81,15 +81,15 @@ class Game:
                     )
 
             # update pellet and pellet count
-            cell: Destroyable = self.pellets[pCurPos.row][pCurPos.col]
-            if cell.valid:
-                id = cell.destroy()
+            pellet: TypePellet = self.pellets[pCurPos.row][pCurPos.col]
+            if pellet != None and pellet.valid:
+                id = pellet.destroy()
 
                 # update canvas if present
                 if self.canvas != None:
                     self.canvas.delete(id)
 
-            self.pelletCount -= 1
+                self.pelletCount -= 1
 
             # end game if all pellets have been eaten
             if self.pelletCount == 0:
@@ -106,7 +106,7 @@ class Game:
             gPrevPos, gCurPos = ghost.getNextPos()
 
             pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
-            if pellet.valid:
+            if pellet != None and pellet.valid:
                 self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
             else:
                 self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
