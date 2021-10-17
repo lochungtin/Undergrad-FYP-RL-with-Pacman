@@ -1,5 +1,5 @@
-from .....data.constants import *
-from ..movable import Movable
+from data import *
+from movable import Movable
 
 
 class Ghost(Movable):
@@ -8,5 +8,4 @@ class Ghost(Movable):
 
         self.mode = GHOST_MODE.CHASE
 
-    def setMode(self, mode):
-        self.mode = mode
+        

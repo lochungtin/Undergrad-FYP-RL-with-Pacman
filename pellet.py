@@ -1,5 +1,5 @@
-from ...data.constants import *
-from .displayable import Displayable
+from data import *
+from displayable import Displayable
 
 class Pellet(Displayable):
     def __init__(self, pos, rep):

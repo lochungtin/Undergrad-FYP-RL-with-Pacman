@@ -1,10 +1,10 @@
-from ..data.constants import *
-from .components.movables.ghosts.blinky import Blinky
-from .components.movables.ghosts.clyde import Clyde
-from .components.movables.ghosts.inky import Inky
-from .components.movables.ghosts.pinky import Pinky
-from .components.movables.pacman import Pacman
-from .components.pellet import Pellet
+from data import *
+from blinky import Blinky
+from clyde import Clyde
+from inky import Inky
+from pinky import Pinky
+from pacman import Pacman
+from pellet import Pellet
 
 
 class Game:
