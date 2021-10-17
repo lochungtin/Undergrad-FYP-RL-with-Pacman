@@ -7,7 +7,7 @@ from data import DIM, DIR, REP
 from game.game import Game
 
 
-class GUI:
+class App:
     def __init__(self) -> None:
         # create game object
         self.game = Game()
@@ -25,7 +25,7 @@ class GUI:
 
         # handle kill event
         self.main.protocol("WM_DELETE_WINDOW", self.kill)
-        
+
         # create canvas object
         self.canvas = Canvas(
             self.main,
