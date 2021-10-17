@@ -1,4 +1,7 @@
 # dimension values of the board
+from utils.coordinate import CPair
+
+
 class BOARD:
     row = 31
     col = 27
@@ -38,7 +41,6 @@ class GHOST_MODE:
     SCATTER = 1
     FRIGHTENED = 2
 
-    # ghost specific modes
     # blinky
     ELROY1 = 3
     ELROY2 = 4
@@ -46,17 +48,17 @@ class GHOST_MODE:
 
 # initial position of displayables
 class POS:
-    PACMAN = (23, 13)
+    PACMAN: CPair = CPair(23, 13)
 
-    BLINKY = (11, 13)
-    INKY = (14, 11)
-    CLYDE = (14, 15)
-    PINKY = (14, 13)
+    BLINKY: CPair = CPair(11, 13)
+    INKY: CPair = CPair(14, 11)
+    CLYDE: CPair = CPair(14, 15)
+    PINKY: CPair = CPair(14, 13)
 
-    PWRPLTTL = (3, 1)
-    PWRPLTTR = (3, 25)
-    PWRPLTBL = (23, 1)
-    PWRPLTBR = (23, 25)
+    PWRPLTTL: CPair = CPair(3, 1)
+    PWRPLTTR: CPair = CPair(3, 25)
+    PWRPLTBL: CPair = CPair(23, 1)
+    PWRPLTBR: CPair = CPair(23, 25)
 
 
 # state representations
