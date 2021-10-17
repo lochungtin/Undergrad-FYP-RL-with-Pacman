@@ -10,6 +10,8 @@ class DATA:
     TOTAL_PELLET_COUNT = 238
     TOTAL_PWRPLT_COUNT = 4
 
+    GHOST_FRIGHTENED_STEP_COUNT = 80
+
 # pixel values of components
 class DIM:
     # canvas pixel count
@@ -55,11 +57,6 @@ class POS:
     CLYDE: CPair = CPair(14, 15)
     PINKY: CPair = CPair(14, 13)
 
-    PWRPLTTL: CPair = CPair(3, 1)
-    PWRPLTTR: CPair = CPair(3, 25)
-    PWRPLTBL: CPair = CPair(23, 1)
-    PWRPLTBR: CPair = CPair(23, 25)
-
 
 # state representations
 class REP:
@@ -74,6 +71,12 @@ class REP:
     INKY = 7
     PINKY = 8
     CLYDE = 9
+
+    def isPellet(rep: int) -> bool:
+        return rep == 3 or rep == 4
+
+    def isGhost(rep: int) -> bool:
+        return rep > 5 and rep < 10
 
     # classic colors
     # COLOR_MAP = {

@@ -10,9 +10,14 @@ class Ghost(Movable):
         super().__init__(pos, repId)
 
         self.mode: int = GHOST_MODE.CHASE
+        self.steps = 200
 
     def getTargetTile(self) -> CPair:
         return CPair(0, 0)
 
     def getNextPos(self) -> Tuple[CPair, CPair]:
         return super().getNextPos()
+
+    def setMode(self, mode: int, steps: int) -> None:
+        self.mode = mode
+        self.steps = steps
