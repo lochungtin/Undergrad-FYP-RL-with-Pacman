@@ -17,7 +17,6 @@ class CPair:
             and self.col < BOARD.col
         )
 
-
     # get all valid neighbouring coordinates
     def getValidNeighbours(self) -> List[CPair]:
         rt: List[CPair] = []

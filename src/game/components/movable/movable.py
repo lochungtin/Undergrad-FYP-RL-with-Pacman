@@ -10,5 +10,6 @@ class Movable(Component):
 
         self.prevPos: CPair = pos
 
+    # get next position of character
     def getNextPos(self) -> Tuple[CPair, CPair]:
         return self.pos, self.prevPos

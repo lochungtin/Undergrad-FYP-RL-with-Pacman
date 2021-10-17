@@ -6,5 +6,6 @@ class Component:
         self.pos: CPair = pos
         self.repId: int = repId
 
+    # set canvas item id of component
     def setCanvasItemId(self, id: int) -> None:
         self.canvasItemId: int = id
