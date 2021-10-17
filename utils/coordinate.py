@@ -1,9 +1,11 @@
 from __future__ import annotations
 from typing import List
 
+
 class BOARD:
     row = 31
     col = 27
+
 
 class CPair:
     def __init__(self, row: int, col: int) -> None:

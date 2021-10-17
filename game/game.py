@@ -1,5 +1,5 @@
 from tkinter import Canvas
-from typing import List, Tuple, Union
+from typing import List, Tuple
 import itertools
 
 from data import DATA, GHOST_MODE, POS, REP
@@ -10,7 +10,6 @@ from game.components.movable.ghosts.inky import Inky
 from game.components.movable.ghosts.pinky import Pinky
 from game.components.movable.pacman import Pacman
 from game.components.stationary.pellet import Pellet, PowerPellet, TypePellet
-from gui.destroyable import Destroyable
 from utils.coordinate import CPair
 
 
