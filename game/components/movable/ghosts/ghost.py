@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 
 from data import GHOST_MODE
 from game.components.movable.movable import Movable
@@ -22,5 +22,5 @@ class Ghost(Movable):
         return CPair(0, 0)
 
     # get next position of ghost
-    def getNextPos(self) -> Tuple[CPair, CPair]:
-        return super().getNextPos()
+    def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+        return super().getNextPos(state)

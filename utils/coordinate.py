@@ -1,16 +1,24 @@
 from __future__ import annotations
 from typing import List
 
-
-class BOARD:
-    row = 31
-    col = 27
+from data import BOARD, DIR
 
 
 class CPair:
     def __init__(self, row: int, col: int) -> None:
         self.row: int = row
         self.col: int = col
+
+    # translate coordinate according to direction
+    def move(self, dir: int) -> CPair:
+        if dir == DIR.UP:
+            return CPair(self.row - 1, self.col)
+        elif dir == DIR.DW:
+            return CPair(self.row + 1, self.col)
+        elif dir == DIR.LF:
+            return CPair(self.row, self.col - 1)
+        else:
+            return CPair(self.row, self.col + 1)
 
     # check if coordinate is valid
     def isValid(self) -> bool:

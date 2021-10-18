@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 
 from game.components.component import Component
 from utils.coordinate import CPair
@@ -11,5 +11,5 @@ class Movable(Component):
         self.prevPos: CPair = pos
 
     # get next position of character
-    def getNextPos(self) -> Tuple[CPair, CPair]:
+    def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
         return self.pos, self.prevPos

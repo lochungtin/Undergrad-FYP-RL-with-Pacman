@@ -1,12 +1,16 @@
 # dimension values of the board
-from utils.coordinate import CPair
+class BOARD:
+    row = 31
+    col = 27
 
 
+# game related data constants
 class DATA:
     TOTAL_PELLET_COUNT = 238
     TOTAL_PWRPLT_COUNT = 4
 
     GHOST_FRIGHTENED_STEP_COUNT = 80
+
 
 # pixel values of components
 class DIM:
@@ -45,6 +49,7 @@ class GHOST_MODE:
 
 
 # initial position of displayables
+from utils.coordinate import CPair
 class POS:
     PACMAN: CPair = CPair(23, 13)
 
@@ -67,6 +72,9 @@ class REP:
     INKY = 7
     PINKY = 8
     CLYDE = 9
+
+    def isWall(rep: int) -> bool:
+        return rep == 1 or rep == 2
 
     def isPellet(rep: int) -> bool:
         return rep == 3 or rep == 4

@@ -64,7 +64,7 @@ class Game:
     # proceed to next time step
     def nextStep(self) -> Tuple[bool, bool]:
         # update pacman location
-        pPrevPos, pCurPos = self.pacman.getNextPos()
+        pPrevPos, pCurPos = self.pacman.getNextPos(self.state)
         prevState = self.state[pCurPos.row][pCurPos.col]
 
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
@@ -102,7 +102,7 @@ class Game:
 
         # update ghosts' locations
         for ghost in self.ghosts:
-            gPrevPos, gCurPos = ghost.getNextPos()
+            gPrevPos, gCurPos = ghost.getNextPos(self.state)
 
             pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
             if pellet != None and pellet.valid:
