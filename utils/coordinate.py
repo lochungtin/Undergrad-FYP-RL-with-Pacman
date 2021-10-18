@@ -50,3 +50,7 @@ class CPair:
 
     def __repr__(self) -> str:
         return "({}, {})".format(self.row, self.col)
+
+    # custom equal function
+    def __eq__(self, o: CPair) -> bool:
+        return self.row == o.row and self.col == o.col

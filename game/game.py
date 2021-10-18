@@ -96,7 +96,6 @@ class Game:
 
         # check gameover
         pNeighbours: List[CPair] = pCurPos.getValidNeighbours()
-        print(pNeighbours)
         for neighbour in pNeighbours:
             if REP.isGhost(self.state[neighbour.row][neighbour.col]):
                 return True, True

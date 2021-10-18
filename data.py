@@ -58,6 +58,12 @@ class POS:
     CLYDE: CPair = CPair(14, 15)
     PINKY: CPair = CPair(14, 13)
 
+    LEFT_LOOP_TRIGGER: CPair = CPair(14, -1)
+    LEFT_LOOP: CPair = CPair(14, 0)
+
+    RIGHT_LOOP_TRIGGER: CPair = CPair(14, 27)
+    RIGHT_LOOP: CPair = CPair(14, 26)
+
 
 # state representations
 class REP:

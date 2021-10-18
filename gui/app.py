@@ -92,13 +92,9 @@ class App:
         gameover, won = self.game.nextStep()
 
         # update pacman's location
-        pdX, pdY = GUIUtil.calculateDxDy(self.game.pacman.pos, self.game.pacman.prevPos)
-        print(pdX, pdY)
-        print(self.game.pacman.pos.row)
-        print(self.game.pacman.pos.col)
-        print(self.game.pacman.prevPos.row)
-        print(self.game.pacman.prevPos.col)
-        self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
+        if self.game.pacman.moved:
+            pdX, pdY = GUIUtil.calculateDxDy(self.game.pacman.pos, self.game.pacman.prevPos)
+            self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
 
         # update ghosts' locations
         for ghost in self.game.ghosts:
