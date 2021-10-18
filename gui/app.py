@@ -1,11 +1,8 @@
-from threading import Thread
 from tkinter import *
-import sys
-import time
-from typing import Tuple
 
 from data import DIM, DIR, REP
 from game.game import Game
+from gui.util import GUIUtil
 
 
 class App:
@@ -22,7 +19,7 @@ class App:
         self.main.bind("<Down>", lambda _: self.game.pacman.setDir(DIR.DW))
         self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
         self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
-        self.main.bind("<space>", self.togglePause)
+        self.main.bind("<space>", lambda _: self.nextStep())
 
         # handle kill event
         self.main.protocol("WM_DELETE_WINDOW", self.kill)
@@ -37,26 +34,15 @@ class App:
         )
         self.canvas.pack()
 
-        # initialise game
+        # bind objects with canvas items
         self.initialGame()
 
-        # start update loop
-        self.playing: bool = True
-        self.running: bool = True
-        # Thread(target=self.controller).start()
-
-    # calculate pixel position of grid
-    def calculatePos(self, row, col) -> Tuple[int, int, int, int]:
-        x0: int = col * DIM.JUMP
-        y0: int = row * DIM.JUMP
-        return x0, y0, x0 + DIM.CELL, y0 + DIM.CELL
-
     # create canvas objects from displayable list
-    def initialGame(self):
+    def initialGame(self) -> None:
         # draw grid
         for rowIndex, stateRow in enumerate(self.game.state):
             for colIndex, cell in enumerate(stateRow):
-                x0, y0, x1, y1 = self.calculatePos(rowIndex, colIndex)
+                x0, y0, x1, y1 = GUIUtil.calculatePos(rowIndex, colIndex)
 
                 if REP.isPellet(cell):
                     # draw pellets
@@ -99,31 +85,38 @@ class App:
                     elif cell == REP.PINKY:
                         self.game.pinky.setCanvasItemId(canvasItemId)
 
-    # time controller
-    def controller(self) -> None:
-        while self.running:
-            if self.playing:
-                time.sleep(0.1)
+    # trigger Game.nextStep() and update canvas
+    # reset canvas if gameover
+    def nextStep(self):
+        print('a')
+        gameover, won = self.game.nextStep()
 
-                # reset game and grid after gameover
-                if self.game.nextStep():
-                    self.canvas.delete("all")
+        # update pacman's location
+        pdX, pdY = GUIUtil.calculateDxDy(self.game.pacman.pos, self.game.pacman.prevPos)
+        print(pdX, pdY)
+        print(self.game.pacman.pos.row)
+        print(self.game.pacman.pos.col)
+        print(self.game.pacman.prevPos.row)
+        print(self.game.pacman.prevPos.col)
+        self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
 
-                    self.game = Game()
-                    self.initialGame()
+        # update ghosts' locations
+        for ghost in self.game.ghosts:
+            dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
+            self.canvas.move(ghost.canvasItemId, dX, dY)
 
-                self.updateCanvas()
+        if gameover:
+            # clear canvas
+            self.canvas.delete("all")
 
-    # pause game
-    def togglePause(self, event) -> None:
-        self.playing = not self.playing
+            # create new game and bind objects with canvas items
+            self.game = Game()
+            self.initialGame()
 
     # kill program
     def kill(self) -> None:
-        self.running = False
         self.main.destroy()
 
     # run main loop of application
     def run(self) -> None:
         self.main.mainloop()
-        sys.exit()

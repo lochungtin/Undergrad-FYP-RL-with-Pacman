@@ -14,3 +14,7 @@ class Pacman(Movable):
     # get next position of pacman
     def getNextPos(self) -> Tuple[CPair, CPair]:
         return super().getNextPos()
+
+    # set direction
+    def setDir(self, direction: int) -> None:
+        self.direction = direction
