@@ -3,9 +3,14 @@ class BOARD:
     row = 31
     col = 27
 
+
+# game related data constants
 class DATA:
     TOTAL_PELLET_COUNT = 238
     TOTAL_PWRPLT_COUNT = 4
+
+    GHOST_FRIGHTENED_STEP_COUNT = 80
+
 
 # pixel values of components
 class DIM:
@@ -38,25 +43,26 @@ class GHOST_MODE:
     SCATTER = 1
     FRIGHTENED = 2
 
-    # ghost specific modes
     # blinky
     ELROY1 = 3
     ELROY2 = 4
 
 
 # initial position of displayables
+from utils.coordinate import CPair
 class POS:
-    PACMAN = (23, 13)
+    PACMAN: CPair = CPair(23, 13)
 
-    BLINKY = (11, 13)
-    INKY = (14, 11)
-    CLYDE = (14, 15)
-    PINKY = (14, 13)
+    BLINKY: CPair = CPair(11, 13)
+    INKY: CPair = CPair(14, 11)
+    CLYDE: CPair = CPair(14, 15)
+    PINKY: CPair = CPair(14, 13)
 
-    PWRPLTTL = (3, 1)
-    PWRPLTTR = (3, 25)
-    PWRPLTBL = (23, 1)
-    PWRPLTBR = (23, 25)
+    LEFT_LOOP_TRIGGER: CPair = CPair(14, -1)
+    LEFT_LOOP: CPair = CPair(14, 0)
+
+    RIGHT_LOOP_TRIGGER: CPair = CPair(14, 27)
+    RIGHT_LOOP: CPair = CPair(14, 26)
 
 
 # state representations
@@ -72,6 +78,15 @@ class REP:
     INKY = 7
     PINKY = 8
     CLYDE = 9
+
+    def isWall(rep: int) -> bool:
+        return rep == 1 or rep == 2
+
+    def isPellet(rep: int) -> bool:
+        return rep == 3 or rep == 4
+
+    def isGhost(rep: int) -> bool:
+        return rep > 5 and rep < 10
 
     # classic colors
     # COLOR_MAP = {
