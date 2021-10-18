@@ -39,7 +39,14 @@ class CPair:
             CPair(self.row, self.col + 1),
             CPair(self.row, self.col - 1),
         ]:
-            if neighbour.isValid:
+            if neighbour.isValid():
                 rt.append(neighbour)
 
         return rt
+
+    # custom string representation
+    def __str__(self) -> str:
+        return "({}, {})".format(self.row, self.col)
+
+    def __repr__(self) -> str:
+        return "({}, {})".format(self.row, self.col)
