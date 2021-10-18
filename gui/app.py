@@ -88,7 +88,6 @@ class App:
     # trigger Game.nextStep() and update canvas
     # reset canvas if gameover
     def nextStep(self):
-        print('a')
         gameover, won = self.game.nextStep()
 
         # update pacman's location
