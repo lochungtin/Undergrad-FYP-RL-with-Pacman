@@ -21,7 +21,7 @@ class CPair:
             return CPair(self.row, self.col + 1)
 
     # check if coordinate is valid
-    def isValid(self) -> bool:
+    def isValid(self) -> bool:       
         return (
             self.row >= 0
             and self.col >= 0
@@ -34,12 +34,16 @@ class CPair:
         rt: List[CPair] = []
 
         for neighbour in [
-            CPair(self.row + 1, self.col),
             CPair(self.row - 1, self.col),
-            CPair(self.row, self.col + 1),
+            CPair(self.row + 1, self.col),
             CPair(self.row, self.col - 1),
+            CPair(self.row, self.col + 1),
         ]:
-            if neighbour.isValid():
+            if neighbour == CPair(14, -1):
+                rt.append(CPair(14, 26))
+            elif neighbour == CPair(14, 27):
+                rt.append(CPair(14, 0))
+            elif neighbour.isValid():
                 rt.append(neighbour)
 
         return rt

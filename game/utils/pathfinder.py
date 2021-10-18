@@ -54,7 +54,11 @@ class PathFinder:
                 # return path if goal is reached
                 if neighbour == goal:
                     weightedList[nX][nY].parent = top.cpair
-                    return self.reconstructPath(goal, weightedList)
+
+                    path: Path = self.reconstructPath(goal, weightedList)
+                    path.insert(start)
+
+                    return path
 
                 # update cell weights
                 else:
@@ -81,4 +85,4 @@ class PathFinder:
         return path
 
 p = PathFinder()
-print(p.start(POS.PACMAN, POS.BLINKY))
+print(p.start(POS.LEFT_LOOP, POS.RIGHT_LOOP))
