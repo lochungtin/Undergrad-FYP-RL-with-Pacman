@@ -10,6 +10,7 @@ from game.components.movable.ghosts.inky import Inky
 from game.components.movable.ghosts.pinky import Pinky
 from game.components.movable.pacman import Pacman
 from game.components.stationary.pellet import Pellet, PowerPellet, TypePellet
+from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 
@@ -56,6 +57,9 @@ class Game:
 
         # set canvas to None as default
         self.canvas: Canvas = None
+
+        # initialise pathfinder
+        self.pathfinder: PathFinder = PathFinder()
 
     # set canvas object
     def setCanvas(self, canvas: Canvas) -> None:
