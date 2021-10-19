@@ -64,6 +64,10 @@ class POS:
     RIGHT_LOOP_TRIGGER: CPair = CPair(14, 27)
     RIGHT_LOOP: CPair = CPair(14, 26)
 
+    GHOST_NO_UP_1: CPair = CPair(11, 12)
+    GHOST_NO_UP_2: CPair = CPair(11, 14)
+    GHOST_NO_UP_3: CPair = CPair(23, 12)
+    GHOST_NO_UP_4: CPair = CPair(23, 14)
 
 # state representations
 class REP:

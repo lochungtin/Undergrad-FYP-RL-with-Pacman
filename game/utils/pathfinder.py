@@ -2,7 +2,7 @@ from typing import List
 from queue import PriorityQueue
 import math
 
-from data import BOARD, REP
+from data import BOARD, POS, REP
 from game.utils.path import Path
 from game.utils.pathcell import PathCell
 from game.utils.pathcoordinate import PathCPair
@@ -44,7 +44,16 @@ class PathFinder:
 
             closedList[top.cpair.row][top.cpair.col] = True
 
-            for neighbour in top.cpair.getValidNeighbours():
+            for index, neighbour in enumerate(top.cpair.getValidNeighbours()):
+                # ignore areas that ghosts cant go up
+                if (
+                    top.cpair == POS.GHOST_NO_UP_1
+                    or top.cpair == POS.GHOST_NO_UP_2
+                    or top.cpair == POS.GHOST_NO_UP_3
+                    or top.cpair == POS.GHOST_NO_UP_4
+                ) and index == 0:
+                    continue
+
                 nX, nY = neighbour.row, neighbour.col
 
                 # pass if neighbour is a wall
@@ -54,7 +63,7 @@ class PathFinder:
                 # return path if goal is reached
                 if neighbour == goal:
                     weightedList[nX][nY].parent = top.cpair
-                    
+
                     return self.reconstructPath(goal, weightedList)
 
                 # update cell weights
@@ -67,7 +76,7 @@ class PathFinder:
                         # put successor into open list
                         openList.put(PathCPair(neighbour, f))
 
-                        # update details of neighboue
+                        # update details of neighbour
                         weightedList[nX][nY].update(f, g, h, top.cpair)
 
     # reconstruct path from weighted state
