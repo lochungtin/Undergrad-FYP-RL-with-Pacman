@@ -28,7 +28,6 @@
     - Clyde
     - Pinky
 
-- fix pacman pellet eating mechanics
 - refactor ghost constructors
 - redo ghost mode switching mechanics
 
