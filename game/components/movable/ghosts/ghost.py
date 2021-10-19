@@ -33,10 +33,14 @@ class Ghost(Movable):
         if self.inHouse:
             return self.pos, self.pos
 
-        self.path = self.pathfinder.start(self.pos, self.getTargetTile(state))
+        self.path = self.pathfinder.start(self.pos, self.getTargetTile(state), self.direction)
 
         self.prevPos = self.pos
         if len(self.path.path) > 0:
             self.pos = self.path.path[0]
+
+        # update direction of travel
+        self.direction = self.pos.relate(self.prevPos)
+        print(self.direction)
 
         return self.pos, self.prevPos

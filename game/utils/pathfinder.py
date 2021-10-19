@@ -2,7 +2,7 @@ from typing import List
 from queue import PriorityQueue
 import math
 
-from data import BOARD, POS, REP
+from data import BOARD, DIR, POS, REP
 from game.utils.path import Path
 from game.utils.pathcell import PathCell
 from game.utils.pathcoordinate import PathCPair
@@ -15,7 +15,7 @@ class PathFinder:
         return math.sqrt(pow(goal.row - pos.row, 2) + pow(goal.col - pos.col, 2))
 
     # pathfind function (a* path finding with ordered direction exploration)
-    def start(self, start: CPair, goal: CPair) -> Path:
+    def start(self, start: CPair, goal: CPair, direction: int) -> Path:
         # create closed list and weighted list
         closedList: List[List[bool]] = []
         weightedList: List[List[PathCell]] = []
@@ -41,16 +41,21 @@ class PathFinder:
         # start a*
         while not openList.empty():
             top: PathCPair = openList.get()
+            searchPos: CPair = top.cpair
 
-            closedList[top.cpair.row][top.cpair.col] = True
+            closedList[searchPos.row][searchPos.col] = True
 
-            for index, neighbour in enumerate(top.cpair.getValidNeighbours()):
+            for index, neighbour in enumerate(searchPos.getValidNeighbours()):
+                # disallow expansion to opposite direction or current motion
+                if searchPos == start and DIR.getOpposite(direction) == index:
+                    continue
+
                 # ignore areas that ghosts cant go up
                 if (
-                    top.cpair == POS.GHOST_NO_UP_1
-                    or top.cpair == POS.GHOST_NO_UP_2
-                    or top.cpair == POS.GHOST_NO_UP_3
-                    or top.cpair == POS.GHOST_NO_UP_4
+                    searchPos == POS.GHOST_NO_UP_1
+                    or searchPos == POS.GHOST_NO_UP_2
+                    or searchPos == POS.GHOST_NO_UP_3
+                    or searchPos == POS.GHOST_NO_UP_4
                 ) and index == 0:
                     continue
 
@@ -62,13 +67,13 @@ class PathFinder:
 
                 # return path if goal is reached
                 if neighbour == goal:
-                    weightedList[nX][nY].parent = top.cpair
+                    weightedList[nX][nY].parent = searchPos
 
                     return self.reconstructPath(goal, weightedList)
 
                 # update cell weights
                 else:
-                    g: float = weightedList[top.cpair.row][top.cpair.col].g + 1
+                    g: float = weightedList[searchPos.row][searchPos.col].g + 1
                     h: float = self.h(neighbour, goal)
                     f: float = g + h
 
@@ -77,7 +82,7 @@ class PathFinder:
                         openList.put(PathCPair(neighbour, f))
 
                         # update details of neighbour
-                        weightedList[nX][nY].update(f, g, h, top.cpair)
+                        weightedList[nX][nY].update(f, g, h, searchPos)
 
     # reconstruct path from weighted state
     def reconstructPath(self, goal: CPair, weightedState: List[List[PathCell]]) -> Path:

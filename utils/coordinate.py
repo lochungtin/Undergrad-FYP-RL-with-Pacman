@@ -29,6 +29,20 @@ class CPair:
             and self.col < BOARD.col
         )
 
+    # get direction relation of coordinate pairs
+    def relate(self, cpair: CPair) -> int:
+        if self.row + 1 == cpair.row and self.col == cpair.col:
+            return DIR.UP
+        elif self.row - 1 == cpair.row and self.col == cpair.col:
+            return DIR.DW
+        elif self.row == cpair.row and self.col + 1 == cpair.col:
+            return DIR.LF
+        elif self.row == cpair.row and self.col - 1 == cpair.col:
+            return DIR.RT
+        
+        # not a valid comparison
+        return -1
+
     # get all valid neighbouring coordinates
     def getValidNeighbours(self) -> List[CPair]:
         rt: List[CPair] = []

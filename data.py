@@ -33,8 +33,17 @@ class DIM:
 class DIR:
     UP = 0
     DW = 1
-    RT = 2
-    LF = 3
+    LF = 2
+    RT = 3
+
+    def getOpposite(dir: int) -> int:
+        if dir == DIR.UP:
+            return DIR.DW
+        elif dir == DIR.DW:
+            return DIR.UP
+        elif dir == DIR.LF:
+            return DIR.RT
+        return DIR.LF
 
 
 # ghost ai modes
