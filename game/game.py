@@ -74,6 +74,7 @@ class Game:
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
         self.state[pCurPos.row][pCurPos.col] = REP.PACMAN
 
+        # check collision to trigger gameover return
         for ghost in self.ghosts:
             if pCurPos == ghost.pos:
                 return True, False
@@ -106,6 +107,7 @@ class Game:
         for ghost in self.ghosts:
             gCurPos, gPrevPos = ghost.getNextPos(self.state)
 
+            # check collision to trigger gameover return
             if gCurPos == pCurPos:
                 return True, False
 
