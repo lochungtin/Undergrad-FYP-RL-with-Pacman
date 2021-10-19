@@ -28,6 +28,8 @@
     - Clyde
     - Pinky
 
+- refactor ghost constructors
+
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
 ---
