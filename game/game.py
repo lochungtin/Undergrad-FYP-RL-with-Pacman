@@ -68,7 +68,7 @@ class Game:
     # proceed to next time step
     def nextStep(self) -> Tuple[bool, bool]:
         # update pacman location
-        pPrevPos, pCurPos = self.pacman.getNextPos(self.state)
+        pCurPos, pPrevPos = self.pacman.getNextPos(self.state)
         prevState = self.state[pCurPos.row][pCurPos.col]
 
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
@@ -85,44 +85,32 @@ class Game:
 
             # update pellet and pellet count
             pellet: TypePellet = self.pellets[pCurPos.row][pCurPos.col]
-            if pellet != None:
-                if pellet.valid:
-                    id = pellet.destroy()
+            if pellet != None and pellet.valid:
+                id = pellet.destroy()
 
-                    # update canvas if present
-                    if self.canvas != None:
-                        self.canvas.delete(id)
+                # update canvas if present
+                if self.canvas != None:
+                    self.canvas.delete(id)
 
-                    self.pelletCount -= 1
+                self.pelletCount -= 1
 
             # end game if all pellets have been eaten
             if self.pelletCount == 0:
-                return True, False
-
-        # check gameover
-        pNeighbours: List[CPair] = pCurPos.getValidNeighbours()
-        for neighbour in pNeighbours:
-            if REP.isGhost(self.state[neighbour.row][neighbour.col]):
                 return True, True
 
         # update ghosts' locations
         for ghost in self.ghosts:
-            gPrevPos, gCurPos = ghost.getNextPos(self.state)
+            gCurPos, gPrevPos = ghost.getNextPos(self.state)
+
+            if gCurPos == pCurPos:
+                return True, False
 
             pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
-            if pellet != None:
-                if pellet.valid:
-                    self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
-                else:
-                    self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
+            if pellet != None and pellet.valid:
+                self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
             else:
                 self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
 
             self.state[gCurPos.row][gCurPos.col] = ghost.repId
-
-        # check gameover
-        for neighbour in pNeighbours:
-            if REP.isGhost(self.state[neighbour.row][neighbour.col]):
-                return True, True
 
         return False, False
