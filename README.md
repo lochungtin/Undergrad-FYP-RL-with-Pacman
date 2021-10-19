@@ -23,12 +23,14 @@
 ### Control Group (Classic behaviour)
 
 - Classic pacman AI
-    - Blinky
+    - Blinky (cruise elroy 1 and 2)
     - Inky
     - Clyde
     - Pinky
 
+- fix pacman pellet eating mechanics
 - refactor ghost constructors
+- redo ghost mode switching mechanics
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
