@@ -19,12 +19,15 @@ class Game:
         # set state from template
         self.state: List[List[int]] = REP.BOARD
 
+        # initialise pathfinder
+        self.pathfinder: PathFinder = PathFinder()
+
         # create movables
         self.pacman: Pacman = Pacman(POS.PACMAN)
-        self.blinky: Ghost = Blinky(POS.BLINKY)
-        self.inky: Ghost = Inky(POS.INKY)
-        self.clyde: Ghost = Clyde(POS.CLYDE)
-        self.pinky: Ghost = Pinky(POS.PINKY)
+        self.blinky: Ghost = Blinky(POS.BLINKY, False, self.pathfinder)
+        self.inky: Ghost = Inky(POS.INKY, True, self.pathfinder)
+        self.clyde: Ghost = Clyde(POS.CLYDE, True, self.pathfinder)
+        self.pinky: Ghost = Pinky(POS.PINKY, True, self.pathfinder)
 
         self.ghosts: List[Ghost] = [
             self.blinky,
@@ -58,9 +61,6 @@ class Game:
         # set canvas to None as default
         self.canvas: Canvas = None
 
-        # initialise pathfinder
-        self.pathfinder: PathFinder = PathFinder()
-
     # set canvas object
     def setCanvas(self, canvas: Canvas) -> None:
         self.canvas = canvas
@@ -85,14 +85,15 @@ class Game:
 
             # update pellet and pellet count
             pellet: TypePellet = self.pellets[pCurPos.row][pCurPos.col]
-            if pellet != None and pellet.valid:
-                id = pellet.destroy()
+            if pellet != None:
+                if pellet.valid:
+                    id = pellet.destroy()
 
-                # update canvas if present
-                if self.canvas != None:
-                    self.canvas.delete(id)
+                    # update canvas if present
+                    if self.canvas != None:
+                        self.canvas.delete(id)
 
-                self.pelletCount -= 1
+                    self.pelletCount -= 1
 
             # end game if all pellets have been eaten
             if self.pelletCount == 0:
@@ -109,8 +110,11 @@ class Game:
             gPrevPos, gCurPos = ghost.getNextPos(self.state)
 
             pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
-            if pellet != None and pellet.valid:
-                self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
+            if pellet != None:
+                if pellet.valid:
+                    self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
+                else:
+                    self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
             else:
                 self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
 

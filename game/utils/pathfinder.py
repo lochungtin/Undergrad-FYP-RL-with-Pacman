@@ -2,7 +2,7 @@ from typing import List
 from queue import PriorityQueue
 import math
 
-from data import BOARD, POS, REP
+from data import BOARD, REP
 from game.utils.path import Path
 from game.utils.pathcell import PathCell
 from game.utils.pathcoordinate import PathCPair
@@ -83,6 +83,3 @@ class PathFinder:
             parent = weightedState[parent.row][parent.col].parent
 
         return path
-
-p = PathFinder()
-print(p.start(POS.LEFT_LOOP, POS.RIGHT_LOOP))
