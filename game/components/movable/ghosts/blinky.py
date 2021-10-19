@@ -15,6 +15,6 @@ class Blinky(Ghost):
         for rowIndex, row in enumerate(state):
             for colIndex, cell in enumerate(row):
                 if cell == REP.PACMAN:
-                    pacman: CPair = CPair(rowIndex, colIndex)
+                    targetTile: CPair = CPair(rowIndex, colIndex)
 
-        return pacman
+        return targetTile
