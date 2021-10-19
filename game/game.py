@@ -74,6 +74,10 @@ class Game:
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
         self.state[pCurPos.row][pCurPos.col] = REP.PACMAN
 
+        for ghost in self.ghosts:
+            if pCurPos == ghost.pos:
+                return True, False
+
         # perform actions if new position had pellets
         if prevState == REP.PELLET or prevState == REP.PWRPLT:
             # set ghost mode to frightened
