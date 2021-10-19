@@ -94,13 +94,16 @@ class App:
             if hasattr(ghost.path, "canvasItemId"):
                 self.canvas.delete(ghost.path.canvasItemId)
 
-        gameover, won = self.game.nextStep()
+        gameover, won, atePellet = self.game.nextStep()
+
+        # remove pellet
+        pPos = self.game.pacman.pos
+        if atePellet:
+            self.canvas.delete(self.game.pellets[pPos.row][pPos.col].canvasItemId)
 
         # update pacman's location
         if self.game.pacman.moved:
-            pdX, pdY = GUIUtil.calculateDxDy(
-                self.game.pacman.pos, self.game.pacman.prevPos
-            )
+            pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
             self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
 
         # update ghosts' locations and paths

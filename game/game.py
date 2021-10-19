@@ -77,10 +77,11 @@ class Game:
         # check collision to trigger gameover return
         for ghost in self.ghosts:
             if pCurPos == ghost.pos:
-                return True, False
+                return True, False, False
 
         # perform actions if new position had pellets
-        if prevState == REP.PELLET or prevState == REP.PWRPLT:
+        atePellet: bool = prevState == REP.PELLET or prevState == REP.PWRPLT
+        if atePellet:
             # set ghost mode to frightened
             if prevState == REP.PWRPLT:
                 for ghost in self.ghosts:
@@ -101,7 +102,7 @@ class Game:
 
             # end game if all pellets have been eaten
             if self.pelletCount == 0:
-                return True, True
+                return True, True, False
 
         # update ghosts' locations
         for ghost in self.ghosts:
@@ -109,7 +110,7 @@ class Game:
 
             # check collision to trigger gameover return
             if gCurPos == pCurPos:
-                return True, False
+                return True, False, False
 
             pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
             if pellet != None and pellet.valid:
@@ -119,4 +120,4 @@ class Game:
 
             self.state[gCurPos.row][gCurPos.col] = ghost.repId
 
-        return False, False
+        return False, False, atePellet
