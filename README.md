@@ -22,8 +22,8 @@
 
 ### Control Group (Classic behaviour)
 
-- Classic pacman AI
-    - Blinky (cruise elroy 1 and 2)
+- Classic pacman AI (get target tile and frightened random walk)
+    - Blinky (cruise elroy)
     - Inky
     - Clyde
     - Pinky

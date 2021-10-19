@@ -15,8 +15,7 @@ class GHOST_MODE:
     DEAD: int = 3
 
     # blinky
-    ELROY_1: int = 4
-    ELROY_2: int = 5
+    CRUISE_ELROY: int = 4
 
 
 # game related data constants
