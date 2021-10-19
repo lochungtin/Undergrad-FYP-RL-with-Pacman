@@ -2,7 +2,7 @@ from tkinter import Canvas
 from typing import List, Tuple
 import itertools
 
-from data import DATA, GHOST_MODE, REP
+from data import DATA, REP
 from game.components.movable.ghosts.blinky import Blinky
 from game.components.movable.ghosts.clyde import Clyde
 from game.components.movable.ghosts.ghost import Ghost
@@ -62,6 +62,8 @@ class Game:
         self.stepCount: int = DATA.TOTAL_STEP_COUNT
         self.ghostSchedule: int = 0
 
+        self.ghostFrightenedCount: int = -1
+
         # set canvas to None as default
         self.canvas: Canvas = None
 
@@ -90,6 +92,8 @@ class Game:
             if prevState == REP.PWRPLT:
                 for ghost in self.ghosts:
                     ghost.isFrightened = True
+
+                self.ghostFrightenedCount = DATA.GHOST_FRIGHTENED_STEP_COUNT
 
             # update pellet and pellet count
             pellet: TypePellet = self.pellets[pCurPos.row][pCurPos.col]
@@ -129,7 +133,17 @@ class Game:
         if self.stepCount < DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][1]:
             self.ghostSchedule += 1
 
+            # set all ghost to new mode
             for ghost in self.ghosts:
                 ghost.mode = DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][0]
+
+        # update frightened state
+        if self.ghostFrightenedCount > -1:
+            self.ghostFrightenedCount -= 1
+            
+            # set all ghost to not frightened after 80 time steps
+            if self.ghostFrightenedCount == -1:
+                for ghost in self.ghosts:
+                    ghost.isFrightened = False
 
         return False, False, atePellet

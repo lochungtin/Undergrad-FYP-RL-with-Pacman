@@ -26,15 +26,15 @@ class DATA:
     TOTAL_PWRPLT_COUNT: int = 4
 
     # ghost mode and step counter
-    TOTAL_STEP_COUNT: int = 84
+    TOTAL_STEP_COUNT: int = 840
     GHOST_FRIGHTENED_STEP_COUNT: int = 80
     GHOST_MODE_SCHEDULE: List[Tuple[int, int]] = [
-        (GHOST_MODE.SCATTER, 77),
-        (GHOST_MODE.CHASE, 57),
-        (GHOST_MODE.SCATTER, 50),
-        (GHOST_MODE.CHASE, 30),
-        (GHOST_MODE.SCATTER, 25),
-        (GHOST_MODE.CHASE, 5),
+        (GHOST_MODE.SCATTER, 770),
+        (GHOST_MODE.CHASE, 570),
+        (GHOST_MODE.SCATTER, 500),
+        (GHOST_MODE.CHASE, 300),
+        (GHOST_MODE.SCATTER, 250),
+        (GHOST_MODE.CHASE, 50),
         (GHOST_MODE.SCATTER, 0),
         (GHOST_MODE.CHASE, -1),
     ]
