@@ -28,7 +28,6 @@
     - Clyde
     - Pinky
 
-- refactor ghost constructors
 - redo ghost mode switching mechanics
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)

@@ -1,14 +1,14 @@
 from typing import List, Tuple
 
-from data import REP
+from data import POS, REP
 from game.components.movable.ghosts.ghost import Ghost
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 
 class Pinky(Ghost):
-    def __init__(self, pos: CPair, inHouse: bool, pathfinder: PathFinder) -> None:
-        super().__init__(pos, REP.PINKY, inHouse, pathfinder)
+    def __init__(self, pathfinder: PathFinder) -> None:
+        super().__init__(POS.PINKY, REP.PINKY, True, pathfinder)
 
     # get target tile of ghost
     def getTargetTile(self, state: List[List[int]]) -> CPair:

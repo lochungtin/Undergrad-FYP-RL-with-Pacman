@@ -6,8 +6,8 @@ from utils.coordinate import CPair
 
 
 class Pacman(Movable):
-    def __init__(self, pos: CPair) -> None:
-        super().__init__(pos, REP.PACMAN)
+    def __init__(self) -> None:
+        super().__init__(POS.PACMAN, REP.PACMAN)
         
         self.moved: bool = True
 

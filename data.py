@@ -53,8 +53,8 @@ class GHOST_MODE:
     FRIGHTENED = 2
 
     # blinky
-    ELROY1 = 3
-    ELROY2 = 4
+    ELROY_1 = 3
+    ELROY_2 = 4
 
 
 # initial position of displayables

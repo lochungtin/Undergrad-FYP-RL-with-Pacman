@@ -2,7 +2,7 @@ from tkinter import Canvas
 from typing import List, Tuple
 import itertools
 
-from data import DATA, GHOST_MODE, POS, REP
+from data import DATA, GHOST_MODE, REP
 from game.components.movable.ghosts.blinky import Blinky
 from game.components.movable.ghosts.clyde import Clyde
 from game.components.movable.ghosts.ghost import Ghost
@@ -23,11 +23,11 @@ class Game:
         self.pathfinder: PathFinder = PathFinder()
 
         # create movables
-        self.pacman: Pacman = Pacman(POS.PACMAN)
-        self.blinky: Ghost = Blinky(POS.BLINKY, False, self.pathfinder)
-        self.inky: Ghost = Inky(POS.INKY, True, self.pathfinder)
-        self.clyde: Ghost = Clyde(POS.CLYDE, True, self.pathfinder)
-        self.pinky: Ghost = Pinky(POS.PINKY, True, self.pathfinder)
+        self.pacman: Pacman = Pacman()
+        self.blinky: Ghost = Blinky(self.pathfinder)
+        self.inky: Ghost = Inky(self.pathfinder)
+        self.clyde: Ghost = Clyde(self.pathfinder)
+        self.pinky: Ghost = Pinky(self.pathfinder)
 
         self.ghosts: List[Ghost] = [
             self.blinky,

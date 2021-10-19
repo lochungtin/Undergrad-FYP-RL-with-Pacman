@@ -30,17 +30,19 @@ class Ghost(Movable):
 
     # get next position of ghost
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+        # ignore if in house
         if self.inHouse:
             return self.pos, self.pos
 
+        # generate path
         self.path = self.pathfinder.start(self.pos, self.getTargetTile(state), self.direction)
 
+        # TO BE CHANGED (affects scatter mode looping)
         self.prevPos = self.pos
         if len(self.path.path) > 0:
             self.pos = self.path.path[0]
 
         # update direction of travel
         self.direction = self.pos.relate(self.prevPos)
-        print(self.direction)
 
         return self.pos, self.prevPos
