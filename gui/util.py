@@ -11,7 +11,7 @@ class GUIUtil:
         y0: int = row * DIM.JUMP
         return x0, y0, x0 + DIM.CELL, y0 + DIM.CELL
 
-    def calculateMidPt(self, pos: CPair) -> Tuple[int, int]:
+    def calculateMidPt(pos: CPair) -> Tuple[int, int]:
         x0, y0, x1, y1 = GUIUtil.calculatePos(pos.row, pos.col)
         return (x0 + x1) / 2, (y0 + y1) / 2
 

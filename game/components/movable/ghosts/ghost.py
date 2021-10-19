@@ -36,9 +36,7 @@ class Ghost(Movable):
         self.path = self.pathfinder.start(self.pos, self.getTargetTile(state))
 
         self.prevPos = self.pos
-        if len(self.path.path) == 0:
+        if len(self.path.path) > 0:
             self.pos = self.path.path[0]
-        else:
-            self.pos = self.path.path[1]
 
         return self.pos, self.prevPos

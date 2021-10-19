@@ -1,4 +1,5 @@
 from tkinter import *
+from typing import List
 
 from data import DIM, DIR, REP
 from game.game import Game
@@ -88,16 +89,38 @@ class App:
     # trigger Game.nextStep() and update canvas
     # reset canvas if gameover
     def nextStep(self):
+        # delete old paths
+        for ghost in self.game.ghosts:
+            if hasattr(ghost.path, "canvasItemId"):
+                self.canvas.delete(ghost.path.canvasItemId)
+
         gameover, won = self.game.nextStep()
 
         # update pacman's location
         if self.game.pacman.moved:
-            pdX, pdY = GUIUtil.calculateDxDy(self.game.pacman.pos, self.game.pacman.prevPos)
+            pdX, pdY = GUIUtil.calculateDxDy(
+                self.game.pacman.pos, self.game.pacman.prevPos
+            )
             self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
 
-        # update ghosts' locations
+        # update ghosts' locations and paths
         for ghost in self.game.ghosts:
             dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
+
+            # update path display
+            displayPath: List[int] = []
+            for cpair in ghost.path.path:
+                x, y = GUIUtil.calculateMidPt(cpair)
+                displayPath.append(x)
+                displayPath.append(y)
+
+            if len(displayPath) > 2:
+                ghost.path.setCanvasItemId(
+                    self.canvas.create_line(
+                        displayPath, width=3, fill=REP.COLOR_MAP[ghost.repId]
+                    )
+                )
+
             self.canvas.move(ghost.canvasItemId, dX, dY)
 
         if gameover:
