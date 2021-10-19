@@ -1,40 +1,68 @@
+from typing import List, Tuple
+
+
 # dimension values of the board
 class BOARD:
-    row = 31
-    col = 27
+    row: int = 31
+    col: int = 27
+
+
+# ghost ai modes
+class GHOST_MODE:
+    CHASE: int = 0
+    SCATTER: int = 1
+    FRIGHTENED: int = 2
+    DEAD: int = 3
+
+    # blinky
+    ELROY_1: int = 4
+    ELROY_2: int = 5
 
 
 # game related data constants
 class DATA:
-    TOTAL_PELLET_COUNT = 238
-    TOTAL_PWRPLT_COUNT = 4
+    # number of pellets
+    TOTAL_PELLET_COUNT: int = 238
+    TOTAL_PWRPLT_COUNT: int = 4
 
-    GHOST_FRIGHTENED_STEP_COUNT = 80
+    # ghost mode and step counter
+    TOTAL_STEP_COUNT: int = 84
+    GHOST_FRIGHTENED_STEP_COUNT: int = 80
+    GHOST_MODE_SCHEDULE: List[Tuple[int, int]] = [
+        (GHOST_MODE.SCATTER, 77),
+        (GHOST_MODE.CHASE, 57),
+        (GHOST_MODE.SCATTER, 50),
+        (GHOST_MODE.CHASE, 30),
+        (GHOST_MODE.SCATTER, 25),
+        (GHOST_MODE.CHASE, 5),
+        (GHOST_MODE.SCATTER, 0),
+        (GHOST_MODE.CHASE, -1),
+    ]
 
 
 # pixel values of components
 class DIM:
     # canvas pixel count
-    GBL_H = 925
-    GBL_W = 805
+    GBL_H: int = 925
+    GBL_W: int = 805
 
     # grid cell and gap size
-    JUMP = 30
-    CELL = 25
-    GAP = 5
+    JUMP: int = 30
+    CELL: int = 25
+    GAP: int = 5
 
     # padding for objects
-    PAD_PELLET = 9
-    PAD_PWRPLT = 5
-    PAD_DOOR = 8
+    PAD_PELLET: int = 9
+    PAD_PWRPLT: int = 5
+    PAD_DOOR: int = 8
 
 
 # directions of movement
 class DIR:
-    UP = 0
-    DW = 1
-    LF = 2
-    RT = 3
+    UP: int = 0
+    DW: int = 1
+    LF: int = 2
+    RT: int = 3
 
     def getOpposite(dir: int) -> int:
         if dir == DIR.UP:
@@ -44,17 +72,6 @@ class DIR:
         elif dir == DIR.LF:
             return DIR.RT
         return DIR.LF
-
-
-# ghost ai modes
-class GHOST_MODE:
-    CHASE = 0
-    SCATTER = 1
-    FRIGHTENED = 2
-
-    # blinky
-    ELROY_1 = 3
-    ELROY_2 = 4
 
 
 # initial position of displayables
@@ -80,17 +97,17 @@ class POS:
 
 # state representations
 class REP:
-    BG = 0
-    EMPTY = 0
-    WALL = 1
-    DOOR = 2
-    PELLET = 3
-    PWRPLT = 4
-    PACMAN = 5
-    BLINKY = 6
-    INKY = 7
-    PINKY = 8
-    CLYDE = 9
+    BG: int = 0
+    EMPTY: int = 0
+    WALL: int = 1
+    DOOR: int = 2
+    PELLET: int = 3
+    PWRPLT: int = 4
+    PACMAN: int = 5
+    BLINKY: int = 6
+    INKY: int = 7
+    PINKY: int = 8
+    CLYDE: int = 9
 
     def isWall(rep: int) -> bool:
         return rep == 1 or rep == 2
@@ -102,7 +119,7 @@ class REP:
         return rep > 5 and rep < 10
 
     # classic colors
-    # COLOR_MAP = {
+    # COLOR_MAP: dict[int, str] = {
     #     0: "#1e1e1e",
     #     1: "#3A60DE",
     #     2: "#F255C8",
@@ -116,7 +133,7 @@ class REP:
     # }
 
     # my colors
-    COLOR_MAP = {
+    COLOR_MAP: dict[int, str] = {
         0: "#1e1e1e",
         1: "#292929",
         2: "#292929",
@@ -130,7 +147,7 @@ class REP:
     }
 
     # board pattern for path and walls
-    BOARD = [
+    BOARD: List[List[int]] = [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
@@ -165,7 +182,7 @@ class REP:
     ]
 
     # board pattern for pellets and power pellets
-    PELLET_BOARD = [
+    PELLET_BOARD: List[List[int]] = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
         [0, 3, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0],

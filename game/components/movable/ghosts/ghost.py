@@ -8,21 +8,16 @@ from utils.coordinate import CPair
 
 
 class Ghost(Movable):
-    def __init__(self, pos: CPair, repId: int, inHouse: bool, pathfinder: PathFinder) -> None:
+    def __init__(self, pos: CPair, repId: int, dead: bool, pf: PathFinder) -> None:
         super().__init__(pos, repId)
 
-        self.mode: int = GHOST_MODE.CHASE
-        self.steps: int = 200
+        self.mode: int = GHOST_MODE.SCATTER
+        self.isFrightened: bool = False
 
-        self.pathfinder: PathFinder = pathfinder
+        self.pathfinder: PathFinder = pf
         self.path: Path = Path()
 
-        self.inHouse: bool = inHouse
-
-    # set ghost movement mode and step counter
-    def setMode(self, mode: int, steps: int) -> None:
-        self.mode: int = mode
-        self.steps: int = steps
+        self.dead: bool = dead
 
     # get target tile of ghost
     def getTargetTile(self, state: List[List[int]]) -> CPair:
@@ -31,11 +26,13 @@ class Ghost(Movable):
     # get next position of ghost
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
         # ignore if in house
-        if self.inHouse:
+        if self.dead:
             return self.pos, self.pos
 
         # generate path
-        self.path = self.pathfinder.start(self.pos, self.getTargetTile(state), self.direction)
+        self.path = self.pathfinder.start(
+            self.pos, self.getTargetTile(state), self.direction
+        )
 
         # TO BE CHANGED (affects scatter mode looping)
         self.prevPos = self.pos

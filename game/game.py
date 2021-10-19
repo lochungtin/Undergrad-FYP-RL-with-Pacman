@@ -58,6 +58,10 @@ class Game:
 
         self.pelletCount = DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT
 
+        # initialise countdown step count and set ghost schedule index
+        self.stepCount: int = DATA.TOTAL_STEP_COUNT
+        self.ghostSchedule: int = 0
+
         # set canvas to None as default
         self.canvas: Canvas = None
 
@@ -85,9 +89,7 @@ class Game:
             # set ghost mode to frightened
             if prevState == REP.PWRPLT:
                 for ghost in self.ghosts:
-                    ghost.setMode(
-                        GHOST_MODE.FRIGHTENED, DATA.GHOST_FRIGHTENED_STEP_COUNT
-                    )
+                    ghost.isFrightened = True
 
             # update pellet and pellet count
             pellet: TypePellet = self.pellets[pCurPos.row][pCurPos.col]
@@ -119,5 +121,15 @@ class Game:
                 self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
 
             self.state[gCurPos.row][gCurPos.col] = ghost.repId
+
+        # update counter and ghost modes
+        if self.stepCount > -1:
+            self.stepCount -= 1
+
+        if self.stepCount < DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][1]:
+            self.ghostSchedule += 1
+
+            for ghost in self.ghosts:
+                ghost.mode = DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][0]
 
         return False, False, atePellet
