@@ -38,6 +38,10 @@ class PathFinder:
         openList: PriorityQueue[PathCPair] = PriorityQueue()
         openList.put(PathCPair(curPos, 0))
 
+        # maintain lowest score for out of bounds pathfinding
+        nearestPos: CPair = start
+        lowestScore: float = math.inf
+
         # start a*
         while not openList.empty():
             top: PathCPair = openList.get()
@@ -77,6 +81,7 @@ class PathFinder:
                     h: float = self.h(neighbour, goal)
                     f: float = g + h
 
+                    # if neighbour is closer to finish
                     if weightedList[nX][nY].f == -1 or weightedList[nX][nY].f > f:
                         # put successor into open list
                         openList.put(PathCPair(neighbour, f))
@@ -84,13 +89,20 @@ class PathFinder:
                         # update details of neighbour
                         weightedList[nX][nY].update(f, g, h, searchPos)
 
+                    # update nearest pos
+                    if h < lowestScore:
+                        lowestScore = h
+                        nearestPos = neighbour
+
+        return self.reconstructPath(nearestPos, weightedList)  
+
     # reconstruct path from weighted state
-    def reconstructPath(self, goal: CPair, weightedState: List[List[PathCell]]) -> Path:
+    def reconstructPath(self, goal: CPair, weightedList: List[List[PathCell]]) -> Path:
         path = Path()
 
         parent = goal
-        while parent != weightedState[parent.row][parent.col].parent:
+        while parent != weightedList[parent.row][parent.col].parent:
             path.insert(parent)
-            parent = weightedState[parent.row][parent.col].parent
+            parent = weightedList[parent.row][parent.col].parent
 
         return path

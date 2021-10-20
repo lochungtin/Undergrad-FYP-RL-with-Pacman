@@ -87,7 +87,8 @@ class Ghost(Movable):
             # generate path
             self.path = self.pathfinder.start(
                 self.pos, self.getTargetTile(state), self.direction
-            ) 
+            )
+            print(self.path) 
             if len(self.path.path) > 0:
                 self.pos = self.path.path[0]
 
