@@ -129,10 +129,8 @@ class App:
 
         # update ghosts' locations and paths
         for ghost in self.game.ghosts:
-            dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
-
+            # update path display
             if not ghost.isFrightened:
-                # update path display
                 displayPath: List[int] = []
                 for cpair in ghost.path.path:
                     x, y = GUIUtil.calculateMidPt(cpair)
@@ -146,6 +144,22 @@ class App:
                         )
                     )
 
+                # update color
+                if ghost.dead:
+                    self.canvas.itemconfig(
+                        ghost.canvasItemId, fill=REP.COLOR_MAP[REP.DEAD]
+                    )
+                else:
+                    self.canvas.itemconfig(
+                        ghost.canvasItemId, fill=REP.COLOR_MAP[ghost.repId]
+                    )
+            else:
+                self.canvas.itemconfig(
+                    ghost.canvasItemId, fill=REP.COLOR_MAP[REP.FRIGHTENED]
+                )
+
+            # update location
+            dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
             self.canvas.move(ghost.canvasItemId, dX, dY)
 
         if gameover:

@@ -126,6 +126,8 @@ class REP:
     INKY: int = 7
     PINKY: int = 8
     CLYDE: int = 9
+    FRIGHTENED: int = 10
+    DEAD: int = 11
 
     def isWall(rep: int) -> bool:
         return rep == 1 or rep == 2
@@ -162,6 +164,8 @@ class REP:
         7: "#71c8e3",
         8: "#e771eb",
         9: "#edb974",
+        10: "#c0c0c0",
+        11: "#505050",
     }
 
     # board pattern for path and walls
