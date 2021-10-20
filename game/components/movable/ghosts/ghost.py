@@ -93,7 +93,8 @@ class Ghost(Movable):
             # generate path
             self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
             self.prevPos = self.pos
-            self.pos = self.path.path[0]
+            if len(self.path.path) > 0:
+                self.pos = self.path.path[0]
 
         # update direction of travel
         if self.pos != self.prevPos:
