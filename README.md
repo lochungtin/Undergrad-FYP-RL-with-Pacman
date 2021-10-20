@@ -28,7 +28,6 @@
         - Inky
         - Clyde
         - Pinky
-    - ghost house exit mechanics
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
