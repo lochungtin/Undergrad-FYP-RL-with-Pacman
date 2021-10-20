@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List, Tuple
 from data import DIR
 
@@ -10,7 +11,7 @@ class Movable(Component):
         super().__init__(pos, repId)
 
         self.direction: int = DIR.UP
-        self.prevPos: CPair = pos
+        self.prevPos: CPair = deepcopy(pos)
 
     # get next position of character
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:

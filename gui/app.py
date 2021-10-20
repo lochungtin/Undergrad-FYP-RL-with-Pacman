@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Canvas, Tk
 from typing import List
 import _thread
 
@@ -47,7 +47,7 @@ class App:
             self.main.bind("<space>", lambda _: self.nextStep)
         else:
             # start time controller
-            _thread.start_new_thread(self.timeController.start, ( ))
+            _thread.start_new_thread(self.timeController.start, ())
 
     # create canvas objects from displayable list
     def initialGame(self) -> None:

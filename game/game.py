@@ -1,3 +1,4 @@
+from copy import deepcopy
 from tkinter import Canvas
 from typing import List, Tuple
 import itertools
@@ -17,7 +18,7 @@ from utils.coordinate import CPair
 class Game:
     def __init__(self) -> None:
         # set state from template
-        self.state: List[List[int]] = REP.BOARD
+        self.state: List[List[int]] = deepcopy(REP.BOARD)
 
         # initialise pathfinder
         self.pathfinder: PathFinder = PathFinder()
