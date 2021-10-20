@@ -1,6 +1,6 @@
 from typing import List
 
-from data import DATA, GHOST_MODE, POS, REP
+from data import DATA, DIR, GHOST_MODE, POS, REP
 from game.components.movable.ghosts.ghost import Ghost
 from game.components.movable.pacman import Pacman
 from game.utils.pathfinder import PathFinder
@@ -22,4 +22,15 @@ class Inky(Ghost):
             return POS.INKY_CORNER
             
         # chase mode
-        return pacman.pos
+        # get reflection tile
+        pivot: CPair = pacman.pos
+        for _ in range(4):
+            pivot = pivot.move(pacman.direction)
+
+        # replicate target tile bug in classic pacman
+        if pacman.direction == DIR.UP:
+            for _ in range(4):
+                pivot = pivot.move(DIR.LF)
+
+        # reflect blinky's position wrt to reflection tile to get target tile
+        return blinkyPos.reflect(pivot)

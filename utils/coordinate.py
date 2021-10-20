@@ -62,6 +62,13 @@ class CPair:
 
         return rt
 
+    # reflect with respect to
+    def reflect(self, pivot: CPair) -> CPair:
+        dy = pivot.row - self.row
+        dx = pivot.col - self.col 
+
+        return CPair(self.row + dy, self.col + dx)
+
     # custom string representation
     def __str__(self) -> str:
         return "({}, {})".format(self.row, self.col)
