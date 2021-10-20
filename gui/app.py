@@ -40,7 +40,7 @@ class App:
         self.canvas.pack()
 
         # bind objects with canvas items
-        self.initialGame()
+        self.initialiseGame()
 
         if manualControl:
             # enable manual control
@@ -50,7 +50,7 @@ class App:
             _thread.start_new_thread(self.timeController.start, ())
 
     # create canvas objects from displayable list
-    def initialGame(self) -> None:
+    def initialiseGame(self) -> None:
         # draw grid
         for rowIndex, stateRow in enumerate(self.game.state):
             for colIndex, cell in enumerate(stateRow):
@@ -154,7 +154,7 @@ class App:
 
             # create new game and bind objects with canvas items
             self.game = Game()
-            self.initialGame()
+            self.initialiseGame()
 
     # kill program
     def kill(self) -> None:

@@ -22,11 +22,13 @@
 
 ### Control Group (Classic behaviour)
 
-- Classic pacman AI (get target tile)
-    - Blinky (cruise elroy)
-    - Inky
-    - Clyde
-    - Pinky
+- Classic pacman AI
+    - getTargetTile()
+        - Blinky (cruise elroy)
+        - Inky
+        - Clyde
+        - Pinky
+    - ghost house exit mechanics
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
