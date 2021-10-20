@@ -69,10 +69,21 @@ class App:
 
                     # add canvas item id to pellet object
                     self.game.pellets[rowIndex][colIndex].setCanvasItemId(canvasItemId)
+
                 elif cell != REP.EMPTY:
-                    canvasItemId: int = self.canvas.create_rectangle(
-                        x0, y0, x1, y1, fill=REP.COLOR_MAP[cell], outline=""
-                    )
+                    if cell == REP.DOOR:
+                        canvasItemId: int = self.canvas.create_rectangle(
+                            x0,
+                            y0 + DIM.PAD_DOOR,
+                            x1,
+                            y1 - DIM.PAD_DOOR,
+                            fill=REP.COLOR_MAP[cell],
+                            outline="",
+                        )
+                    else:
+                        canvasItemId: int = self.canvas.create_rectangle(
+                            x0, y0, x1, y1, fill=REP.COLOR_MAP[cell], outline=""
+                        )
 
                     # add canvas item id to movable
                     if cell == REP.PACMAN:
