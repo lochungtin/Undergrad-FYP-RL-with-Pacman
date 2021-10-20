@@ -22,8 +22,6 @@
 
 ### Control Group (Classic behaviour)
 
-- pacman kill mode
-
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
 ---
