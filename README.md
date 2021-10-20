@@ -22,9 +22,7 @@
 
 ### Control Group (Classic behaviour)
 
-- Classic pacman AI
-    - getTargetTile()
-        - Inky
+- pacman kill mode
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
