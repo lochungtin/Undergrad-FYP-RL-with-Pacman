@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from data import GHOST_MODE, POS, REP
 from game.components.movable.ghosts.ghost import Ghost
@@ -13,17 +13,33 @@ class Blinky(Ghost):
 
     # get target tile of ghost
     def getTargetTile(self, pacman: Pacman, blinkyPos: CPair) -> CPair:
-        # cruise elroy mode
-        if self.mode == GHOST_MODE.CRUISE_ELROY:
-            return pacman.pos
-
         # frightened mode (ignore)
-        elif self.isFrightened:
+        if self.isFrightened:
             return None
 
         # scatter mode (head to corner)
         elif self.mode == GHOST_MODE.SCATTER:
             return POS.BLINKY_CORNER
-            
+
         # chase mode
         return pacman.pos
+
+    # get next postition of blinky (overrided for cruise elroy mode)
+    def getNextPos(
+        self, state: List[List[int]], pacman: Pacman, blinkyPos: CPair
+    ) -> Tuple[CPair, CPair]:
+
+        if self.mode == GHOST_MODE.CRUISE_ELROY:
+            print('a')
+            # generate path
+            self.path = self.pathfinder.start(self.pos, pacman.pos, self.direction)
+            self.prevPos = self.pos
+            self.pos = self.path.path[0]
+
+            # update direction of travel
+            if self.pos != self.prevPos:
+                self.direction = self.pos.relate(self.prevPos)
+
+            return self.pos, self.prevPos
+
+        return super().getNextPos(state, pacman, blinkyPos)

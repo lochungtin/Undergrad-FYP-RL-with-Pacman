@@ -3,7 +3,7 @@ from tkinter import Canvas
 from typing import List, Tuple
 import itertools
 
-from data import DATA, REP
+from data import DATA, GHOST_MODE, REP
 from game.components.movable.ghosts.blinky import Blinky
 from game.components.movable.ghosts.clyde import Clyde
 from game.components.movable.ghosts.ghost import Ghost
@@ -106,6 +106,9 @@ class Game:
                     self.canvas.delete(id)
 
                 self.pelletCount -= 1
+
+                if self.pelletCount < DATA.CRUISE_ELROY_TRIGGER:
+                    self.blinky.mode = GHOST_MODE.CRUISE_ELROY
 
             # end game if all pellets have been eaten
             if self.pelletCount == 0:
