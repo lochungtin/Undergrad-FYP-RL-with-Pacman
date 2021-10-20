@@ -131,19 +131,20 @@ class App:
         for ghost in self.game.ghosts:
             dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
 
-            # update path display
-            displayPath: List[int] = []
-            for cpair in ghost.path.path:
-                x, y = GUIUtil.calculateMidPt(cpair)
-                displayPath.append(x)
-                displayPath.append(y)
+            if not ghost.isFrightened:
+                # update path display
+                displayPath: List[int] = []
+                for cpair in ghost.path.path:
+                    x, y = GUIUtil.calculateMidPt(cpair)
+                    displayPath.append(x)
+                    displayPath.append(y)
 
-            if len(displayPath) > 2:
-                ghost.path.setCanvasItemId(
-                    self.canvas.create_line(
-                        displayPath, width=3, fill=REP.COLOR_MAP[ghost.repId]
+                if len(displayPath) > 2:
+                    ghost.path.setCanvasItemId(
+                        self.canvas.create_line(
+                            displayPath, width=3, fill=REP.COLOR_MAP[ghost.repId]
+                        )
                     )
-                )
 
             self.canvas.move(ghost.canvasItemId, dX, dY)
 
