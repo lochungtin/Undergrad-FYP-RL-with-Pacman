@@ -59,9 +59,9 @@ class Ghost(Movable):
             self.initWait -= 1
             return self.pos, self.pos
 
-        # ignore if in house
-        if self.dead:
-            return self.pos, self.pos
+        # dead and returned to ghost house
+        if self.dead and self.pos == POS.GHOST_HOUSE_CENTER:
+            self.dead = False
 
         # start random walk if frightened
         if self.isFrightened:

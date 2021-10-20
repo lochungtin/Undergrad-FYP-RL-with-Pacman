@@ -81,10 +81,15 @@ class Game:
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
         self.state[pCurPos.row][pCurPos.col] = REP.PACMAN
 
-        # check collision to trigger gameover return
+        # handle ghost collision
         for ghost in self.ghosts:
             if pCurPos == ghost.pos:
-                return True, False, False
+                if not ghost.dead:
+                    if ghost.isFrightened:
+                        ghost.isFrightened = False
+                        ghost.dead = True
+                    else:
+                        return True, False, False
 
         # perform actions if new position had pellets
         atePellet: bool = prevState == REP.PELLET or prevState == REP.PWRPLT
@@ -118,9 +123,14 @@ class Game:
         for ghost in self.ghosts:
             gCurPos, gPrevPos = ghost.getNextPos(self.state, self.pacman, self.blinky.pos)
 
-            # check collision to trigger gameover return
+            # handle ghost collision
             if gCurPos == pCurPos:
-                return True, False, False
+                if not ghost.dead:
+                    if ghost.isFrightened:
+                        ghost.isFrightened = False
+                        ghost.dead = True
+                    else:
+                        return True, False, False
 
             pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
             if pellet != None and pellet.valid:

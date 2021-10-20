@@ -17,6 +17,10 @@ class Blinky(Ghost):
         if self.isFrightened:
             return None
 
+        # dead
+        if self.dead:
+            return POS.GHOST_HOUSE_CENTER
+
         # scatter mode (head to corner)
         elif self.mode == GHOST_MODE.SCATTER:
             return POS.BLINKY_CORNER
@@ -30,7 +34,6 @@ class Blinky(Ghost):
     ) -> Tuple[CPair, CPair]:
 
         if self.mode == GHOST_MODE.CRUISE_ELROY:
-            print('a')
             # generate path
             self.path = self.pathfinder.start(self.pos, pacman.pos, self.direction)
             self.prevPos = self.pos

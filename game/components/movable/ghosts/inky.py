@@ -17,6 +17,10 @@ class Inky(Ghost):
         if self.isFrightened:
             return None
 
+        # dead
+        if self.dead:
+            return POS.GHOST_HOUSE_CENTER
+
         # scatter mode (head to corner)
         elif self.mode == GHOST_MODE.SCATTER:
             return POS.INKY_CORNER

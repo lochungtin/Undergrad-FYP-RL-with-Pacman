@@ -80,16 +80,20 @@ class DIR:
 # initial position of displayables
 from utils.coordinate import CPair
 class POS:
-    # pacman
+    # initial pacman location
     PACMAN: CPair = CPair(23, 13)
 
-    # ghost locations
+    # initial ghost locations
     BLINKY: CPair = CPair(11, 13)
     INKY: CPair = CPair(14, 11)
     CLYDE: CPair = CPair(14, 15)
     PINKY: CPair = CPair(14, 13)
 
+
     # special locations
+    # ghost house reset location
+    GHOST_HOUSE_CENTER: CPair = CPair(14, 13)
+
     # scatter mode target corners
     BLINKY_CORNER: CPair = CPair(1, 25)
     INKY_CORNER: CPair = CPair(29, 25)
