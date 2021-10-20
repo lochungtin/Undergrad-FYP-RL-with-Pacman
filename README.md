@@ -24,7 +24,6 @@
 
 - Classic pacman AI
     - getTargetTile()
-        - Blinky (cruise elroy)
         - Inky
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
