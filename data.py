@@ -91,7 +91,7 @@ class POS:
     # scatter mode target corners
     BLINKY_CORNER: CPair = CPair(1, 25)
     INKY_CORNER: CPair = CPair(29, 25)
-    CLYDE_CORNER: CPair = CPair(26, 1)
+    CLYDE_CORNER: CPair = CPair(29, 1)
     PINKY_CORNER: CPair = CPair(1, 1)
 
     # loop triggers

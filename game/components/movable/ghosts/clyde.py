@@ -20,6 +20,9 @@ class Clyde(Ghost):
         # scatter mode (head to corner)
         elif self.mode == GHOST_MODE.SCATTER:
             return POS.CLYDE_CORNER
-            
+
         # chase mode
+        if len(self.pathfinder.start(self.pos, pacman.pos, self.direction).path) < 8:
+            return POS.CLYDE_CORNER
+
         return pacman.pos
