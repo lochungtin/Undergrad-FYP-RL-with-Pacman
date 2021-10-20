@@ -3,6 +3,7 @@ import random
 
 from data import DIR, GHOST_MODE, POS, REP
 from game.components.movable.movable import Movable
+from game.components.movable.pacman import Pacman
 from game.utils.path import Path
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
@@ -22,15 +23,6 @@ class Ghost(Movable):
         self.initWait = initWait
 
         self.dead: bool = False
-
-    # get pacman's location from state
-    def getPacmanPos(self, state: List[List[int]]) -> CPair:
-        for rowIndex, row in enumerate(state):
-            for colIndex, cell in enumerate(row):
-                if cell == REP.PACMAN:
-                    return CPair(rowIndex, colIndex)
-
-        return CPair(1, 1)
 
     # modified version of getValidNeighbours to accomodate for "no go up" zones
     def getValidNeighbours(self, state: List[List[int]]) -> List[CPair]:
@@ -55,11 +47,13 @@ class Ghost(Movable):
         return rt
 
     # get target tile of ghost
-    def getTargetTile(self, state: List[List[int]]) -> CPair:
+    def getTargetTile(self, pacman: Pacman, blinkyPos: CPair) -> CPair:
         return CPair(1, 1)
 
     # get next position of ghost
-    def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+    def getNextPos(
+        self, state: List[List[int]], pacman: Pacman, blinkyPos: CPair
+    ) -> Tuple[CPair, CPair]:
         # wait at ghost house
         if self.initWait > -1:
             self.initWait -= 1
@@ -92,7 +86,7 @@ class Ghost(Movable):
         else:
             # get target tile
             # loop mechanic
-            targetTile: CPair = self.getTargetTile(state)
+            targetTile: CPair = self.getTargetTile(pacman, blinkyPos)
             if self.pos == targetTile:
                 targetTile = self.prevPos
 

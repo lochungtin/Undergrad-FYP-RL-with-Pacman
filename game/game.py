@@ -113,7 +113,7 @@ class Game:
 
         # update ghosts' locations
         for ghost in self.ghosts:
-            gCurPos, gPrevPos = ghost.getNextPos(self.state)
+            gCurPos, gPrevPos = ghost.getNextPos(self.state, self.pacman, self.blinky.pos)
 
             # check collision to trigger gameover return
             if gCurPos == pCurPos:

@@ -27,7 +27,6 @@
         - Blinky (cruise elroy)
         - Inky
         - Clyde
-        - Pinky
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 

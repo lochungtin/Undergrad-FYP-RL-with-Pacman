@@ -2,6 +2,7 @@ from typing import List
 
 from data import GHOST_MODE, POS, REP
 from game.components.movable.ghosts.ghost import Ghost
+from game.components.movable.pacman import Pacman
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
@@ -11,10 +12,10 @@ class Blinky(Ghost):
         super().__init__(POS.BLINKY, REP.BLINKY, 0, pathfinder)
 
     # get target tile of ghost
-    def getTargetTile(self, state: List[List[int]]) -> CPair:
+    def getTargetTile(self, pacman: Pacman, blinkyPos: CPair) -> CPair:
         # cruise elroy mode
         if self.mode == GHOST_MODE.CRUISE_ELROY:
-            return super().getPacmanPos(state)
+            return pacman.pos
 
         # frightened mode (ignore)
         elif self.isFrightened:
@@ -25,4 +26,4 @@ class Blinky(Ghost):
             return POS.BLINKY_CORNER
             
         # chase mode
-        return super().getPacmanPos(state)
+        return pacman.pos

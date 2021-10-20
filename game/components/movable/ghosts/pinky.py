@@ -1,7 +1,8 @@
 from typing import List
 
-from data import GHOST_MODE, POS, REP
+from data import DIR, GHOST_MODE, POS, REP
 from game.components.movable.ghosts.ghost import Ghost
+from game.components.movable.pacman import Pacman
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
@@ -11,7 +12,7 @@ class Pinky(Ghost):
         super().__init__(POS.PINKY, REP.PINKY, 0, pathfinder)
 
     # get target tile of ghost
-    def getTargetTile(self, state: List[List[int]]) -> CPair:
+    def getTargetTile(self, pacman: Pacman, blinkyPos: CPair) -> CPair:
         # frightened mode (ignore)
         if self.isFrightened:
             return None
@@ -21,4 +22,13 @@ class Pinky(Ghost):
             return POS.PINKY_CORNER
             
         # chase mode
-        return super().getPacmanPos(state)
+        targetTile: CPair = pacman.pos
+        for _ in range(4):
+            targetTile = targetTile.move(pacman.direction)
+
+        # replicate target tile bug in classic pacman
+        if pacman.direction == DIR.UP:
+            for _ in range(4):
+                targetTile = targetTile.move(DIR.LF)
+
+        return targetTile

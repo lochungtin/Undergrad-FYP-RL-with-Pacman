@@ -2,6 +2,7 @@ from typing import List
 
 from data import DATA, GHOST_MODE, POS, REP
 from game.components.movable.ghosts.ghost import Ghost
+from game.components.movable.pacman import Pacman
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
@@ -11,7 +12,7 @@ class Clyde(Ghost):
         super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pathfinder)
 
     # get target tile of ghost
-    def getTargetTile(self, state: List[List[int]]) -> CPair:
+    def getTargetTile(self, pacman: Pacman, blinkyPos: CPair) -> CPair:
         # frightened mode (ignore)
         if self.isFrightened:
             return None
@@ -21,4 +22,4 @@ class Clyde(Ghost):
             return POS.CLYDE_CORNER
             
         # chase mode
-        return super().getPacmanPos(state)
+        return pacman.pos
