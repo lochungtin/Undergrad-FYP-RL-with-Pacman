@@ -26,7 +26,6 @@
     - getTargetTile()
         - Blinky (cruise elroy)
         - Inky
-        - Clyde
 
 ### Pacman AI (Neural Q / Neural Expected Sarsa)
 
