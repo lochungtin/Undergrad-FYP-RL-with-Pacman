@@ -63,11 +63,11 @@ class Ghost(Movable):
         if self.dead:
             return self.pos, self.pos
 
-        # update prev pos
-        self.prevPos = self.pos
-
         # start random walk if frightened
         if self.isFrightened:
+            # update prev pos
+            self.prevPos = self.pos
+
             # reverse direction for first step
             # hold position if reverse is invalid
             if self.speedReducer == 2:
@@ -84,14 +84,16 @@ class Ghost(Movable):
 
         # normal behaviour
         else:
-            # generate path
-            self.path = self.pathfinder.start(
-                self.pos, self.getTargetTile(state), self.direction
-            )
-            print(self.path) 
-            if len(self.path.path) > 0:
-                self.pos = self.path.path[0]
+            # get target tile
+            # loop mechanic
+            targetTile: CPair = self.getTargetTile(state)
+            if self.pos == targetTile:
+                targetTile = self.prevPos
 
+            # generate path
+            self.path = self.pathfinder.start(self.pos, targetTile, self.direction) 
+            self.prevPos = self.pos
+            self.pos = self.path.path[0]
 
         # update direction of travel
         if self.pos != self.prevPos:

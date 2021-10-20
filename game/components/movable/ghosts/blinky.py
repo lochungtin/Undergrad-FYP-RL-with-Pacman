@@ -22,10 +22,7 @@ class Blinky(Ghost):
 
         # scatter mode (head to corner)
         elif self.mode == GHOST_MODE.SCATTER:
-            if self.pos == POS.BLINKY_CORNER:
-                return self.prevPos
-            else:
-                return POS.BLINKY_CORNER
+            return POS.BLINKY_CORNER
             
         # chase mode
         return super().getPacmanPos(state)
