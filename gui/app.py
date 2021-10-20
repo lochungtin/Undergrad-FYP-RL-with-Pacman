@@ -42,11 +42,10 @@ class App:
         # bind objects with canvas items
         self.initialiseGame()
 
+        # bind nextStep() controllers
         if manualControl:
-            # enable manual control
-            self.main.bind("<space>", lambda _: self.nextStep)
+            self.main.bind("<space>", lambda _: self.nextStep())
         else:
-            # start time controller
             _thread.start_new_thread(self.timeController.start, ())
 
     # create canvas objects from displayable list
