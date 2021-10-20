@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from data import POS, REP
+from data import GHOST_MODE, POS, REP
 from game.components.movable.ghosts.ghost import Ghost
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
@@ -12,9 +12,20 @@ class Blinky(Ghost):
 
     # get target tile of ghost
     def getTargetTile(self, state: List[List[int]]) -> CPair:
-        for rowIndex, row in enumerate(state):
-            for colIndex, cell in enumerate(row):
-                if cell == REP.PACMAN:
-                    targetTile: CPair = CPair(rowIndex, colIndex)
+        # cruise elroy mode
+        if self.mode == GHOST_MODE.CRUISE_ELROY:
+            return super().getPacmanPos(state)
 
-        return targetTile
+        # frightened mode (ignore)
+        elif self.isFrightened:
+            return None
+
+        # scatter mode (head to corner)
+        elif self.mode == GHOST_MODE.SCATTER:
+            if self.pos == POS.BLINKY_CORNER:
+                return self.prevPos
+            else:
+                return POS.BLINKY_CORNER
+            
+        # chase mode
+        return super().getPacmanPos(state)
