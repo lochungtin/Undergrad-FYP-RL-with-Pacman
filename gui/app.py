@@ -1,15 +1,20 @@
 from tkinter import *
 from typing import List
+import _thread
 
 from data import DIM, DIR, REP
 from game.game import Game
+from gui.controller import TimeController
 from gui.util import GUIUtil
 
 
 class App:
-    def __init__(self) -> None:
+    def __init__(self, manualControl: bool) -> None:
         # create game object
         self.game: Game = Game()
+
+        # create time controller object
+        self.timeController: TimeController = TimeController(0.1, self.nextStep)
 
         # create application
         self.main: Tk = Tk()
@@ -20,7 +25,6 @@ class App:
         self.main.bind("<Down>", lambda _: self.game.pacman.setDir(DIR.DW))
         self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
         self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
-        self.main.bind("<space>", lambda _: self.nextStep())
 
         # handle kill event
         self.main.protocol("WM_DELETE_WINDOW", self.kill)
@@ -37,6 +41,13 @@ class App:
 
         # bind objects with canvas items
         self.initialGame()
+
+        if manualControl:
+            # enable manual control
+            self.main.bind("<space>", lambda _: self.nextStep)
+        else:
+            # start time controller
+            _thread.start_new_thread(self.timeController.start, ( ))
 
     # create canvas objects from displayable list
     def initialGame(self) -> None:

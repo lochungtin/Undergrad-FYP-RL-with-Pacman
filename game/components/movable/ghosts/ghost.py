@@ -21,10 +21,6 @@ class Ghost(Movable):
 
         self.dead: bool = dead
 
-    # get target tile of ghost
-    def getTargetTile(self, state: List[List[int]]) -> CPair:
-        return CPair(1, 1)
-
     # get pacman's location from state
     def getPacmanPos(self, state: List[List[int]]) -> CPair:
         for rowIndex, row in enumerate(state):
@@ -32,7 +28,7 @@ class Ghost(Movable):
                 if cell == REP.PACMAN:
                     return CPair(rowIndex, colIndex)
 
-        return CPair(1, 1)
+        return CPair(0, 0)
 
     # modified version of getValidNeighbours to accomodate for "no go up" zones
     def getValidNeighbours(self, state: List[List[int]]) -> List[CPair]:
@@ -54,8 +50,11 @@ class Ghost(Movable):
 
             rt.append(pos)
 
-        print(self.pos, rt)
         return rt
+
+    # get target tile of ghost
+    def getTargetTile(self, state: List[List[int]]) -> CPair:
+        return CPair(0, 0)
 
     # get next position of ghost
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
@@ -91,7 +90,7 @@ class Ghost(Movable):
                 targetTile = self.prevPos
 
             # generate path
-            self.path = self.pathfinder.start(self.pos, targetTile, self.direction) 
+            self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
             self.prevPos = self.pos
             self.pos = self.path.path[0]
 
