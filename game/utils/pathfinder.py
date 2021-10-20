@@ -66,7 +66,7 @@ class PathFinder:
                 nX, nY = neighbour.row, neighbour.col
 
                 # pass if neighbour is a wall
-                if REP.isWall(REP.BOARD[nX][nY]):
+                if REP.BOARD[nX][nY] == REP.WALL:
                     continue
 
                 # return path if goal is reached

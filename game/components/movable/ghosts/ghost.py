@@ -9,7 +9,7 @@ from utils.coordinate import CPair
 
 
 class Ghost(Movable):
-    def __init__(self, pos: CPair, repId: int, dead: bool, pf: PathFinder) -> None:
+    def __init__(self, pos: CPair, repId: int, initWait: int, pf: PathFinder) -> None:
         super().__init__(pos, repId)
 
         self.mode: int = GHOST_MODE.SCATTER
@@ -19,7 +19,9 @@ class Ghost(Movable):
         self.pathfinder: PathFinder = pf
         self.path: Path = Path()
 
-        self.dead: bool = dead
+        self.initWait = initWait
+
+        self.dead: bool = False
 
     # get pacman's location from state
     def getPacmanPos(self, state: List[List[int]]) -> CPair:
@@ -28,7 +30,7 @@ class Ghost(Movable):
                 if cell == REP.PACMAN:
                     return CPair(rowIndex, colIndex)
 
-        return CPair(0, 0)
+        return CPair(1, 1)
 
     # modified version of getValidNeighbours to accomodate for "no go up" zones
     def getValidNeighbours(self, state: List[List[int]]) -> List[CPair]:
@@ -54,10 +56,15 @@ class Ghost(Movable):
 
     # get target tile of ghost
     def getTargetTile(self, state: List[List[int]]) -> CPair:
-        return CPair(0, 0)
+        return CPair(1, 1)
 
     # get next position of ghost
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+        # wait at ghost house
+        if self.initWait > -1:
+            self.initWait -= 1
+            return self.pos, self.pos
+
         # ignore if in house
         if self.dead:
             return self.pos, self.pos

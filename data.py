@@ -26,6 +26,9 @@ class DATA:
 
     # ghost mode and step counter
     TOTAL_STEP_COUNT: int = 840
+
+    GHOST_EXIT_INTERVAL: int = 30
+
     GHOST_FRIGHTENED_STEP_COUNT: int = 80
     GHOST_MODE_SCHEDULE: List[Tuple[int, int]] = [
         (GHOST_MODE.SCATTER, 770),
@@ -37,7 +40,6 @@ class DATA:
         (GHOST_MODE.SCATTER, 0),
         (GHOST_MODE.CHASE, -1),
     ]
-
 
 # pixel values of components
 class DIM:
@@ -88,9 +90,9 @@ class POS:
     # special locations
     # scatter mode target corners
     BLINKY_CORNER: CPair = CPair(1, 25)
-    INKY_CORNER: CPair = CPair(1, 25)
-    CLYDE_CORNER: CPair = CPair(1, 25)
-    PINKY_CORNER: CPair = CPair(1, 25)
+    INKY_CORNER: CPair = CPair(29, 25)
+    CLYDE_CORNER: CPair = CPair(26, 1)
+    PINKY_CORNER: CPair = CPair(1, 1)
 
     # loop triggers
     LEFT_LOOP_TRIGGER: CPair = CPair(14, -1)
