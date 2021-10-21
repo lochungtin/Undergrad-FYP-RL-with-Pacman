@@ -9,6 +9,15 @@ class CPair:
         self.row: int = row
         self.col: int = col
 
+    # check if coordinate is valid
+    def isValid(self) -> bool:
+        return (
+            self.row >= 0
+            and self.col >= 0
+            and self.row < BOARD.row
+            and self.col < BOARD.col
+        )
+
     # translate coordinate according to direction
     def move(self, dir: int) -> CPair:
         if dir == DIR.UP:
@@ -20,14 +29,12 @@ class CPair:
         else:
             return CPair(self.row, self.col + 1)
 
-    # check if coordinate is valid
-    def isValid(self) -> bool:       
-        return (
-            self.row >= 0
-            and self.col >= 0
-            and self.row < BOARD.row
-            and self.col < BOARD.col
-        )
+    # reflect with respect to
+    def reflect(self, pivot: CPair) -> CPair:
+        dy = pivot.row - self.row
+        dx = pivot.col - self.col
+
+        return CPair(self.row + dy, self.col + dx)
 
     # get direction relation of coordinate pairs
     def relate(self, cpair: CPair) -> int:
@@ -39,12 +46,12 @@ class CPair:
             return DIR.LF
         elif self.row == cpair.row and self.col - 1 == cpair.col:
             return DIR.RT
-        
+
         # not a valid comparison
         return -1
 
     # get all valid neighbouring coordinates
-    def getValidNeighbours(self) -> List[CPair]:
+    def getNeighbours(self) -> List[CPair]:
         rt: List[CPair] = []
 
         for neighbour in [
@@ -61,13 +68,6 @@ class CPair:
                 rt.append(neighbour)
 
         return rt
-
-    # reflect with respect to
-    def reflect(self, pivot: CPair) -> CPair:
-        dy = pivot.row - self.row
-        dx = pivot.col - self.col 
-
-        return CPair(self.row + dy, self.col + dx)
 
     # custom string representation
     def __str__(self) -> str:

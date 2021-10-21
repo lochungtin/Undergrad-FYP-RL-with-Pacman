@@ -24,11 +24,11 @@ class Ghost(Movable):
 
         self.dead: bool = False
 
-    # modified version of getValidNeighbours to accomodate for "no go up" zones
-    def getValidNeighbours(self, state: List[List[int]]) -> List[CPair]:
+    # modified version of getNeighbours to accomodate for "no go up" zones
+    def getNeighbours(self, state: List[List[int]]) -> List[CPair]:
         rt: List[CPair] = []
 
-        for index, pos in enumerate(self.pos.getValidNeighbours()):
+        for index, pos in enumerate(self.pos.getNeighbours()):
             if (
                 (
                     pos == POS.GHOST_NO_UP_1
@@ -80,7 +80,7 @@ class Ghost(Movable):
             # slow down ghost speed (walk every 2 time steps)
             self.speedReducer = (self.speedReducer + 1) % 2
             if self.speedReducer == 0:
-                self.pos = random.choice(self.getValidNeighbours(state))
+                self.pos = random.choice(self.getNeighbours(state))
 
         # normal behaviour
         else:

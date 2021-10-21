@@ -49,7 +49,7 @@ class PathFinder:
 
             closedList[searchPos.row][searchPos.col] = True
 
-            for index, neighbour in enumerate(searchPos.getValidNeighbours()):
+            for index, neighbour in enumerate(searchPos.getNeighbours()):
                 # disallow expansion to opposite direction or current motion
                 if searchPos == start and DIR.getOpposite(direction) == index:
                     continue
