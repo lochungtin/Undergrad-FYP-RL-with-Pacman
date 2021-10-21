@@ -73,7 +73,7 @@ class PathFinder:
                 if neighbour == goal:
                     weightedList[nX][nY].parent = searchPos
 
-                    return self.reconstructPath(goal, weightedList)
+                    return self.makePath(goal, weightedList)
 
                 # update cell weights
                 else:
@@ -94,10 +94,10 @@ class PathFinder:
                         lowestScore = h
                         nearestPos = neighbour
 
-        return self.reconstructPath(nearestPos, weightedList)  
+        return self.makePath(nearestPos, weightedList)  
 
     # reconstruct path from weighted state
-    def reconstructPath(self, goal: CPair, weightedList: List[List[PathCell]]) -> Path:
+    def makePath(self, goal: CPair, weightedList: List[List[PathCell]]) -> Path:
         path = Path()
 
         parent = goal

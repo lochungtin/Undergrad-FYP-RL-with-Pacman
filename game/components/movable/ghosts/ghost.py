@@ -14,6 +14,7 @@ class Ghost(Movable):
         super().__init__(pos, repId)
 
         self.mode: int = GHOST_MODE.SCATTER
+        self.isDead: bool = False
         self.isFrightened: bool = False
         self.speedReducer: int = 2
 
@@ -22,7 +23,6 @@ class Ghost(Movable):
 
         self.initWait = initWait
 
-        self.dead: bool = False
 
     # modified version of getNeighbours to accomodate for "no go up" zones
     def getNeighbours(self, state: List[List[int]]) -> List[CPair]:
@@ -60,8 +60,8 @@ class Ghost(Movable):
             return self.pos, self.pos
 
         # dead and returned to ghost house
-        if self.dead and self.pos == POS.GHOST_HOUSE_CENTER:
-            self.dead = False
+        if self.isDead and self.pos == POS.GHOST_HOUSE_CENTER:
+            self.isDead = False
 
         # start random walk if frightened
         if self.isFrightened:

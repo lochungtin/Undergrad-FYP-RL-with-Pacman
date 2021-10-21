@@ -84,10 +84,10 @@ class Game:
         # handle ghost collision
         for ghost in self.ghosts:
             if pCurPos == ghost.pos:
-                if not ghost.dead:
+                if not ghost.isDead:
                     if ghost.isFrightened:
                         ghost.isFrightened = False
-                        ghost.dead = True
+                        ghost.isDead = True
                     else:
                         return True, False, False
 
@@ -125,10 +125,10 @@ class Game:
 
             # handle ghost collision
             if gCurPos == pCurPos:
-                if not ghost.dead:
+                if not ghost.isDead:
                     if ghost.isFrightened:
                         ghost.isFrightened = False
-                        ghost.dead = True
+                        ghost.isDead = True
                     else:
                         return True, False, False
 

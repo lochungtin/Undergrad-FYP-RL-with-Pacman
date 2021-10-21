@@ -18,7 +18,7 @@ class Clyde(Ghost):
             return None
 
         # dead
-        if self.dead:
+        if self.isDead:
             return POS.GHOST_HOUSE_CENTER
 
         # scatter mode (head to corner)
