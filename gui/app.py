@@ -12,14 +12,12 @@ class App:
     def __init__(
         self,
         manualControl: bool,
-        enablePacman: bool = True,
         enableGhost: bool = True,
         enablePwrPlt: bool = True,
     ) -> None:
         # create game object
-        self.game: Game = Game(enablePacman, enableGhost, enablePwrPlt)
+        self.game: Game = Game(enableGhost, enablePwrPlt)
         # save game config
-        self.enablePacman: bool = enablePacman
         self.enableGhost: bool = enableGhost
         self.enablePwrPlt: bool = enablePwrPlt
 
@@ -31,10 +29,10 @@ class App:
         self.main.title("Pacman")
 
         # bind key hanlders
-        self.main.bind("<Up>", lambda _: self.game.setPMDir(DIR.UP))
-        self.main.bind("<Down>", lambda _: self.game.setPMDir(DIR.DW))
-        self.main.bind("<Left>", lambda _: self.game.setPMDir(DIR.LF))
-        self.main.bind("<Right>", lambda _: self.game.setPMDir(DIR.RT))
+        self.main.bind("<Up>", lambda _: self.game.pacman.setDir(DIR.UP))
+        self.main.bind("<Down>", lambda _: self.game.pacman.setDir(DIR.DW))
+        self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
+        self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
 
         # handle kill event
         self.main.protocol("WM_DELETE_WINDOW", self.kill)
@@ -129,17 +127,15 @@ class App:
         # update game, proceed to next step
         gameover, won, atePellet = self.game.nextStep()
 
-        # pacman updates
-        if self.enablePacman:
-            # remove pellet
-            pPos = self.game.pacman.pos
-            if atePellet:
-                self.canvas.delete(self.game.pellets[pPos.row][pPos.col].canvasItemId)
+        # remove pellet
+        pPos = self.game.pacman.pos
+        if atePellet:
+            self.canvas.delete(self.game.pellets[pPos.row][pPos.col].canvasItemId)
 
-            # update location
-            if self.game.pacman.moved:
-                pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
-                self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
+        # update pacman location
+        if self.game.pacman.moved:
+            pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
+            self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
 
         # ghost updates
         if self.enableGhost:
@@ -183,7 +179,7 @@ class App:
             self.canvas.delete("all")
 
             # create new game and bind objects with canvas items
-            self.game = Game(self.enablePacman, self.enableGhost, self.enablePwrPlt)
+            self.game = Game(self.enableGhost, self.enablePwrPlt)
             self.initialiseGame()
 
     # kill program
