@@ -147,7 +147,7 @@ class App:
                 # update color
                 if ghost.isDead:
                     self.canvas.itemconfig(
-                        ghost.canvasItemId, fill=REP.COLOR_MAP[REP.isDead]
+                        ghost.canvasItemId, fill=REP.COLOR_MAP[REP.DEAD]
                     )
                 else:
                     self.canvas.itemconfig(
