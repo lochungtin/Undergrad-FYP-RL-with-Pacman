@@ -18,7 +18,7 @@ class App:
     ) -> None:
         # create game object
         self.game: Game = Game(enablePacman, enableGhost, enablePwrPlt)
-        # save config
+        # save game config
         self.enablePacman: bool = enablePacman
         self.enableGhost: bool = enableGhost
         self.enablePwrPlt: bool = enablePwrPlt
@@ -31,10 +31,10 @@ class App:
         self.main.title("Pacman")
 
         # bind key hanlders
-        self.main.bind("<Up>", lambda _: self.game.pacman.setDir(DIR.UP))
-        self.main.bind("<Down>", lambda _: self.game.pacman.setDir(DIR.DW))
-        self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
-        self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
+        self.main.bind("<Up>", lambda _: self.game.setPMDir(DIR.UP))
+        self.main.bind("<Down>", lambda _: self.game.setPMDir(DIR.DW))
+        self.main.bind("<Left>", lambda _: self.game.setPMDir(DIR.LF))
+        self.main.bind("<Right>", lambda _: self.game.setPMDir(DIR.RT))
 
         # handle kill event
         self.main.protocol("WM_DELETE_WINDOW", self.kill)
@@ -120,57 +120,60 @@ class App:
     # trigger Game.nextStep() and update canvas
     # reset canvas if gameover
     def nextStep(self):
-        # delete old paths
-        for ghost in self.game.ghosts:
-            if hasattr(ghost.path, "canvasItemId"):
-                self.canvas.delete(ghost.path.canvasItemId)
-
+        # update game, proceed to next step
         gameover, won, atePellet = self.game.nextStep()
 
-        # remove pellet
-        pPos = self.game.pacman.pos
-        if atePellet:
-            self.canvas.delete(self.game.pellets[pPos.row][pPos.col].canvasItemId)
-
-        # update pacman's location
-        if self.game.pacman.moved:
-            pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
-            self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
-
-        # update ghosts' locations and paths
-        for ghost in self.game.ghosts:
-            # update path display
-            if not ghost.isFrightened:
-                displayPath: List[int] = []
-                for cpair in ghost.path.path:
-                    x, y = GUIUtil.calculateMidPt(cpair)
-                    displayPath.append(x)
-                    displayPath.append(y)
-
-                if len(displayPath) > 2:
-                    ghost.path.setCanvasItemId(
-                        self.canvas.create_line(
-                            displayPath, width=3, fill=REP.COLOR_MAP[ghost.repId]
-                        )
-                    )
-
-                # update color
-                if ghost.isDead:
-                    self.canvas.itemconfig(
-                        ghost.canvasItemId, fill=REP.COLOR_MAP[REP.DEAD]
-                    )
-                else:
-                    self.canvas.itemconfig(
-                        ghost.canvasItemId, fill=REP.COLOR_MAP[ghost.repId]
-                    )
-            else:
-                self.canvas.itemconfig(
-                    ghost.canvasItemId, fill=REP.COLOR_MAP[REP.FRIGHTENED]
-                )
+        # pacman updates
+        if self.enablePacman:
+            # remove pellet
+            pPos = self.game.pacman.pos
+            if atePellet:
+                self.canvas.delete(self.game.pellets[pPos.row][pPos.col].canvasItemId)
 
             # update location
-            dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
-            self.canvas.move(ghost.canvasItemId, dX, dY)
+            if self.game.pacman.moved:
+                pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
+                self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
+
+        # ghost updates
+        if self.enableGhost:
+            for ghost in self.game.ghosts:
+                # delete old paths
+                if hasattr(ghost.path, "canvasItemId"):
+                    self.canvas.delete(ghost.path.canvasItemId)
+
+                # update path display
+                if not ghost.isFrightened:
+                    displayPath: List[int] = []
+                    for cpair in ghost.path.path:
+                        x, y = GUIUtil.calculateMidPt(cpair)
+                        displayPath.append(x)
+                        displayPath.append(y)
+
+                    if len(displayPath) > 2:
+                        ghost.path.setCanvasItemId(
+                            self.canvas.create_line(
+                                displayPath, width=3, fill=REP.COLOR_MAP[ghost.repId]
+                            )
+                        )
+
+                    # update color
+                    if ghost.isDead:
+                        self.canvas.itemconfig(
+                            ghost.canvasItemId, fill=REP.COLOR_MAP[REP.DEAD]
+                        )
+                    else:
+                        self.canvas.itemconfig(
+                            ghost.canvasItemId, fill=REP.COLOR_MAP[ghost.repId]
+                        )
+                else:
+                    self.canvas.itemconfig(
+                        ghost.canvasItemId, fill=REP.COLOR_MAP[REP.FRIGHTENED]
+                    )
+
+                # update location
+                dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
+                self.canvas.move(ghost.canvasItemId, dX, dY)
 
         if gameover:
             # clear canvas
