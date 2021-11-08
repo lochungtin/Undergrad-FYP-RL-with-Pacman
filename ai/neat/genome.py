@@ -2,11 +2,12 @@ from __future__ import annotations
 from copy import deepcopy
 from random import uniform
 from typing import List, Tuple
+from ai.agents.predictable import Predictable
 
 from ai.neat.gene import Gene
 
 
-class Genome:
+class Genome(Predictable):
     def __init__(self, inNo: int, outNo: int) -> None:
         self.genes: dict[int, Gene] = {}
 

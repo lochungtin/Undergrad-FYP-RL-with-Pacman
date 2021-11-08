@@ -8,8 +8,6 @@ from utils.coordinate import CPair
 class Pacman(Movable):
     def __init__(self) -> None:
         super().__init__(POS.PACMAN, REP.PACMAN)
-        
-        self.moved: bool = True
 
     # get next position of pacman
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
@@ -32,7 +30,7 @@ class Pacman(Movable):
             self.prevPos = self.pos
             self.pos = newPos
             self.moved = True
-        
+
         return self.pos, self.prevPos
 
     # set direction

@@ -120,6 +120,12 @@ class App:
     # trigger Game.nextStep() and update canvas
     # reset canvas if gameover
     def nextStep(self):
+        if self.enableGhost:
+            for ghost in self.game.ghosts:
+                # delete old paths
+                if hasattr(ghost.path, "canvasItemId"):
+                    self.canvas.delete(ghost.path.canvasItemId)
+
         # update game, proceed to next step
         gameover, won, atePellet = self.game.nextStep()
 
@@ -138,10 +144,6 @@ class App:
         # ghost updates
         if self.enableGhost:
             for ghost in self.game.ghosts:
-                # delete old paths
-                if hasattr(ghost.path, "canvasItemId"):
-                    self.canvas.delete(ghost.path.canvasItemId)
-
                 # update path display
                 if not ghost.isFrightened:
                     displayPath: List[int] = []
@@ -172,8 +174,9 @@ class App:
                     )
 
                 # update location
-                dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
-                self.canvas.move(ghost.canvasItemId, dX, dY)
+                if ghost.moved:
+                    dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
+                    self.canvas.move(ghost.canvasItemId, dX, dY)
 
         if gameover:
             # clear canvas

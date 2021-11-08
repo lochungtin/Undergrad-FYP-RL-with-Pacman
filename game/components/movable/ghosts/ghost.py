@@ -21,8 +21,7 @@ class Ghost(Movable):
         self.pathfinder: PathFinder = pf
         self.path: Path = Path()
 
-        self.initWait = initWait
-
+        self.initWait: int = initWait
 
     # modified version of getNeighbours to accomodate for "no go up" zones
     def getNeighbours(self, state: List[List[int]]) -> List[CPair]:

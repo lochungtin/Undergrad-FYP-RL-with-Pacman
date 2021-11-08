@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "train.neat.pacman.py",
+            "program": "main.py",
             "console": "integratedTerminal"
         }
     ]

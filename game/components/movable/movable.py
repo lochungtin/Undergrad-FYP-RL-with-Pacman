@@ -13,6 +13,8 @@ class Movable(Component):
         self.direction: int = DIR.UP
         self.prevPos: CPair = deepcopy(pos)
 
+        self.moved: bool = True
+
     # get next position of character
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
         return self.pos, self.prevPos
