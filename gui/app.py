@@ -5,7 +5,7 @@ import _thread
 from data import DIM, DIR, REP
 from game.game import Game
 from gui.controller import TimeController
-from gui.util import GUIUtil
+from gui.utils import GUIUtil
 
 
 class App:
