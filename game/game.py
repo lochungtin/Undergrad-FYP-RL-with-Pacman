@@ -3,7 +3,7 @@ from tkinter import Canvas
 from typing import List, Tuple
 import itertools
 
-from data import DATA, GHOST_MODE, REP
+from data import DATA, GHOST_MODE, POS, REP
 from game.components.movable.ghosts.blinky import Blinky
 from game.components.movable.ghosts.clyde import Clyde
 from game.components.movable.ghosts.ghost import Ghost
@@ -16,7 +16,12 @@ from utils.coordinate import CPair
 
 
 class Game:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        enablePacman: bool = True,
+        enableGhost: bool = True,
+        enablePwrPlt: bool = True,
+    ) -> None:
         # set state from template
         self.state: List[List[int]] = deepcopy(REP.BOARD)
 
@@ -24,22 +29,25 @@ class Game:
         self.pathfinder: PathFinder = PathFinder()
 
         # create movables
-        self.pacman: Pacman = Pacman()
-        self.blinky: Ghost = Blinky(self.pathfinder)
-        self.inky: Ghost = Inky(self.pathfinder)
-        self.clyde: Ghost = Clyde(self.pathfinder)
-        self.pinky: Ghost = Pinky(self.pathfinder)
+        if enablePacman:
+            self.pacman: Pacman = Pacman()
+            self.state[POS.PACMAN.row][POS.PACMAN.col] = REP.PACMAN
 
-        self.ghosts: List[Ghost] = [
-            self.blinky,
-            self.inky,
-            self.clyde,
-            self.pinky,
-        ]
+        if enableGhost:
+            self.blinky: Ghost = Blinky(self.pathfinder)
+            self.inky: Ghost = Inky(self.pathfinder)
+            self.clyde: Ghost = Clyde(self.pathfinder)
+            self.pinky: Ghost = Pinky(self.pathfinder)
 
-        # update state
-        for movable in itertools.chain([self.pacman], self.ghosts):
-            self.state[movable.pos.row][movable.pos.col] = movable.repId
+            self.ghosts: List[Ghost] = [
+                self.blinky,
+                self.inky,
+                self.clyde,
+                self.pinky,
+            ]
+
+            for ghost in self.ghosts:
+                self.state[ghost.pos.row][ghost.pos.col] = ghost.repId
 
         # create pellets and update state
         self.pellets: List[List[TypePellet]] = []
@@ -51,13 +59,15 @@ class Game:
                 elif cell == REP.PELLET:
                     row.append(Pellet(CPair(rowIndex, colIndex)))
                     self.state[rowIndex][colIndex] = REP.PELLET
-                else:
+                elif enablePwrPlt:
                     row.append(PowerPellet(CPair(rowIndex, colIndex)))
                     self.state[rowIndex][colIndex] = REP.PWRPLT
+                else:
+                    row.append(None)
 
             self.pellets.append(row)
 
-        self.pelletCount = DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT
+        self.pelletCount = DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT * enablePwrPlt
 
         # initialise countdown step count and set ghost schedule index
         self.stepCount: int = DATA.TOTAL_STEP_COUNT
@@ -121,7 +131,9 @@ class Game:
 
         # update ghosts' locations
         for ghost in self.ghosts:
-            gCurPos, gPrevPos = ghost.getNextPos(self.state, self.pacman, self.blinky.pos)
+            gCurPos, gPrevPos = ghost.getNextPos(
+                self.state, self.pacman, self.blinky.pos
+            )
 
             # handle ghost collision
             if gCurPos == pCurPos:
@@ -154,7 +166,7 @@ class Game:
         # update frightened state
         if self.ghostFrightenedCount > -1:
             self.ghostFrightenedCount -= 1
-            
+
             # set all ghost to not frightened after 80 time steps
             if self.ghostFrightenedCount == -1:
                 for ghost in self.ghosts:

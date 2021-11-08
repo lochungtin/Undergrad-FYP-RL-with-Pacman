@@ -9,9 +9,19 @@ from gui.utils import GUIUtil
 
 
 class App:
-    def __init__(self, manualControl: bool) -> None:
+    def __init__(
+        self,
+        manualControl: bool,
+        enablePacman: bool = True,
+        enableGhost: bool = True,
+        enablePwrPlt: bool = True,
+    ) -> None:
         # create game object
-        self.game: Game = Game()
+        self.game: Game = Game(enablePacman, enableGhost, enablePwrPlt)
+        # save config
+        self.enablePacman: bool = enablePacman
+        self.enableGhost: bool = enableGhost
+        self.enablePwrPlt: bool = enablePwrPlt
 
         # create time controller object
         self.timeController: TimeController = TimeController(0.1, self.nextStep)
@@ -167,7 +177,7 @@ class App:
             self.canvas.delete("all")
 
             # create new game and bind objects with canvas items
-            self.game = Game()
+            self.game = Game(self.enablePacman, self.enableGhost, self.enablePwrPlt)
             self.initialiseGame()
 
     # kill program
