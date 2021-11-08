@@ -92,7 +92,7 @@ class Game:
         self.canvas = canvas
 
     # proceed to next time step
-    def nextStep(self) -> Tuple[bool, bool]:
+    def nextStep(self) -> Tuple[bool, bool, bool]:
         # update pacman location
         if self.enablePacman:
             pCurPos, pPrevPos = self.pacman.getNextPos(self.state)

@@ -3,7 +3,7 @@ from copy import deepcopy
 from random import uniform
 from typing import List, Tuple
 
-from neat.gene import Gene
+from ai.neat.gene import Gene
 
 
 class Genome:

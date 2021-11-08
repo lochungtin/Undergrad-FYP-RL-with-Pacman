@@ -2,8 +2,8 @@ from random import random
 from datetime import datetime
 import json
 
-from neat.gene import Gene
-from neat.genome import Genome
+from ai.neat.gene import Gene
+from ai.neat.genome import Genome
 
 
 class Utils:
