@@ -1,7 +1,9 @@
 from random import random
+from datetime import datetime
+import json
 
-from gene import Gene
-from genome import Genome
+from neat.gene import Gene
+from neat.genome import Genome
 
 
 class Utils:
@@ -77,3 +79,51 @@ class Utils:
             N = 1
 
         return (cE * E / N) + (cD * D / N) + (cW * W)
+
+    def save(genome: Genome, generation: int, prefix: str = "") -> None:
+        result: dict[str, object] = {}
+        genes: dict[int, dict[str, float]] = {}
+
+        result["inNo"] = genome.inNo
+        result["outNo"] = genome.outNo
+        result["maxInnov"] = genome.maxInnov
+
+        for _, (_, gene) in enumerate(genome.genes.items()):
+            data: dict[str, float] = {}
+
+            data["inNode"] = gene.inNode
+            data["outNode"] = gene.outNode
+            data["weight"] = gene.weight
+            data["enabled"] = gene.enabled * 1
+            data["innov"] = gene.innov
+
+            genes[gene.innov] = data
+
+        result["genes"] = genes
+
+        filename: str = "./out/{}-gen{}-{}.json".format(
+            prefix, generation, datetime.now().strftime("%d:%m:%Y:%H:%M:%S")
+        )
+        with open(filename, "w") as outfile:
+            json.dump(result, outfile)
+
+    def load(filename: str) -> Genome:
+        result: Genome = None
+        with open(filename) as infile:
+            data: dict[str, object] = json.load(infile)
+
+            result: Genome = Genome(data["inNo"], data["outNo"])
+            result.maxInnov = data["maxInnov"]
+
+            for _, (_, geneData) in enumerate(data["genes"].items()):
+                result.addGene(
+                    Gene(
+                        geneData["inNode"],
+                        geneData["outNode"],
+                        geneData["weight"],
+                        geneData["enabled"] == 1,
+                        geneData["innov"],
+                    )
+                )
+
+        return result
