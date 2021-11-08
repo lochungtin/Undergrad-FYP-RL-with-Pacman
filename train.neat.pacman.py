@@ -1,5 +1,5 @@
-from neat.genome import Genome
-from neat.utils import Utils
+from ai.neat.genome import Genome
+from ai.neat.utils import Utils
 
 
 def main():
