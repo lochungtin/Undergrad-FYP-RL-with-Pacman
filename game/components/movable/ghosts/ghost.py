@@ -1,7 +1,7 @@
 from typing import List, Tuple
 import random
 
-from data import DIR, GHOST_MODE, POS, REP
+from data import DATA, DIR, GHOST_MODE, POS, REP
 from game.components.movable.movable import Movable
 from game.components.movable.pacman import Pacman
 from game.utils.path import Path
@@ -69,15 +69,15 @@ class Ghost(Movable):
 
             # reverse direction for first step
             # hold position if reverse is invalid
-            if self.speedReducer == 2:
+            if self.speedReducer == DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE:
                 newPos = self.pos.move(DIR.getOpposite(self.direction))
                 if newPos.isValid() and not REP.isWall(state[newPos.row][newPos.col]):
                     self.pos = newPos
 
-                self.speedReducer = 1
+                self.speedReducer = DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
 
             # slow down ghost speed (walk every 2 time steps)
-            self.speedReducer = (self.speedReducer + 1) % 2
+            self.speedReducer = (self.speedReducer + 1) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
                 self.pos = random.choice(self.getNeighbours(state))
 
