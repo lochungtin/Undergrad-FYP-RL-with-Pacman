@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from ai.agents.predictable import Predictable
+from ai.predictable import Predictable
 from data import REP
 
 from game.components.movable.movable import Movable
@@ -12,11 +12,16 @@ class Agent(Movable):
 
         self.predictable: Predictable = predictable
 
+    # process the state into neural network input
     def processState(state: List[List[int]]) -> List[int]:
         return []
 
+    # get next position of agent
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+        # predict action values
         actionValues: List[float] = self.predictable.predict(self.processState(state))
+
+        # select optimal action
         index: int = -1
         value: float = float('-inf')
         for i, val in enumerate(actionValues):
@@ -24,9 +29,10 @@ class Agent(Movable):
                 index = i
                 value = val
 
+        # update positions
         self.moved = False
 
-        newPos: CPair = self.pos.move(i)
+        newPos: CPair = self.pos.move(index)
         if newPos.isValid() and not REP.isWall(state[newPos.row][newPos.col]):
             self.prevPos = self.pos
             self.pos = newPos
