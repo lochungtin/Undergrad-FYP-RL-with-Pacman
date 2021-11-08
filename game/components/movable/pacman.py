@@ -37,4 +37,4 @@ class Pacman(Movable):
 
     # set direction
     def setDir(self, direction: int) -> None:
-        self.direction = direction
+        self.direction: int = direction

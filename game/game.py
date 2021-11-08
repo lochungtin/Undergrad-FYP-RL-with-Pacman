@@ -1,7 +1,6 @@
 from copy import deepcopy
 from tkinter import Canvas
 from typing import List, Tuple
-import itertools
 
 from data import DATA, GHOST_MODE, POS, REP
 from game.components.movable.ghosts.blinky import Blinky
