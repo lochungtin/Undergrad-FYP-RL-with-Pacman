@@ -18,10 +18,7 @@ class App:
         enablePwrPlt: bool = True,
     ) -> None:
         # create game object
-        # self.game: Game = Game(enableGhost, enablePwrPlt)
-        g = Genome(10, 4)
-        g.baseInit()
-        self.game: Game = PAIV(g, enableGhost, enablePwrPlt)
+        self.game: Game = Game(enableGhost, enablePwrPlt)
         # save game config
         self.enableGhost: bool = enableGhost
         self.enablePwrPlt: bool = enablePwrPlt
