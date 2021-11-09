@@ -3,6 +3,6 @@ from ai.predictable import Predictable
 from data import POS, REP
 
 
-class BlinkyAI(Agent):
+class InkyAI(Agent):
     def __init__(self, predictable: Predictable) -> None:
         super().__init__(POS.INKY, REP.INKY, predictable)
