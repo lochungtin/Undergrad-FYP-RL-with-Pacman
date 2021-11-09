@@ -1,5 +1,7 @@
 from tkinter import Tk
 from typing import Tuple
+import _thread
+import time
 
 from ai.neat.genome import Genome
 from ai.neat.utils import Utils
@@ -16,13 +18,13 @@ class NEATTraining:
             self.main: Tk = Tk()
             self.main.title("Pacman Training")
 
-            self.display: Display
+            self.display: Display = Display(self.main)
 
         # fitness coefficent
-        cT: float = 0
-        cP: float = 0
-        cW: float = 0
-        cL: float = 0
+        self.cT: float = 0
+        self.cP: float = 0
+        self.cW: float = 0
+        self.cL: float = 0
 
     def runSim(
         self, genome: Genome, enableGhost: bool, enablePwrPlt: bool
@@ -36,11 +38,14 @@ class NEATTraining:
         pelletCount: int = 0
         gameover: bool = False
         won: bool = False
-        while game.pelletDrought < 50 and not gameover and not won:
+        while game.pelletDrought < 100 and not gameover and not won:
             gameover, won, atePellet = game.nextStep()
 
             if self.hasDisplay:
-                self.display.rerender()
+                self.display.rerender(atePellet)
+
+                time.sleep(0.05)
+
 
             if atePellet:
                 pelletCount += 0
@@ -54,8 +59,16 @@ class NEATTraining:
 
         return genome.fitness, game.timesteps, pelletCount, gameover, won
 
-    def start(self) -> None:
+    def startTrainingLoop(self) -> None:
+        t: int = 0
+        while t < 10:
+            g = Genome(10, 4)
+            g.baseInit() 
+            print(self.runSim(g, enableGhost=False, enablePwrPlt=False))
 
+
+    def start(self) -> None:
+        _thread.start_new_thread(self.startTrainingLoop, ())
 
         # start display
         if self.hasDisplay:
