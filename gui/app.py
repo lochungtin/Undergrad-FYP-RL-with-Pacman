@@ -1,12 +1,10 @@
-from tkinter import Canvas, Tk
-from typing import List
+from tkinter import Tk
 import _thread
 
-from data import DIM, DIR, REP
+from data import DIR
 from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display
-from gui.utils import GUIUtil
 
 
 class App:
@@ -35,9 +33,6 @@ class App:
         self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
         self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
 
-        # handle kill event
-        self.main.protocol("WM_DELETE_WINDOW", self.kill)
-
         # create game display
         self.display: Display = Display(self.game, self.main)
 
@@ -60,10 +55,6 @@ class App:
 
         # update display
         self.display.rerender(atePellet)
-
-    # kill program
-    def kill(self) -> None:
-        self.main.destroy()
 
     # run main loop of application
     def run(self) -> None:
