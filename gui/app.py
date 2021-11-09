@@ -4,10 +4,8 @@ import _thread
 
 from data import DIM, DIR, REP
 from game.game import Game
-from game.paiv import PAIV
 from gui.controller import TimeController
 from gui.utils import GUIUtil
-from ai.neat.genome import Genome
 
 
 class App:
@@ -120,12 +118,6 @@ class App:
     # trigger Game.nextStep() and update canvas
     # reset canvas if gameover
     def nextStep(self):
-        if self.enableGhost:
-            for ghost in self.game.ghosts:
-                # delete old paths
-                if hasattr(ghost.path, "canvasItemId"):
-                    self.canvas.delete(ghost.path.canvasItemId)
-
         # update game, proceed to next step
         gameover, won, atePellet = self.game.nextStep()
 
@@ -142,6 +134,10 @@ class App:
         # ghost updates
         if self.enableGhost:
             for ghost in self.game.ghosts:
+                # delete old paths
+                if hasattr(ghost.prevPath, "canvasItemId"):
+                    self.canvas.delete(ghost.prevPath.canvasItemId)
+
                 # update path display
                 if not ghost.isFrightened:
                     displayPath: List[int] = []

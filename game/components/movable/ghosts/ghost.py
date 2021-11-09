@@ -20,6 +20,7 @@ class Ghost(Movable):
 
         self.pathfinder: PathFinder = pf
         self.path: Path = Path()
+        self.prevPath: Path = Path()
 
         self.initWait: int = initWait
 
@@ -90,7 +91,9 @@ class Ghost(Movable):
                 targetTile = self.prevPos
 
             # generate path
+            self.prevPath = self.path
             self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
+
             self.prevPos = self.pos
             if len(self.path.path) > 0:
                 self.pos = self.path.path[0]

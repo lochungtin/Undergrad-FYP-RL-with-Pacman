@@ -172,7 +172,7 @@ class Game:
             if self.ghostFrightenedCount > -1:
                 self.ghostFrightenedCount -= 1
 
-                # set all ghost to not frightened after 80 time steps
+                # set all ghost to not frightened after some time steps
                 if self.ghostFrightenedCount == -1:
                     for ghost in self.ghosts:
                         ghost.isFrightened = False
