@@ -35,8 +35,9 @@ class App:
         self.main.bind("<Left>", lambda _: self.game.pacman.setDir(DIR.LF))
         self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
 
-        # create game display
-        self.display: Display = Display(self.game, self.main)
+        # create game display and bind game objects
+        self.display: Display = Display(self.main)
+        self.display.newGame(self.game)
 
         # bind nextStep() controllers
         if manualControl:

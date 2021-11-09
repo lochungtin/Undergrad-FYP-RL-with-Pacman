@@ -6,9 +6,7 @@ from gui.utils import GUIUtil
 
 
 class Display:
-    def __init__(self, game: Game, main: Tk) -> None:
-        self.game: Game = game
-
+    def __init__(self, main: Tk) -> None:
         # create canvas and add to window
         self.canvas: Canvas = Canvas(
             main,
@@ -18,8 +16,6 @@ class Display:
             highlightthickness=0,
         )
         self.canvas.pack()
-
-        self.bindObjects()
 
     def newGame(self, game: Game) -> None:
         self.game = game
