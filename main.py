@@ -8,6 +8,7 @@ from gui.controller import TimeController
 from gui.display import Display
 
 
+# app class
 class App:
     def __init__(
         self,
@@ -62,6 +63,7 @@ class App:
         self.main.mainloop()
 
 
+# execute app
 if __name__ == "__main__":
     app = App(manualControl=False, enableGhost=True, enablePwrPlt=True)
     app.run()
