@@ -2,8 +2,8 @@ from __future__ import annotations
 from copy import deepcopy
 from random import uniform
 from typing import List, Tuple
-from ai.agents.predictable import Predictable
 
+from ai.predictable import Predictable
 from ai.neat.gene import Gene
 
 
@@ -89,7 +89,7 @@ class Genome(Predictable):
             val = 0
             for pair in nodes[node]["p"]:
                 val += self.compute(pair[0], nodes) * pair[1]
-            
+
             nodes[node]["o"] = val
             return val
 
@@ -119,7 +119,7 @@ class Genome(Predictable):
     def chgConn(self, innov: int, enabled: bool) -> None:
         self.genes[innov].enabled = enabled
 
-    # custom string representation
+    # for debugging purposes
     def __str__(self) -> str:
         return self.__repr__()
 

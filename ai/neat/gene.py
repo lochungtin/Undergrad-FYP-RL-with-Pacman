@@ -8,6 +8,8 @@ class Gene:
         self.enabled: bool = enabled
         self.innov: int = innov
 
+
+    # for debugging purposes
     def __str__(self) -> str:
         return self.__repr__()
 
