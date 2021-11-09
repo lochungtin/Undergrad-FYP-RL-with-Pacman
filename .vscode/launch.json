@@ -5,11 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Main Game Script",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pacman Training Script",
             "type": "python",
             "request": "launch",
             "program": "train_neat_pacman.py",
-            // "program": "main.py",
             "console": "integratedTerminal"
         }
     ]

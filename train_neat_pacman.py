@@ -5,7 +5,6 @@ import time
 
 from ai.neat.genome import Genome
 from ai.neat.utils import Utils
-from game.game import Game
 from game.paiv import PAIV
 from gui.display import Display
 
@@ -60,14 +59,14 @@ class NEATTraining:
     # start training (main function)
     def start(self) -> None:
         # start training
-        _thread.start_new_thread(self.startTrainingLoop, ())
+        _thread.start_new_thread(self.startEvolution, ())
 
         # start display
         if self.hasDisplay:
             self.main.mainloop()
 
-    # start training loop
-    def startTrainingLoop(self) -> None:
+    # start neuro evolution
+    def startEvolution(self) -> None:
         t: int = 0
 
         while t < 50:
