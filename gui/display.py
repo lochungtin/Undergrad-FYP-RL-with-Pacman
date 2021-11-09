@@ -1,6 +1,6 @@
 from tkinter import Canvas, Tk
 from typing import List
-from data import DIM, REP
+from data.data import DIM, REP
 from game.game import Game
 from gui.utils import GUIUtil
 

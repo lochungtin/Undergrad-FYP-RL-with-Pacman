@@ -2,7 +2,8 @@ from copy import deepcopy
 from tkinter import Canvas
 from typing import List, Tuple
 
-from data import DATA, GHOST_MODE, POS, REP
+from data.config import CONFIG
+from data.data import DATA, GHOST_MODE, POS, REP
 from game.components.movable.ghosts.blinky import Blinky
 from game.components.movable.ghosts.clyde import Clyde
 from game.components.movable.ghosts.ghost import Ghost
@@ -25,7 +26,7 @@ class Game:
         self.enablePwrPlt: bool = enablePwrPlt
 
         # set state from template
-        self.state: List[List[int]] = deepcopy(REP.BOARD)
+        self.state: List[List[int]] = deepcopy(CONFIG.BOARD)
 
         # initialise pathfinder
         self.pathfinder: PathFinder = PathFinder()
@@ -52,7 +53,7 @@ class Game:
 
         # create pellets and update state
         self.pellets: List[List[TypePellet]] = []
-        for rowIndex, gridRow in enumerate(REP.PELLET_BOARD):
+        for rowIndex, gridRow in enumerate(CONFIG.PELLET_BOARD):
             row: List[TypePellet] = []
             for colIndex, cell in enumerate(gridRow):
                 if cell == REP.EMPTY:

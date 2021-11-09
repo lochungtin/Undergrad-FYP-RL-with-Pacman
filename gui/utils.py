@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from data import DIM
+from data.data import DIM
 from utils.coordinate import CPair
 
 

@@ -1,6 +1,6 @@
 from typing import List
 
-from data import DATA, DIR, GHOST_MODE, POS, REP
+from data.data import DATA, DIR, GHOST_MODE, POS, REP
 from game.components.movable.ghosts.ghost import Ghost
 from game.components.movable.pacman import Pacman
 from game.utils.pathfinder import PathFinder

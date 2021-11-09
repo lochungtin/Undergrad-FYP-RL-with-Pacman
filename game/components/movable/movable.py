@@ -1,6 +1,6 @@
 from copy import deepcopy
 from typing import List, Tuple
-from data import DIR
+from data.data import DIR
 
 from game.components.component import Component
 from utils.coordinate import CPair

@@ -1,7 +1,7 @@
 from typing import List, Tuple
 import random
 
-from data import DATA, DIR, GHOST_MODE, POS, REP
+from data.data import DATA, DIR, GHOST_MODE, POS, REP
 from game.components.movable.movable import Movable
 from game.components.movable.pacman import Pacman
 from game.utils.path import Path

@@ -1,6 +1,6 @@
 from typing import Union
 from typing_extensions import TypeAlias
-from data import REP
+from data.data import REP
 from game.components.component import Component
 from gui.destroyable import Destroyable
 from utils.coordinate import CPair

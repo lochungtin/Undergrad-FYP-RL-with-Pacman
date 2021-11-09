@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from data import DIR, POS, REP
+from data.data import DIR, POS, REP
 from game.components.movable.movable import Movable
 from utils.coordinate import CPair
 

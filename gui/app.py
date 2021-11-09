@@ -1,7 +1,7 @@
 from tkinter import Tk
 import _thread
 
-from data import DIR
+from data.data import DIR
 from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display

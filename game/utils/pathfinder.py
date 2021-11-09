@@ -2,7 +2,8 @@ from typing import List
 from queue import PriorityQueue
 import math
 
-from data import BOARD, DIR, POS, REP
+from data.config import CONFIG
+from data.data import BOARD, DIR, POS, REP
 from game.utils.path import Path
 from game.utils.pathcell import PathCell
 from game.utils.pathcoordinate import PathCPair
@@ -66,7 +67,7 @@ class PathFinder:
                 nX, nY = neighbour.row, neighbour.col
 
                 # pass if neighbour is a wall
-                if REP.BOARD[nX][nY] == REP.WALL:
+                if CONFIG.BOARD[nX][nY] == REP.WALL:
                     continue
 
                 # return path if goal is reached

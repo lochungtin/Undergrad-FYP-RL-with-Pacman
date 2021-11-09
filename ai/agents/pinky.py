@@ -1,6 +1,6 @@
 from ai.agents.agent import Agent
 from ai.predictable import Predictable
-from data import POS, REP
+from data.data import POS, REP
 
 
 class PinkyAI(Agent):

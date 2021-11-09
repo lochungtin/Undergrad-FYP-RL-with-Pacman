@@ -1,6 +1,6 @@
 from typing import List, Tuple
 from ai.predictable import Predictable
-from data import REP
+from data.data import REP
 
 from game.components.movable.movable import Movable
 from utils.coordinate import CPair
