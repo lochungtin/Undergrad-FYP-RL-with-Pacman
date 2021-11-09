@@ -10,4 +10,8 @@ class Destroyable(Displayable):
     # set item validity to false
     def destroy(self) -> int:
         self.valid: bool = False
-        return self.canvasItemId
+
+        if hasattr(self, "canvasItemId"):
+            return self.canvasItemId
+    
+        return 0
