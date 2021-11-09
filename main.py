@@ -2,7 +2,7 @@ from gui.app import App
 
 
 def main():
-    app = App(False, True, True)
+    app = App(manualControl=False, enableGhost=False, enablePwrPlt=False)
     app.run()
 
 

@@ -13,7 +13,7 @@ class Agent(Movable):
         self.predictable: Predictable = predictable
 
     # process the state into neural network input
-    def processState(state: List[List[int]]) -> List[int]:
+    def processState(self, state: List[List[int]]) -> List[int]:
         return []
 
     # get next position of agent

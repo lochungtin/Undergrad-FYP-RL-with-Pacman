@@ -4,8 +4,10 @@ import _thread
 
 from data import DIM, DIR, REP
 from game.game import Game
+from game.paiv import PAIV
 from gui.controller import TimeController
 from gui.utils import GUIUtil
+from ai.neat.genome import Genome
 
 
 class App:
@@ -16,7 +18,10 @@ class App:
         enablePwrPlt: bool = True,
     ) -> None:
         # create game object
-        self.game: Game = Game(enableGhost, enablePwrPlt)
+        # self.game: Game = Game(enableGhost, enablePwrPlt)
+        g = Genome(10, 4)
+        g.baseInit()
+        self.game: Game = PAIV(g, enableGhost, enablePwrPlt)
         # save game config
         self.enableGhost: bool = enableGhost
         self.enablePwrPlt: bool = enablePwrPlt
