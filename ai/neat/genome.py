@@ -19,6 +19,7 @@ class Genome(Predictable):
         self.maxInnov: int = 0
 
         self.fitness: float = 0
+        self.speciesIndex: int = -1
 
     # create copy of itself
     def duplicate(self) -> Genome:

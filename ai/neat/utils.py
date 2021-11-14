@@ -1,12 +1,14 @@
 from random import random
 from datetime import datetime
 import json
+from typing import List
 
 from ai.neat.gene import Gene
 from ai.neat.genome import Genome
 
 
 class Utils:
+    # reproduce offspring
     def reproduce(p1: Genome, p2: Genome) -> Genome:
         offspring: Genome = Genome(p1.inNo, p1.outNo)
 
@@ -51,6 +53,7 @@ class Utils:
 
         return offspring
 
+    # calculate compatibility distance
     def getCompDist(g1: Genome, g2: Genome, cE: float, cD: float, cW: float) -> float:
         N: int = g1.maxInnov
         E: int = N - g2.maxInnov
@@ -80,6 +83,18 @@ class Utils:
 
         return (cE * E / N) + (cD * D / N) + (cW * W)
 
+    # calculate adjusted fitness against the population
+    def adjFitness(
+        g: Genome, pop: List[Genome], cE: float, cD: float, cW: float, dThres: float
+    ):
+        adjustment: int = 0
+        for genome in pop:
+            adjustment += (Utils.getCompDist(g, genome, cE, cD, cW) <= dThres) * 1
+
+        g.fitness /= adjustment
+        return g.fitness
+
+    # save genome data
     def save(genome: Genome, generation: int, prefix: str = "") -> None:
         result: dict[str, object] = {}
         genes: dict[int, dict[str, float]] = {}
@@ -107,6 +122,7 @@ class Utils:
         with open(filename, "w") as outfile:
             json.dump(result, outfile)
 
+    # create genome from data
     def load(filename: str) -> Genome:
         result: Genome = None
         with open(filename) as infile:
