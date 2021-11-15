@@ -87,14 +87,16 @@ class NEATTraining:
     def start(self) -> None:
         # start display
         if self.hasDisplay:
-            _thread.start_new_thread(self.startEvolution, ())
+            _thread.start_new_thread(self.evolution, ())
             self.main.mainloop()
 
         else:
-            self.startEvolution()
+            self.evolution()
 
     # start neuro evolution
-    def startEvolution(self) -> None:
+    def evolution(self) -> None:
+        # initial mutations
+
         while self.generation < self.generationCap:
             self.generation += 1
 
@@ -136,11 +138,12 @@ class NEATTraining:
                         reps.append(genome)
                         species.append([genome])
 
-            # select fittest
+            # select fittest and reproduce
             for genomes in species:
                 genomes.sort(key=lambda g: g.fitness, reverse=True)
-                print(len(genomes))
                 pass
+
+            # mutate offsprings
 
 
 if __name__ == "__main__":

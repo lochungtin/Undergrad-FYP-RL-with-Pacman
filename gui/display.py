@@ -99,6 +99,9 @@ class Display:
                 if hasattr(ghost.prevPath, "canvasItemId"):
                     self.canvas.delete(ghost.prevPath.canvasItemId)
 
+                if hasattr(ghost.path, "canvasItemId"):
+                    self.canvas.delete(ghost.path.canvasItemId)
+
                 # update path display
                 if not ghost.isFrightened:
                     displayPath: List[int] = []
