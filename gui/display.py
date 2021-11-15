@@ -1,18 +1,22 @@
 from tkinter import Canvas, Tk
 from typing import List
+from data.color import COLOR
 from data.data import DIM, REP
 from game.game import Game
 from gui.utils import GUIUtil
 
 
 class Display:
-    def __init__(self, main: Tk) -> None:
+    def __init__(self, main: Tk, color: dict[int, str] = COLOR.DARK_FLAT) -> None:
+        # set color mapping
+        self.color: dict[int, str] = color
+
         # create canvas and add to window
         self.canvas: Canvas = Canvas(
             main,
             width=DIM.GBL_W,
             height=DIM.GBL_H,
-            background=REP.COLOR_MAP[REP.BG],
+            background=self.color[REP.BG],
             highlightthickness=0,
         )
         self.canvas.pack()
@@ -37,7 +41,7 @@ class Display:
                             y0 + DIM.PAD_PELLET,
                             x1 - DIM.PAD_PELLET,
                             y1 - DIM.PAD_PELLET,
-                            fill=REP.COLOR_MAP[cell],
+                            fill=self.color[cell],
                             outline="",
                         )
                     # draw power pellet
@@ -47,7 +51,7 @@ class Display:
                             y0 + DIM.PAD_PWRPLT,
                             x1 - DIM.PAD_PWRPLT,
                             y1 - DIM.PAD_PWRPLT,
-                            fill=REP.COLOR_MAP[cell],
+                            fill=self.color[cell],
                             outline="",
                         )
 
@@ -61,12 +65,12 @@ class Display:
                             y0 + DIM.PAD_DOOR,
                             x1,
                             y1 - DIM.PAD_DOOR,
-                            fill=REP.COLOR_MAP[cell],
+                            fill=self.color[cell],
                             outline="",
                         )
                     else:
                         canvasItemId: int = self.canvas.create_rectangle(
-                            x0, y0, x1, y1, fill=REP.COLOR_MAP[cell], outline=""
+                            x0, y0, x1, y1, fill=self.color[cell], outline=""
                         )
 
                     # add canvas item id to movable
@@ -113,22 +117,22 @@ class Display:
                     if len(displayPath) > 2:
                         ghost.path.setCanvasItemId(
                             self.canvas.create_line(
-                                displayPath, width=3, fill=REP.COLOR_MAP[ghost.repId]
+                                displayPath, width=3, fill=self.color[ghost.repId]
                             )
                         )
 
                     # update color
                     if ghost.isDead:
                         self.canvas.itemconfig(
-                            ghost.canvasItemId, fill=REP.COLOR_MAP[REP.DEAD]
+                            ghost.canvasItemId, fill=self.color[REP.DEAD]
                         )
                     else:
                         self.canvas.itemconfig(
-                            ghost.canvasItemId, fill=REP.COLOR_MAP[ghost.repId]
+                            ghost.canvasItemId, fill=self.color[ghost.repId]
                         )
                 else:
                     self.canvas.itemconfig(
-                        ghost.canvasItemId, fill=REP.COLOR_MAP[REP.FRIGHTENED]
+                        ghost.canvasItemId, fill=self.color[REP.FRIGHTENED]
                     )
 
                 # update location
