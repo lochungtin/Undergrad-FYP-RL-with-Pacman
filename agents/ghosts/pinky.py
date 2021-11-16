@@ -90,6 +90,7 @@ class ClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
 # neural q agent for pinky
 class NeuralQAgent(PinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        PinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.PINKY, REP.PINKY, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:
@@ -99,6 +100,7 @@ class NeuralQAgent(PinkyBaseAgent, IntelligentBase):
 # neat agent for pinky
 class NEATAgent(PinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        PinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.PINKY, REP.PINKY, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:

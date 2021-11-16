@@ -7,7 +7,7 @@ from agents.ghosts.blinky import ClassicAgent as Blinky
 from agents.ghosts.clyde import ClassicAgent as Clyde
 from agents.ghosts.inky import ClassicAgent as Inky
 from agents.ghosts.pinky import ClassicAgent as Pinky
-from agents.pacman import PacmanBaseAgent as Pacman
+from agents.pacman import PlayableAgent as Pacman
 from data.config import CONFIG
 from data.data import DATA, GHOST_MODE, POS, REP
 from game.components.pellet import Pellet, PowerPellet, PelletType

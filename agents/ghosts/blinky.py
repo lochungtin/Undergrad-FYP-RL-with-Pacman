@@ -92,6 +92,7 @@ class ClassicAggrAgent(BlinkyBaseAgent, ClassicGhostBase):
 # neural q agent for blinky
 class NeuralQAgent(BlinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        BlinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.BLINKY, REP.BLINKY, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:
@@ -101,6 +102,7 @@ class NeuralQAgent(BlinkyBaseAgent, IntelligentBase):
 # neat agent for blinky
 class NEATAgent(BlinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        BlinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.BLINKY, REP.BLINKY, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:

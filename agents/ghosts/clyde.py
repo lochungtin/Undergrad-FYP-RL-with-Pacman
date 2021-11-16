@@ -62,6 +62,7 @@ class ClassicAggrAgent(ClydeBaseAgent, ClassicGhostBase):
 # neural q agent for clyde
 class NeuralQAgent(ClydeBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        ClydeBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.CLYDE, REP.CLYDE, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:
@@ -71,6 +72,7 @@ class NeuralQAgent(ClydeBaseAgent, IntelligentBase):
 # neat agent for clyde
 class NEATAgent(ClydeBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        ClydeBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.CLYDE, REP.CLYDE, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:

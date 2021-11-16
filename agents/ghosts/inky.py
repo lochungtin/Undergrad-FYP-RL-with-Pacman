@@ -4,7 +4,7 @@ from agents.base import IntelligentBase
 from agents.ghosts.base import ClassicGhostBase, GhostBase
 from agents.pacman import PacmanBaseAgent
 from ai.predictable import Predictable
-from data.data import DIR, GHOST_MODE, POS, REP
+from data.data import DATA, DIR, GHOST_MODE, POS, REP
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
@@ -12,13 +12,15 @@ from utils.coordinate import CPair
 # inky base class
 class InkyBaseAgent(GhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        super().__init__(POS.INKY, REP.INKY, 0, pf)
+        super().__init__(POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf)
 
 
 # classic ai agent for inky
 class ClassicAgent(InkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(self, POS.INKY, REP.INKY, 0, pf)
+        ClassicGhostBase.__init__(
+            self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf
+        )
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
@@ -29,7 +31,7 @@ class ClassicAgent(InkyBaseAgent, ClassicGhostBase):
         # scatter mode (head to corner)
         elif self.mode == GHOST_MODE.SCATTER:
             return POS.INKY_CORNER
-            
+
         # chase mode
         # get reflection tile
         pivot: CPair = pacman.pos
@@ -48,7 +50,9 @@ class ClassicAgent(InkyBaseAgent, ClassicGhostBase):
 # classic aggressive ai agent for inky
 class ClassicAggrAgent(InkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(self, POS.INKY, REP.INKY, 0, pf)
+        ClassicGhostBase.__init__(
+            self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf
+        )
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
@@ -94,6 +98,7 @@ class ClassicAggrAgent(InkyBaseAgent, ClassicGhostBase):
 # neural q agent for inky
 class NeuralQAgent(InkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        InkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.INKY, REP.INKY, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:
@@ -103,6 +108,7 @@ class NeuralQAgent(InkyBaseAgent, IntelligentBase):
 # neat agent for inky
 class NEATAgent(InkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
+        InkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.INKY, REP.INKY, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:
