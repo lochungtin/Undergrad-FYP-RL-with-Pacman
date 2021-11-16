@@ -2,15 +2,15 @@ from copy import deepcopy
 from tkinter import Canvas
 from typing import List, Tuple
 
+from agents.ghosts.base import ClassicGhostBase as Ghost
+from agents.ghosts.blinky import ClassicAgent as Blinky
+from agents.ghosts.clyde import ClassicAgent as Clyde
+from agents.ghosts.inky import ClassicAgent as Inky
+from agents.ghosts.pinky import ClassicAgent as Pinky
+from agents.pacman import PlayableAgent as Pacman
 from data.config import CONFIG
 from data.data import DATA, GHOST_MODE, POS, REP
-from game.components.movable.ghosts.blinky import Blinky
-from game.components.movable.ghosts.clyde import Clyde
-from game.components.movable.ghosts.ghost import Ghost
-from game.components.movable.ghosts.inky import Inky
-from game.components.movable.ghosts.pinky import Pinky
-from game.components.movable.pacman import Pacman
-from game.components.stationary.pellet import Pellet, PowerPellet, TypePellet
+from game.components.pellet import Pellet, PowerPellet, PelletType
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
@@ -52,9 +52,9 @@ class Game:
                 self.state[ghost.pos.row][ghost.pos.col] = ghost.repId
 
         # create pellets and update state
-        self.pellets: List[List[TypePellet]] = []
+        self.pellets: List[List[PelletType]] = []
         for rowIndex, gridRow in enumerate(CONFIG.PELLET_BOARD):
-            row: List[TypePellet] = []
+            row: List[PelletType] = []
             for colIndex, cell in enumerate(gridRow):
                 if cell == REP.EMPTY:
                     row.append(None)
@@ -117,7 +117,7 @@ class Game:
                 self.ghostFrightenedCount = DATA.GHOST_FRIGHTENED_STEP_COUNT
 
             # update pellet and pellet count
-            pellet: TypePellet = self.pellets[pCurPos.row][pCurPos.col]
+            pellet: PelletType = self.pellets[pCurPos.row][pCurPos.col]
             if pellet != None and pellet.valid:
                 id = pellet.destroy()
 
@@ -150,7 +150,7 @@ class Game:
                         else:
                             return True, False, False
 
-                pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
+                pellet: PelletType = self.pellets[gPrevPos.row][gPrevPos.col]
                 if pellet != None and pellet.valid:
                     self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
                 else:

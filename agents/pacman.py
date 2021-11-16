@@ -1,13 +1,25 @@
+from random import randint
 from typing import List, Tuple
 
+from agents.base import Base, IntelligentBase
+from ai.predictable import Predictable
 from data.data import DIR, POS, REP
-from game.components.movable.movable import Movable
 from utils.coordinate import CPair
 
 
-class Pacman(Movable):
+# pacman base agent
+class PacmanBaseAgent(Base):
     def __init__(self) -> None:
         super().__init__(POS.PACMAN, REP.PACMAN)
+
+
+# playable keyboard agent for pacman
+class PlayableAgent(PacmanBaseAgent):
+    def __init__(self) -> None:
+        super().__init__()
+
+        # initialise direction
+        self.direction = DIR.UP
 
     # get next position of pacman
     def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
@@ -36,3 +48,16 @@ class Pacman(Movable):
     # set direction
     def setDir(self, direction: int) -> None:
         self.direction: int = direction
+
+
+# neat agent for pacman
+class NEATAgent(PacmanBaseAgent, IntelligentBase):
+    def __init__(self, predictable: Predictable) -> None:
+        IntelligentBase.__init__(self, POS.PACMAN, REP.PACMAN, predictable)
+
+    def processState(self, state: List[List[int]]) -> List[int]:
+        input = []
+        for i in range(10):
+            input.append(randint(1, 10))
+
+        return input

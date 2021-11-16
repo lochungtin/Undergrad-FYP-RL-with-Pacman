@@ -1,15 +1,15 @@
+from random import choice
 from typing import List, Tuple
-import random
 
+from agents.base import Base
+from agents.pacman import PacmanBaseAgent
 from data.data import DATA, DIR, GHOST_MODE, POS, REP
-from game.components.movable.movable import Movable
-from game.components.movable.pacman import Pacman
 from game.utils.path import Path
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
-
-class Ghost(Movable):
+# base class for ghost implementations (classic and intelligent)
+class GhostBase(Base):
     def __init__(self, pos: CPair, repId: int, initWait: int, pf: PathFinder) -> None:
         super().__init__(pos, repId)
 
@@ -46,13 +46,13 @@ class Ghost(Movable):
 
         return rt
 
-    # get target tile of ghost
-    def getTargetTile(self, pacman: Pacman, blinkyPos: CPair) -> CPair:
-        return CPair(1, 1)
+    # perform normal behaviour for next step
+    def updatePositions(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> None:
+        raise NotImplementedError
 
     # get next position of ghost
     def getNextPos(
-        self, state: List[List[int]], pacman: Pacman, blinkyPos: CPair
+        self, state: List[List[int]], pacman: PacmanBaseAgent, blinkyPos: CPair
     ) -> Tuple[CPair, CPair]:
         # wait at ghost house
         if self.initWait > -1:
@@ -77,29 +77,44 @@ class Ghost(Movable):
 
                 self.speedReducer = DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
 
-            # slow down ghost speed (walk every 2 time steps)
-            self.speedReducer = (self.speedReducer + 1) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
+            # slow down ghost speed
+            self.speedReducer = (
+                self.speedReducer + 1
+            ) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
-                self.pos = random.choice(self.getNeighbours(state))
+                self.pos = choice(self.getNeighbours(state))
 
         # normal behaviour
         else:
-            # get target tile
-            # loop mechanic
-            targetTile: CPair = self.getTargetTile(pacman, blinkyPos)
-            if self.pos == targetTile:
-                targetTile = self.prevPos
-
-            # generate path
-            self.prevPath = self.path
-            self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
-
-            self.prevPos = self.pos
-            if len(self.path.path) > 0:
-                self.pos = self.path.path[0]
+            self.updatePositions(pacman, blinkyPos)
 
         # update direction of travel
         if self.pos != self.prevPos:
             self.direction = self.pos.relate(self.prevPos)
 
         return self.pos, self.prevPos
+
+
+# base class for ghost implementations
+class ClassicGhostBase(GhostBase):
+    def __init__(self, pos: CPair, repId: int, initWait: int, pf: PathFinder) -> None:
+        super().__init__(pos, repId, initWait, pf)
+
+    # get target tile of ghost
+    def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
+        raise NotImplementedError
+
+    # perform normal behaviour for next step
+    def updatePositions(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> None:
+        # get target tile
+        targetTile: CPair = self.getTargetTile(pacman, blinkyPos)
+        if self.pos == targetTile:
+            targetTile = self.prevPos
+
+        # generate path
+        self.prevPath = self.path
+        self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
+
+        self.prevPos = self.pos
+        if len(self.path.path) > 0:
+            self.pos = self.path.path[0]
