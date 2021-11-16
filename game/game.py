@@ -10,7 +10,7 @@ from game.components.movable.ghosts.ghost import Ghost
 from game.components.movable.ghosts.inky import Inky
 from game.components.movable.ghosts.pinky import Pinky
 from game.components.movable.pacman import Pacman
-from game.components.stationary.pellet import Pellet, PowerPellet, TypePellet
+from game.components.stationary.pellet import Pellet, PowerPellet, PelletType
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
@@ -52,9 +52,9 @@ class Game:
                 self.state[ghost.pos.row][ghost.pos.col] = ghost.repId
 
         # create pellets and update state
-        self.pellets: List[List[TypePellet]] = []
+        self.pellets: List[List[PelletType]] = []
         for rowIndex, gridRow in enumerate(CONFIG.PELLET_BOARD):
-            row: List[TypePellet] = []
+            row: List[PelletType] = []
             for colIndex, cell in enumerate(gridRow):
                 if cell == REP.EMPTY:
                     row.append(None)
@@ -117,7 +117,7 @@ class Game:
                 self.ghostFrightenedCount = DATA.GHOST_FRIGHTENED_STEP_COUNT
 
             # update pellet and pellet count
-            pellet: TypePellet = self.pellets[pCurPos.row][pCurPos.col]
+            pellet: PelletType = self.pellets[pCurPos.row][pCurPos.col]
             if pellet != None and pellet.valid:
                 id = pellet.destroy()
 
@@ -150,7 +150,7 @@ class Game:
                         else:
                             return True, False, False
 
-                pellet: TypePellet = self.pellets[gPrevPos.row][gPrevPos.col]
+                pellet: PelletType = self.pellets[gPrevPos.row][gPrevPos.col]
                 if pellet != None and pellet.valid:
                     self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
                 else:

@@ -6,6 +6,7 @@ from gui.destroyable import Destroyable
 from utils.coordinate import CPair
 
 
+# pellet class
 class Pellet(Component, Destroyable):
     def __init__(self, pos: CPair) -> None:
         self.pos: CPair = pos
@@ -14,6 +15,7 @@ class Pellet(Component, Destroyable):
         self.valid: bool = True
 
 
+# power pellet class
 class PowerPellet(Component, Destroyable):
     def __init__(self, pos: CPair) -> None:
         self.pos: CPair = pos
@@ -22,4 +24,5 @@ class PowerPellet(Component, Destroyable):
         self.valid: bool = True
 
 
-TypePellet: TypeAlias = Union[Pellet, PowerPellet]
+# pellet type
+PelletType: TypeAlias = Union[Pellet, PowerPellet]
