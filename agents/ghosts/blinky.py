@@ -18,7 +18,7 @@ class BlinkyBaseAgent(GhostBase):
 # classic ai agent for blinky
 class ClassicAgent(BlinkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(POS.BLINKY, REP.BLINKY, 0, pf)
+        ClassicGhostBase.__init__(self, POS.BLINKY, REP.BLINKY, 0, pf)
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
@@ -57,7 +57,7 @@ class ClassicAgent(BlinkyBaseAgent, ClassicGhostBase):
 # classic aggressive ai agent for blinky
 class ClassicAggrAgent(BlinkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(POS.BLINKY, REP.BLINKY, 0, pf)
+        ClassicGhostBase.__init__(self, POS.BLINKY, REP.BLINKY, 0, pf)
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
