@@ -172,6 +172,6 @@ if __name__ == "__main__":
                 "pwrplt": False,
             },
         },
-        False,
+        True,
     )
     training.start()

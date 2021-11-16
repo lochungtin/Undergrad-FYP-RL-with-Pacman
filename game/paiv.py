@@ -1,7 +1,6 @@
 from typing import Tuple
 
-from ai.agents.agent import Agent
-from ai.agents.pacman import PacmanAI
+from agents.pacman import NEATAgent as Pacman
 from ai.predictable import Predictable
 from game.game import Game
 
@@ -15,7 +14,7 @@ class PAIV(Game):
     ) -> None:
         super().__init__(enableGhost=enableGhost, enablePwrPlt=enablePwrPlt)
 
-        self.pacman: Agent = PacmanAI(predictable)
+        self.pacman: Pacman = Pacman(predictable)
 
         self.timesteps: int = 0
         self.pelletDrought: int = 0
