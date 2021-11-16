@@ -51,9 +51,9 @@ class PlayableAgent(PacmanBaseAgent):
 
 
 # neat agent for pacman
-class NEATAgent(IntelligentBase, PacmanBaseAgent):
+class NEATAgent(PacmanBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
-        IntelligentBase.__init__(POS.PACMAN, REP.PACMAN, predictable)
+        IntelligentBase.__init__(self, POS.PACMAN, REP.PACMAN, predictable)
 
     def processState(self, state: List[List[int]]) -> List[int]:
         input = []

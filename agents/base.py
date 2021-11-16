@@ -25,7 +25,13 @@ class Base(Component):
 
 # base class for intelligent agents (pacman and ghosts)
 class IntelligentBase(Base):
-    def __init__(self, pos: CPair, repId: int, predictable: Predictable, undeterministic: float = -1) -> None:
+    def __init__(
+        self,
+        pos: CPair,
+        repId: int,
+        predictable: Predictable,
+        undeterministic: float = -1,
+    ) -> None:
         super().__init__(pos, repId)
 
         self.predictable: Predictable = predictable
@@ -45,7 +51,9 @@ class IntelligentBase(Base):
             index = randint(0, 3)
         else:
             # predict action values
-            actionValues: List[float] = self.predictable.predict(self.processState(state))
+            actionValues: List[float] = self.predictable.predict(
+                self.processState(state)
+            )
 
             # select optimal action
             value: float = float("-inf")
