@@ -1,4 +1,4 @@
-from random import random
+from random import choice
 from typing import List, Tuple
 
 from agents.base import Base
@@ -82,7 +82,7 @@ class GhostBase(Base):
                 self.speedReducer + 1
             ) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
-                self.pos = random.choice(self.getNeighbours(state))
+                self.pos = choice(self.getNeighbours(state))
 
         # normal behaviour
         else:
