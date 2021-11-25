@@ -16,7 +16,7 @@ class InkyBaseAgent(GhostBase):
 
 
 # classic ai agent for inky
-class ClassicAgent(InkyBaseAgent, ClassicGhostBase):
+class InkyClassicAgent(InkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(
             self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf
@@ -48,7 +48,7 @@ class ClassicAgent(InkyBaseAgent, ClassicGhostBase):
 
 
 # classic aggressive ai agent for inky
-class ClassicAggrAgent(InkyBaseAgent, ClassicGhostBase):
+class InkyClassicAggrAgent(InkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(
             self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf
@@ -96,7 +96,7 @@ class ClassicAggrAgent(InkyBaseAgent, ClassicGhostBase):
 
 
 # neural q agent for inky
-class NeuralQAgent(InkyBaseAgent, IntelligentBase):
+class InkyNeuralQAgent(InkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         InkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.INKY, REP.INKY, predictable)
@@ -106,7 +106,7 @@ class NeuralQAgent(InkyBaseAgent, IntelligentBase):
 
 
 # neat agent for inky
-class NEATAgent(InkyBaseAgent, IntelligentBase):
+class InkyNEATAgent(InkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         InkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.INKY, REP.INKY, predictable)

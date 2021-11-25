@@ -16,7 +16,7 @@ class BlinkyBaseAgent(GhostBase):
 
 
 # classic ai agent for blinky
-class ClassicAgent(BlinkyBaseAgent, ClassicGhostBase):
+class BlinkyClassicAgent(BlinkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(self, POS.BLINKY, REP.BLINKY, 0, pf)
 
@@ -55,7 +55,7 @@ class ClassicAgent(BlinkyBaseAgent, ClassicGhostBase):
 
 
 # classic aggressive ai agent for blinky
-class ClassicAggrAgent(BlinkyBaseAgent, ClassicGhostBase):
+class BlinkyClassicAggrAgent(BlinkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(self, POS.BLINKY, REP.BLINKY, 0, pf)
 
@@ -90,7 +90,7 @@ class ClassicAggrAgent(BlinkyBaseAgent, ClassicGhostBase):
 
 
 # neural q agent for blinky
-class NeuralQAgent(BlinkyBaseAgent, IntelligentBase):
+class BlinkyNeuralQAgent(BlinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         BlinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.BLINKY, REP.BLINKY, predictable)
@@ -100,7 +100,7 @@ class NeuralQAgent(BlinkyBaseAgent, IntelligentBase):
 
 
 # neat agent for blinky
-class NEATAgent(BlinkyBaseAgent, IntelligentBase):
+class BlinkyNEATAgent(BlinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         BlinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.BLINKY, REP.BLINKY, predictable)

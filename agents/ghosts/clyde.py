@@ -16,7 +16,7 @@ class ClydeBaseAgent(GhostBase):
 
 
 # classic ai agent for clyde
-class ClassicAgent(ClydeBaseAgent, ClassicGhostBase):
+class ClydeClassicAgent(ClydeBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(
             self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf
@@ -40,7 +40,7 @@ class ClassicAgent(ClydeBaseAgent, ClassicGhostBase):
 
 
 # classic aggressive ai for clyde
-class ClassicAggrAgent(ClydeBaseAgent, ClassicGhostBase):
+class ClydeClassicAggrAgent(ClydeBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(
             self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf
@@ -60,7 +60,7 @@ class ClassicAggrAgent(ClydeBaseAgent, ClassicGhostBase):
 
 
 # neural q agent for clyde
-class NeuralQAgent(ClydeBaseAgent, IntelligentBase):
+class ClydeNeuralQAgent(ClydeBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         ClydeBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.CLYDE, REP.CLYDE, predictable)
@@ -70,7 +70,7 @@ class NeuralQAgent(ClydeBaseAgent, IntelligentBase):
 
 
 # neat agent for clyde
-class NEATAgent(ClydeBaseAgent, IntelligentBase):
+class ClydeNEATAgent(ClydeBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         ClydeBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.CLYDE, REP.CLYDE, predictable)

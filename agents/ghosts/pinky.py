@@ -16,7 +16,7 @@ class PinkyBaseAgent(GhostBase):
 
 
 # classic ai agent for pinky
-class ClassicAgent(PinkyBaseAgent, ClassicGhostBase):
+class PinkyClassicAgent(PinkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(self, POS.PINKY, REP.PINKY, 0, pf)
 
@@ -44,7 +44,7 @@ class ClassicAgent(PinkyBaseAgent, ClassicGhostBase):
 
 
 # classic aggressive ai agent for pinky
-class ClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
+class PinkyClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
         ClassicGhostBase.__init__(self, POS.PINKY, REP.PINKY, 0, pf)
 
@@ -88,7 +88,7 @@ class ClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
 
 
 # neural q agent for pinky
-class NeuralQAgent(PinkyBaseAgent, IntelligentBase):
+class PinkyNeuralQAgent(PinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         PinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.PINKY, REP.PINKY, predictable)
@@ -98,7 +98,7 @@ class NeuralQAgent(PinkyBaseAgent, IntelligentBase):
 
 
 # neat agent for pinky
-class NEATAgent(PinkyBaseAgent, IntelligentBase):
+class PinkyNEATAgent(PinkyBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         PinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.PINKY, REP.PINKY, predictable)
