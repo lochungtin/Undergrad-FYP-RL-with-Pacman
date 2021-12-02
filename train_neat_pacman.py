@@ -11,7 +11,7 @@ from gui.display import Display
 
 class NEATTraining:
     def __init__(
-        self, trainingConfig: dict[str, object], hasDisplay: bool = False
+        self, trainingConfig: "dict[str, object]", hasDisplay: bool = False
     ) -> None:
         # display
         self.hasDisplay: bool = hasDisplay
