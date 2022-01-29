@@ -1,6 +1,10 @@
 from random import randint
 from typing import List, Tuple
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from game.game import Game
+
 from agents.base import Base, IntelligentBase
 from ai.predictable import Predictable
 from data.data import DIR, POS, REP
@@ -22,7 +26,7 @@ class PlayableAgent(PacmanBaseAgent):
         self.direction = DIR.UP
 
     # get next position of pacman
-    def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         newPos: CPair = self.pos.move(self.direction)
         self.moved = False
 
@@ -38,7 +42,7 @@ class PlayableAgent(PacmanBaseAgent):
             self.moved = True
 
         # natural movement
-        elif newPos.isValid() and not REP.isWall(state[newPos.row][newPos.col]):
+        elif newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
             self.prevPos = self.pos
             self.pos = newPos
             self.moved = True
@@ -55,9 +59,9 @@ class NEATAgent(PacmanBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         IntelligentBase.__init__(self, POS.PACMAN, REP.PACMAN, predictable)
 
-    def processState(self, state: List[List[int]]) -> List[int]:
-        input = []
-        for i in range(10):
-            input.append(randint(1, 10))
+    def processState(self, game: "Game") -> List[int]:
+        input: List[int] = []
+        
+
 
         return input

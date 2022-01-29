@@ -1,10 +1,12 @@
+from copy import deepcopy
+from random import random
 from tkinter import Tk
 from typing import List, Tuple
 import _thread
 import time
 
 from ai.neat.genome import Genome
-from ai.neat.utils import Utils
+from ai.neat.utils import GenomeUtils
 from game.paiv import PAIV
 from gui.display import Display
 
@@ -26,35 +28,39 @@ class NEATTraining:
         self.enablePwrPlt: bool = trainingConfig["simulationConfig"]["pwrplt"]
 
         # training config
-        self.populationSize: int = trainingConfig["populationSize"]
-        self.genomeInSize: int = trainingConfig["genomeConfig"]["inSize"]
-        self.genomeOutSize: int = trainingConfig["genomeConfig"]["outSize"]
+        self.popSize: int = trainingConfig["populationSize"]
+        self.genCap: int = trainingConfig["generationCap"]
+
+        # genome config
+        self.gConf: dict[str, int] = trainingConfig["genomeConfig"]
 
         # distance compatibility config
-        self.compDistThres: float = trainingConfig["compDistThres"]
-        self.cExcess: float = trainingConfig["compDistCoeff"]["excess"]
-        self.cDisjoint: float = trainingConfig["compDistCoeff"]["disjoint"]
-        self.cWeight: float = trainingConfig["compDistCoeff"]["weight"]
+        self.cConf: dict[str, float] = trainingConfig["comp"]
 
         # fitness coefficent
-        self.cTimestep: float = trainingConfig["fitnessCoeff"]["timesteps"]
-        self.cPellet: float = trainingConfig["fitnessCoeff"]["pellets"]
-        self.cWin: float = trainingConfig["fitnessCoeff"]["win"]
-        self.cLoss: float = trainingConfig["fitnessCoeff"]["loss"]
+        self.fCoef: dict[str, int] = trainingConfig["fitnessCoeff"]
 
-        # population
-        self.population: List[Genome] = []
-        # create initial population
-        for _ in range(self.populationSize):
-            genome = Genome(self.genomeInSize, self.genomeOutSize)
-            genome.baseInit()
-            self.population.append(genome)
+        # mutation probabilities
+        self.mProb: dict[str, float] = trainingConfig["mutationConfig"]
 
-        # generation data
-        self.generationCap: int = trainingConfig["generationCap"]
-        self.generation: int = 0
+        # crossing option
+        self.cOpt: int = trainingConfig["crossOpt"]
 
-    def runSim(self, genome: Genome) -> Tuple[float, int, int, bool, bool]:
+        # generations per genome saving
+        self.saving: int = trainingConfig["saveOpt"]
+
+    # create mutation config
+    def mutationConfig(self) -> dict[str, bool]:
+        return {
+            "addNode": random() < self.mProb["addNode"],
+            "addConn": random() < self.mProb["addConn"],
+            "mutBias": random() < self.mProb["mutBias"],
+            "mutWeight": random() < self.mProb["mutWeight"],
+            "mutConn": random() < self.mProb["mutConn"],
+        }
+
+    # run genome against simluation and get fitness value
+    def runSim(self, genome: Genome) -> float:
         game: PAIV = PAIV(genome, self.enableGhost, self.enablePwrPlt)
 
         if self.hasDisplay:
@@ -74,14 +80,14 @@ class NEATTraining:
             if atePellet:
                 pelletCount += 1
 
-        genome.fitness = (
-            self.cTimestep * game.timesteps
-            + self.cPellet * pelletCount
-            + self.cWin * won
-            + self.cLoss * (gameover or game.pelletDrought >= 50)
+        fitness: float = (
+            self.fCoef["t"] * game.timesteps
+            + self.fCoef["p"] * pelletCount
+            + self.fCoef["w"] * won
+            + self.fCoef["l"] * (gameover or game.pelletDrought >= 50)
         )
 
-        return genome.fitness, game.timesteps, pelletCount, gameover, won
+        return fitness
 
     # start training (main function)
     def start(self) -> None:
@@ -95,78 +101,98 @@ class NEATTraining:
 
     # start neuro evolution
     def evolution(self) -> None:
-        # initial mutations
+        # create population
+        pop: List[Genome] = [Genome(self.gConf, True) for _ in range(self.popSize)]
 
-        while self.generation < self.generationCap:
-            self.generation += 1
+        # innovation number map
+        innovMap: dict[str, int] = {}
+        for i in range(self.gConf["inSize"]):
+            for o in range(
+                self.gConf["inSize"],
+                self.gConf["outSize"] + self.gConf["inSize"],
+            ):
+                key: str = Genome.genInnovKey(0, 1, i, o)
+                innovMap[key] = i * self.gConf["outSize"] + (o - self.gConf["inSize"])
+        innovMap["SIZE"] = len(innovMap)
 
-            # run simulation
-            for genome in self.population:
-                self.runSim(genome)
+        # filenames of saved config
+        configSaves: List[str] = []
 
-                # adjust fitness values
-                Utils.adjFitness(
-                    genome,
-                    self.population,
-                    self.cExcess,
-                    self.cDisjoint,
-                    self.cWeight,
-                    self.compDistThres,
-                )
+        # initial mutation
+        for i, genome in enumerate(pop):
+            pop[i] = genome.mutate(self.mutationConfig(), innovMap)
 
-            # segregation
-            reps: List[Genome] = []
-            species: List[List[Genome]] = []
-            for genome in self.population:
-                if len(reps) == 0:
-                    reps.append(genome)
-                    species.append([genome])
+        # evolution process
+        for gen in range(self.genCap):
+            # evaluate population perfomance
+            perf: List[Tuple[int, float]] = []
+            for i, genome in enumerate(pop):
+                # run simulation
+                fitness: float = self.runSim(genome)
+
+                # adjust fitness to topology
+                fitness /= GenomeUtils.fitnessAdj(genome, pop, self.cConf)
+
+                # save fitness value
+                perf.append((i, fitness))
+
+            # get top performing genomes
+            perf = sorted(perf, key=lambda p: p[1], reverse=True)[:4]
+            tGenomes: List[Genome] = [deepcopy(pop[p[1]]) for p in perf]
+
+            print("Gen: {}\tTopF: {}".format(gen, perf[0][1]))
+
+            # save genome config every N generations
+            if gen % self.saving == 0:
+                configSaves.append(GenomeUtils.save(tGenomes[0], gen))
+
+            # exit evoluation loop if end
+            if gen + 1 == self.genCap:
+                break
+
+            # mutate and cross top genomes
+            for i in range(self.popSize):
+                if i < self.popSize / 2:
+                    pop[i] = tGenomes[i % 4].mutate(self.mutationConfig(), innovMap)
                 else:
-                    assigned = False
-                    for index, r in enumerate(reps):
-                        if (
-                            Utils.getCompDist(
-                                genome, r, self.cExcess, self.cDisjoint, self.cWeight
-                            )
-                            < self.compDistThres
-                        ):
-                            species[index].append(genome)
-                            assigned = True
-                            break
+                    p1: Genome = tGenomes[0 + i % 2 * 2]
+                    p2: Genome = tGenomes[1 + i % 2 * 2]
+                    pop[i] = GenomeUtils.cross(p1, p2, self.cOpt)
 
-                    if not assigned:
-                        reps.append(genome)
-                        species.append([genome])
-
-            # select fittest and reproduce
-            for genomes in species:
-                genomes.sort(key=lambda g: g.fitness, reverse=True)
-                pass
-
-            # mutate offsprings
-
+        # save best performing genome after training process
+        # get best performing genome
+        configSaves.append(GenomeUtils.save(tGenomes[0], self.genCap))
 
 if __name__ == "__main__":
     training: NEATTraining = NEATTraining(
         {
-            "compDistCoeff": {
-                "disjoint": 1,
-                "excess": 1,
-                "weight": 1,
+            "comp": {
+                "cD": 1,
+                "cE": 1,
+                "cW": 1,
+                "dThres": 0.4,
             },
-            "compDistThres": 0.75,
+            "crossOpt": GenomeUtils.CROSS_OPTIONS["RAN"],
             "fitnessCoeff": {
-                "timesteps": -1,
-                "pellets": 10,
-                "win": 1000,
-                "loss": -1000,
+                "t": -0.1,
+                "p": 1,
+                "w": 100,
+                "l": -100,
             },
-            "generationCap": 1,
+            "generationCap": 500,
             "genomeConfig": {
                 "inSize": 10,
                 "outSize": 4,
             },
-            "populationSize": 100,
+            "mutationConfig": {
+                "addNode": 0.05,
+                "addConn": 0.7,
+                "mutBias": 0.6,
+                "mutWeight": 0.8,
+                "mutConn": 0.4,
+            },
+            "populationSize": 50,
+            "saveOpt": 50,
             "simulationConfig": {
                 "ghost": False,
                 "pwrplt": False,

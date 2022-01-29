@@ -2,6 +2,10 @@ from copy import deepcopy
 from random import randint, random
 from typing import List, Tuple
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from game.game import Game
+
 from ai.predictable import Predictable
 from data.data import DIR, REP
 from game.components.component import Component
@@ -19,7 +23,7 @@ class Base(Component):
         self.moved: bool = True
 
     # get next position of character
-    def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         raise NotImplementedError
 
 
@@ -38,11 +42,11 @@ class IntelligentBase(Base):
         self.undeterministic: float = undeterministic
 
     # process the state into neural network input
-    def processState(self, state: List[List[int]]) -> List[int]:
+    def processState(self, game: "Game") -> List[int]:
         raise NotImplementedError
 
     # get next position of agent
-    def getNextPos(self, state: List[List[int]]) -> Tuple[CPair, CPair]:
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         # action index
         index: int = -1
 
@@ -52,7 +56,7 @@ class IntelligentBase(Base):
         else:
             # predict action values
             actionValues: List[float] = self.predictable.predict(
-                self.processState(state)
+                self.processState(game)
             )
 
             # select optimal action
@@ -66,7 +70,7 @@ class IntelligentBase(Base):
         self.moved = False
 
         newPos: CPair = self.pos.move(index)
-        if newPos.isValid() and not REP.isWall(state[newPos.row][newPos.col]):
+        if newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
             self.prevPos = self.pos
             self.pos = newPos
             self.moved = True

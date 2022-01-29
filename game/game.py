@@ -89,7 +89,7 @@ class Game:
     # proceed to next time step
     def nextStep(self) -> Tuple[bool, bool, bool]:
         # update pacman location
-        pCurPos, pPrevPos = self.pacman.getNextPos(self.state)
+        pCurPos, pPrevPos = self.pacman.getNextPos(self)
         prevState = self.state[pCurPos.row][pCurPos.col]
 
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
@@ -137,9 +137,7 @@ class Game:
         # update ghosts' locations
         if self.enableGhost:
             for ghost in self.ghosts:
-                gCurPos, gPrevPos = ghost.getNextPos(
-                    self.state, self.pacman, self.blinky.pos
-                )
+                gCurPos, gPrevPos = ghost.getNextPos(self)
 
                 # handle ghost collision
                 if gCurPos == pCurPos:

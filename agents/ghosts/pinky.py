@@ -1,5 +1,9 @@
 from typing import List, Tuple
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from game.game import Game
+
 from agents.base import IntelligentBase
 from agents.ghosts.base import ClassicGhostBase, GhostBase
 from agents.pacman import PacmanBaseAgent
@@ -68,12 +72,12 @@ class PinkyClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
 
     # get next postition of pinky (overrided for cruise elroy mode)
     def getNextPos(
-        self, state: List[List[int]], pacman: PacmanBaseAgent, blinkyPos: CPair
+        self, game: "Game"
     ) -> Tuple[CPair, CPair]:
         if self.mode == GHOST_MODE.CRUISE_ELROY:
             # generate path
             self.prevPath = self.path
-            self.path = self.pathfinder.start(self.pos, pacman.pos, self.direction)
+            self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
 
             self.prevPos = self.pos
             self.pos = self.path.path[0]
@@ -84,7 +88,7 @@ class PinkyClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
 
             return self.pos, self.prevPos
 
-        return super().getNextPos(state, pacman, blinkyPos)
+        return super().getNextPos(game)
 
 
 # neural q agent for pinky
@@ -93,8 +97,8 @@ class PinkyNeuralQAgent(PinkyBaseAgent, IntelligentBase):
         PinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.PINKY, REP.PINKY, predictable)
 
-    def processState(self, state: List[List[int]]) -> List[int]:
-        return super().processState(state)
+    def processState(self, game: "Game") -> List[int]:
+        return super().processState(game)
 
 
 # neat agent for pinky
@@ -103,5 +107,5 @@ class PinkyNEATAgent(PinkyBaseAgent, IntelligentBase):
         PinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.PINKY, REP.PINKY, predictable)
 
-    def processState(self, state: List[List[int]]) -> List[int]:
-        return super().processState(state)
+    def processState(self, game: "Game") -> List[int]:
+        return super().processState(game)

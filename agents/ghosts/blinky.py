@@ -1,5 +1,9 @@
 from typing import List, Tuple
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from game.game import Game
+
 from agents.base import IntelligentBase
 from agents.ghosts.base import ClassicGhostBase, GhostBase
 from agents.pacman import PacmanBaseAgent
@@ -34,13 +38,11 @@ class BlinkyClassicAgent(BlinkyBaseAgent, ClassicGhostBase):
         return pacman.pos
 
     # get next postition of blinky (overrided for cruise elroy mode)
-    def getNextPos(
-        self, state: List[List[int]], pacman: PacmanBaseAgent, blinkyPos: CPair
-    ) -> Tuple[CPair, CPair]:
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         if self.mode == GHOST_MODE.CRUISE_ELROY:
             # generate path
             self.prevPath = self.path
-            self.path = self.pathfinder.start(self.pos, pacman.pos, self.direction)
+            self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
 
             self.prevPos = self.pos
             self.pos = self.path.path[0]
@@ -51,7 +53,7 @@ class BlinkyClassicAgent(BlinkyBaseAgent, ClassicGhostBase):
 
             return self.pos, self.prevPos
 
-        return super().getNextPos(state, pacman, blinkyPos)
+        return super().getNextPos(game)
 
 
 # classic aggressive ai agent for blinky
@@ -69,13 +71,11 @@ class BlinkyClassicAggrAgent(BlinkyBaseAgent, ClassicGhostBase):
         return pacman.pos
 
     # get next postition of blinky (overrided for cruise elroy mode)
-    def getNextPos(
-        self, state: List[List[int]], pacman: PacmanBaseAgent, blinkyPos: CPair
-    ) -> Tuple[CPair, CPair]:
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         if self.mode == GHOST_MODE.CRUISE_ELROY:
             # generate path
             self.prevPath = self.path
-            self.path = self.pathfinder.start(self.pos, pacman.pos, self.direction)
+            self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
 
             self.prevPos = self.pos
             self.pos = self.path.path[0]
@@ -86,7 +86,7 @@ class BlinkyClassicAggrAgent(BlinkyBaseAgent, ClassicGhostBase):
 
             return self.pos, self.prevPos
 
-        return super().getNextPos(state, pacman, blinkyPos)
+        return super().getNextPos(game)
 
 
 # neural q agent for blinky
@@ -95,8 +95,8 @@ class BlinkyNeuralQAgent(BlinkyBaseAgent, IntelligentBase):
         BlinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.BLINKY, REP.BLINKY, predictable)
 
-    def processState(self, state: List[List[int]]) -> List[int]:
-        return super().processState(state)
+    def processState(self, game: "Game") -> List[int]:
+        return super().processState(game)
 
 
 # neat agent for blinky
@@ -105,5 +105,5 @@ class BlinkyNEATAgent(BlinkyBaseAgent, IntelligentBase):
         BlinkyBaseAgent.__init__(self, None)
         IntelligentBase.__init__(self, POS.BLINKY, REP.BLINKY, predictable)
 
-    def processState(self, state: List[List[int]]) -> List[int]:
-        return super().processState(state)
+    def processState(self, game: "Game") -> List[int]:
+        return super().processState(game)

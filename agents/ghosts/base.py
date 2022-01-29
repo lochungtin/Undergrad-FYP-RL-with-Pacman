@@ -1,6 +1,10 @@
 from random import choice
 from typing import List, Tuple
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from game.game import Game
+
 from agents.base import Base
 from agents.pacman import PacmanBaseAgent
 from data.data import DATA, DIR, GHOST_MODE, POS, REP
@@ -51,9 +55,7 @@ class GhostBase(Base):
         raise NotImplementedError
 
     # get next position of ghost
-    def getNextPos(
-        self, state: List[List[int]], pacman: PacmanBaseAgent, blinkyPos: CPair
-    ) -> Tuple[CPair, CPair]:
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         # wait at ghost house
         if self.initWait > -1:
             self.initWait -= 1
@@ -72,7 +74,9 @@ class GhostBase(Base):
             # hold position if reverse is invalid
             if self.speedReducer == DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE:
                 newPos = self.pos.move(DIR.getOpposite(self.direction))
-                if newPos.isValid() and not REP.isWall(state[newPos.row][newPos.col]):
+                if newPos.isValid() and not REP.isWall(
+                    game.state[newPos.row][newPos.col]
+                ):
                     self.pos = newPos
 
                 self.speedReducer = DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
@@ -82,11 +86,11 @@ class GhostBase(Base):
                 self.speedReducer + 1
             ) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
-                self.pos = choice(self.getNeighbours(state))
+                self.pos = choice(self.getNeighbours(game.state))
 
         # normal behaviour
         else:
-            self.updatePositions(pacman, blinkyPos)
+            self.updatePositions(game.pacman, game.blinky.pos)
 
         # update direction of travel
         if self.pos != self.prevPos:
