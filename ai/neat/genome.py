@@ -70,8 +70,8 @@ class Genome(Predictable):
                     self.cStruct[i].append(o)
                     self.pStruct[o].append(i)
 
-    # evaluate neural net
-    def evaluate(self, input: List[float]) -> List[float]:
+    # evaluate neural net - predict actino values
+    def predict(self, input: List[float]) -> List[float]:
         if len(input) != self.inSize:
             return None
 

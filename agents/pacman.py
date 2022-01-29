@@ -2,12 +2,13 @@ from random import randint
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import Base, IntelligentBase
 from ai.predictable import Predictable
-from data.data import DIR, POS, REP
+from data.data import BOARD, DIR, GHOST_MODE, POS, REP
 from utils.coordinate import CPair
 
 
@@ -61,7 +62,53 @@ class NEATAgent(PacmanBaseAgent, IntelligentBase):
 
     def processState(self, game: "Game") -> List[int]:
         input: List[int] = []
-        
 
+        pacPos: CPair = game.pacman.pos
+        for dir in [DIR.UP, DIR.DW, DIR.LF, DIR.RT]:
+            newPos: CPair = pacPos.move(dir)
+            input.append(int(REP.isWall(game.state[newPos.row][newPos.col])))
+
+        pltDist: int = 2 * BOARD.row
+        pwrDist: int = 2 * BOARD.row
+
+        pltPos: CPair = pacPos
+        pwrPos: CPair = pacPos
+
+        for r in range(BOARD.row):
+            for c in range(BOARD.col):
+                cell = game.state[r][c]
+                manDist: int = abs(pacPos.row - r) + abs(pacPos.col - c)
+
+                if cell == REP.PELLET and manDist < pltDist:
+                    pltDist = manDist
+                    pltPos = CPair(r, c)
+
+                elif cell == REP.PWRPLT and manDist < pwrDist:
+                    pwrDist = manDist
+                    pwrPos = CPair(r, c)
+
+        input.append(int(pltPos.row < pacPos.row))
+        input.append(int(pltPos.row > pacPos.row))
+        input.append(int(pltPos.col < pacPos.col))
+        input.append(int(pltPos.col > pacPos.col))
+
+        input.append(int(pwrPos.row < pacPos.row))
+        input.append(int(pwrPos.row > pacPos.row))
+        input.append(int(pwrPos.col < pacPos.col))
+        input.append(int(pwrPos.col > pacPos.col))
+
+        if hasattr(game, "ghosts"):
+            for ghost in game.ghosts:
+                input.append(int(ghost.pos.row < pacPos.row))
+                input.append(int(ghost.pos.row > pacPos.row))
+                input.append(int(ghost.pos.col < pacPos.col))
+                input.append(int(ghost.pos.col > pacPos.col))
+                input.append(int(ghost.isDead))
+                input.append(int(ghost.isFrightened))
+
+            input.append(int(game.inky.mode == GHOST_MODE.CHASE))
+        else:
+            for _ in range(25):
+                input.append(0)
 
         return input

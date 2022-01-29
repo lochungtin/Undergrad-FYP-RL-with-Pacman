@@ -181,7 +181,7 @@ if __name__ == "__main__":
             },
             "generationCap": 500,
             "genomeConfig": {
-                "inSize": 10,
+                "inSize": 37,
                 "outSize": 4,
             },
             "mutationConfig": {
