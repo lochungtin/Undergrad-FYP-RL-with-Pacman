@@ -1,133 +1,328 @@
 from __future__ import annotations
 from copy import deepcopy
-from random import uniform
-from typing import List, Tuple
+from random import choice, randint, random, uniform
+from typing import List
 
 from ai.predictable import Predictable
-from ai.neat.gene import Gene
+from ai.neat.gene import ConnGene, NodeGene, NodeType
 
 
 class Genome(Predictable):
-    def __init__(self, inNo: int, outNo: int) -> None:
-        self.genes: dict[int, Gene] = {}
+    def __init__(self, config: dict[str, object], gen1: bool = False) -> None:
+        self.inSize: int = config["inSize"]
+        self.outSize: int = config["outSize"]
 
-        self.inNo: int = inNo
-        self.outNo: int = outNo
+        # id: gene
+        self.nodes: dict[int, NodeGene] = {}
+        # key: gene
+        self.conns: dict[str, ConnGene] = {}
 
-        self.baseNodeCount: int = inNo * outNo
+        # topological structure data
+        # id: List[parent Id]
+        self.cStruct: dict[int, List[int]] = {}
+        self.pStruct: dict[int, List[int]] = {}
+        # id: layer
+        self.lMap: dict[int, int] = {}
+        # layer: List[id]
+        self.layers: dict[int, List[int]] = {
+            0: [],
+            1: [],
+        }
+        self.layerNum: int = len(self.layers)
 
-        self.maxInnov: int = 0
+        # create IO nodes
+        for i in range(self.inSize):
+            # create input node
+            self.nodes[i] = NodeGene({"id": i, "type": NodeType.INPUT, "bias": 0})
 
-        self.fitness: float = 0
-        self.speciesIndex: int = -1
+            # maintain topological structure data
+            self.cStruct[i] = []
 
-    # create copy of itself
-    def duplicate(self) -> Genome:
-        return deepcopy(self)
+            self.lMap[i] = 0
+            self.layers[0].append(i)
 
-    # initialise first population
-    def baseInit(self):
-        for i in range(self.inNo):
-            for o in range(self.outNo):
-                self.genes[i * self.outNo + o + 1] = Gene(
-                    i + 1,
-                    self.inNo + o + 1,
-                    uniform(-1, 1),
-                    True,
-                    i * self.outNo + o + 1,
+        for o in range(self.inSize, self.outSize + self.inSize):
+            # create output node
+            self.nodes[o] = NodeGene({"id": o, "type": NodeType.OUTPUT, "bias": 0})
+
+            # maintain topological structure data
+            self.pStruct[o] = []
+
+            self.lMap[o] = 1
+            self.layers[1].append(o)
+
+        # create connections for generation 1
+        if gen1:
+            for i in range(self.inSize):
+                for o in range(self.inSize, self.outSize + self.inSize):
+                    key: str = ConnGene.genKey(i, o)
+                    self.conns[key] = ConnGene(
+                        {
+                            "inId": i,
+                            "outId": o,
+                            "key": key,
+                            "weight": uniform(-1, 1),
+                            "innov": i * self.outSize + (o - self.inSize),
+                        }
+                    )
+
+                    # maintain topological structure data
+                    self.cStruct[i].append(o)
+                    self.pStruct[o].append(i)
+
+    # evaluate neural net
+    def evaluate(self, input: List[float]) -> List[float]:
+        if len(input) != self.inSize:
+            return None
+
+        outputList: dict[int, float] = {}
+        for idx, val in enumerate(input):
+            outputList[idx] = val
+
+        return [
+            self.evalRec(i, outputList)
+            for i in range(self.inSize, self.outSize + self.inSize)
+        ]
+
+    def evalRec(self, id: int, outputList: dict[int, float]) -> float:
+        if id in outputList:
+            return outputList[id]
+        else:
+            # ignore unconnected nodes
+            if id not in self.pStruct:
+                return 0
+
+            output: float = 0
+            for pId in self.pStruct[id]:
+                key: str = ConnGene.genKey(pId, id)
+                conn: ConnGene = self.conns[key]
+                output += (
+                    self.evalRec(pId, outputList) * conn.weight + self.nodes[id].bias
                 )
 
-        self.maxInnov = self.inNo * self.outNo
+            outputList[id] = max(0, output)
+            return output
 
-    # add gene manually
-    def addGene(self, gene: Gene) -> None:
-        self.genes[gene.innov] = gene
+    # ===== MUTATION =====
+    def mutate(self, config: dict[str, bool], innovMap: dict[str, int]) -> Genome:
+        genome: Genome = deepcopy(self)
 
-        self.maxInnov = gene.innov
+        # add new node
+        if config["addNode"]:
+            fL: int = randint(0, genome.layerNum - 2)
+            bL: int = randint(fL + 1, genome.layerNum - 1)
+            nId: int = genome.addNode(
+                {
+                    "inId": (f := choice(genome.layers[fL])),
+                    "outId": (b := choice(genome.layers[bL])),
+                }
+            )
 
-    # find the gene with given params
-    def findGene(self, io: Tuple[int, int]) -> Gene:
-        for _, (_, gene) in enumerate(self.genes.items()):
-            if gene.inNode == io[0] and gene.outNode == io[1]:
-                return gene
+            # set innovation numbers for new connections
+            inInnovKey: str = Genome.genInnovKey(genome.lMap[f], genome.lMap[nId], f, nId)
+            inInnov: int
+            if inInnovKey not in innovMap:
+                inInnov = innovMap["SIZE"]
 
-        return None
+                innovMap[inInnovKey] = inInnov
+                innovMap["SIZE"] += 1
+            else:
+                inInnov = innovMap[inInnovKey]
 
-    # get gene, return None of no innov id
-    def getGene(self, innov: int) -> Gene:
-        if innov in self.genes:
-            return self.genes[innov]
+            genome.conns[ConnGene.genKey(f, nId)].innov = inInnov
 
-        return None
+            outInnovKey: str = Genome.genInnovKey(genome.lMap[nId], genome.lMap[b], nId, b)
+            outInnov: int
+            if outInnovKey not in innovMap:
+                outInnov = innovMap["SIZE"]
 
-    # predict
-    def predict(self, input: List[int]) -> List[float]:
-        nodes: dict[int, dict[str, object]] = {}
+                innovMap[outInnovKey] = outInnov
+                innovMap["SIZE"] += 1
+            else:
+                outInnov = innovMap[outInnovKey]
 
-        for _, (_, gene) in enumerate(self.genes.items()):
-            if not gene.inNode in nodes:
-                nodes[gene.inNode] = {"o": None, "p": []}
-            if not gene.outNode in nodes:
-                nodes[gene.outNode] = {"o": None, "p": []}
+            genome.conns[ConnGene.genKey(nId, b)].innov = outInnov
 
-            if gene.enabled:
-                nodes[gene.outNode]["p"].append((gene.inNode, gene.weight))
+        # add new connection
+        if config["addConn"]:
+            fL: int = randint(0, genome.layerNum - 2)
+            bL: int = randint(fL + 1, genome.layerNum - 1)
+            f: int = choice(genome.layers[fL])
+            b: int = choice(genome.layers[bL])
 
-        for i, inputVal in enumerate(input):
-            nodes[i + 1]["o"] = inputVal
+            # get innovation number
+            innovKey: str = Genome.genInnovKey(genome.lMap[f], genome.lMap[b], f, b)
+            innov: int
+            if innovKey not in innovMap:
+                innov = innovMap["SIZE"]
 
-        rt: List[float] = []
-        for i in range(self.inNo + 1, self.inNo + self.outNo + 1):
-            rt.append(self.compute(i, nodes))
+                innovMap[innovKey] = innov
+                innovMap["SIZE"] += 1
+            else:
+                innov = innovMap[innovKey]
+            
+            genome.addConn({"inId": f, "outId": b, "innov": innov})
 
-        return rt
+        # mutate bias
+        if config["mutBias"]:
+            genome.nodes[choice(list(genome.nodes.keys()))].setBias(random())
 
-    # compute the output of node (dynamic programming)
-    def compute(self, node: int, nodes: dict[int, dict[str, object]]):
-        if nodes[node]["o"] != None:
-            return nodes[node]["o"]
+        # mutate weight
+        if config["mutWeight"]:
+            genome.conns[choice(list(genome.conns.keys()))].setWeight(random())
+
+        # mutate connection
+        if config["mutConn"]:
+            genome.conns[choice(list(genome.conns.keys()))].setEnabled(random() > 0.5)
+
+        return genome
+
+    # == topological based mutation methods ==
+    # add node
+    def addNode(self, config: dict[str, object]) -> int:
+        id: int = len(self.nodes)
+
+        # create new node
+        self.nodes[id] = NodeGene({"id": id, "type": NodeType.HIDDEN, "bias": 0})
+
+        # create weight for OG inNode to the new node
+        w: float
+        ogKey: str = ConnGene.genKey(config["inId"], config["outId"])
+        if ogKey in self.conns:
+            ogConn: ConnGene = self.conns[ogKey]
+            # disable original connection
+            ogConn.setEnabled(False)
+            # get original weight
+            w = ogConn.weight
+
+        # if no connection between nodes, set random weight
         else:
-            val = 0
-            for pair in nodes[node]["p"]:
-                val += self.compute(pair[0], nodes) * pair[1]
+            w = uniform(-1, 1)
 
-            nodes[node]["o"] = val
-            return val
+        # add connections
+        self.addConn({"inId": config["inId"], "outId": id, "weight": w, "innov": -1})
+        self.addConn({"inId": id, "outId": config["outId"], "weight": 1, "innov": -1})
 
-    # mutation methods
-    # add new node
-    def addNode(self, inNode: int, outNode: int, nodeId: int, innov: int) -> None:
-        ogG: Gene = self.findGene((inNode, outNode))
+        return id
 
-        ogG.enabled = False
+    # add connection
+    def addConn(self, config: dict[str, object]) -> None:
+        # randomly generate weight if not given
+        if "weight" not in config:
+            config["weight"] = uniform(-1, 1)
 
-        self.genes[innov - 1] = Gene(inNode, nodeId, ogG.weight, True, innov - 1)
-        self.genes[innov] = Gene(nodeId, outNode, 1.0, True, innov)
+        # create and add connection
+        conn: ConnGene = ConnGene(config)
+        self.conns[conn.key] = conn
 
-        self.maxInnov = innov
+        # maintain topological structure data
+        # child structure dict
+        if config["inId"] not in self.cStruct:
+            self.cStruct[config["inId"]] = []
 
-    # add new connection
-    def addConn(self, inNode: int, outNode: int, innov: int) -> None:
-        self.genes[innov] = Gene(inNode, outNode, uniform(-1, 1), True, innov)
+        if config["outId"] not in self.cStruct[config["inId"]]:
+            self.cStruct[config["inId"]].append(config["outId"])
 
-        self.maxInnov = innov
+        # parent structure dict
+        if config["outId"] not in self.pStruct:
+            self.pStruct[config["outId"]] = []
 
-    # change weight of connection
-    def chgWght(self, innov: int, weight: float) -> None:
-        self.genes[innov].weight = weight
+        if config["inId"] not in self.pStruct[config["outId"]]:
+            self.pStruct[config["outId"]].append(config["inId"])
 
-    # change connection status (enable / disable)
-    def chgConn(self, innov: int, enabled: bool) -> None:
-        self.genes[innov].enabled = enabled
+        # layer map and layer dict
+        toUpdate: List[int] = [config["outId"]]
+        while (len(toUpdate) > 0):
+            head: int = toUpdate.pop(0)
 
-    # for debugging purposes
+            # remove head from old layer list
+            oldLayer: int = -1
+            newLayer: int = max(map(lambda pid: self.lMap[pid], self.pStruct[head])) + 1
+
+            if head in self.lMap:
+                oldLayer = self.lMap[head]
+
+                if oldLayer == newLayer:
+                    continue
+
+                if head in self.layers[oldLayer]:
+                    self.layers[oldLayer].remove(head)
+
+            # update layer map
+            self.lMap[head] = newLayer
+
+            # add head to layer list
+            if newLayer not in self.layers:
+                self.layers[newLayer] = []
+            self.layers[newLayer].append(head)
+
+            # if head has children, update children
+            if head in self.cStruct:
+                for child in self.cStruct[head]:
+                    # add child to queue
+                    if child not in toUpdate:
+                        toUpdate.append(child)
+
+        # update layer count
+        self.layerNum = len(self.layers)
+
+    # == value based mutation methods ==
+    # enabled/disabled connection
+    def toggleConn(self, config: dict[str, object]) -> None:
+        key: str
+        if "key" not in config:
+            key = ConnGene.genKey(config["inId"], config["outId"])
+        else:
+            key = config["key"]
+
+        self.conns[key].setEnabled(config["enabled"])
+
+    # update weight of connection
+    def setWeight(self, config: dict[str, object]) -> None:
+        key: str
+        if "key" not in config:
+            key = ConnGene.genKey(config["inId"], config["outId"])
+        else:
+            key = config["key"]
+
+        self.conns[key].setWeight(config["weight"])
+
+    # update bias of node
+    def setBias(self, config: dict[str, object]) -> None:
+        self.nodes[config["id"]].setBias(config["bias"])
+
+    # generate innovation key
+    def genInnovKey(fL: int, bL: int, f: int, b: int) -> str:
+        return "{}.{}-{}.{}".format(fL, bL, f, b)
+
+    # ===== DEBUG / PRINTERS ======
+    # custom string representation
     def __str__(self) -> str:
         return self.__repr__()
 
     def __repr__(self) -> str:
-        sb = "<\n"
+        rt: str = ""
 
-        for _, (_, gene) in enumerate(self.genes.items()):
-            sb += str(gene) + "\n"
+        nL: int = len(self.nodes) - 1
+        for i, (_, v) in enumerate(self.nodes.items()):
+            if i == 0:
+                b = "╔═ "
+            elif i == nL:
+                b = "\n╠═ "
+            else:
+                b = "\n║  "
 
-        return sb + ">"
+            rt += b + str(v)
+
+        cL: int = len(self.conns) - 1
+        for i, (_, v) in enumerate(self.conns.items()):
+            if i == 0 and cL != 0:
+                b = "\n╠═ "
+            elif i == cL:
+                b = "\n╚═ "
+            else:
+                b = "\n║  "
+
+            rt += b + str(v)
+
+        return rt
