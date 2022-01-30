@@ -203,7 +203,7 @@ if __name__ == "__main__":
                 "w": 1000,
                 "l": -1000,
             },
-            "generationCap": 10000,
+            "generationCap": 300,
             "genomeConfig": {
                 "inSize": 37,
                 "outSize": 4,
@@ -215,7 +215,7 @@ if __name__ == "__main__":
                 "mutWeight": 0.8, 
                 "mutConn": 0.5,
             },
-            "populationSize": 50,
+            "populationSize": 100,
             "saveOpt": 25,
             "selectionSize": 15,
             "simulationConfig": {
