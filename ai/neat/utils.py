@@ -15,6 +15,7 @@ class GenomeUtils:
         "RAN": 2,
     }
 
+    # ===== fitness related =====
     # get compatibility distance
     def getCompDist(g1: Genome, g2: Genome, conf: dict[str, float]):
         genes: dict[int, ConnGene] = {}
@@ -66,6 +67,7 @@ class GenomeUtils:
 
         return adjustment
 
+    # ===== crossing related =====
     # reproduce offspring, g1 is fitter
     def cross(g1: Genome, g2: Genome, options: int) -> Genome:
         g: Genome = deepcopy(g1)
@@ -106,8 +108,9 @@ class GenomeUtils:
 
         return g
 
-    # save and load functions
-    def save(genome: Genome, generation: int) -> str:
+    # ===== save and load functions =====
+    # save genome config
+    def save(genome: Genome, runPref: str, generation: int) -> str:
         data: dict[str, object] = {}
 
         data["inSize"] = genome.inSize
@@ -131,13 +134,21 @@ class GenomeUtils:
         data["cStruct"] = genome.cStruct
         data["layers"] = genome.layers
 
-        timestamp: str = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
-        filename: str = "./out/ne-gen{}-{}.json".format(generation, timestamp)
+        filename: str = "./out/{}/ne-genome-gen{}.json".format(runPref, generation)
         with open(filename, "w+") as outfile:
             json.dump(data, outfile)
 
         return filename
 
+    # save innovation map data
+    def saveInnov(innov: dict[str, int], runPref: str, generation: int) -> str:
+        filename: str = "/out/{}/ne-innov-gen{}.json".format(runPref, generation)
+        with open(filename, "w+") as outfile:
+            json.dump(innov, outfile)
+
+        return filename
+
+    # load genome
     def load(filename: str, plain: bool = False) -> Genome:
 
         if not filename.startswith("./out"):
@@ -185,3 +196,11 @@ class GenomeUtils:
                 genome.layerNum = len(genome.layers)
 
                 return genome
+
+    # load innovation map
+    def loadInnov(filename: str) -> dict[str, int]:
+        if not filename.startswith("./out"):
+            filename = "./out/{}".format(filename)
+
+        with open(filename, "r") as infile:
+            return json.load(infile)                

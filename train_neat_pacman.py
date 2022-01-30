@@ -1,13 +1,11 @@
 from copy import deepcopy
-from math import ceil, floor
-from multiprocessing.connection import wait
-from random import choices, random
+from datetime import datetime
+from random import random
 from tkinter import Tk
 from typing import List, Tuple
 import _thread
+import os
 import time
-
-from numpy import empty
 
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
@@ -110,6 +108,9 @@ class NEATTraining:
 
     # start neuro evolution
     def evolution(self) -> None:
+        runPref: str = "R{}".format(datetime.now().strftime("%d%m_%H%M"))
+        os.mkdir("out/{}".format(runPref))
+
         # create population
         pop: List[Genome] = [Genome(self.gConf, True) for _ in range(self.popSize)]
 
@@ -123,9 +124,6 @@ class NEATTraining:
                 key: str = Genome.genInnovKey(0, 1, i, o)
                 innovMap[key] = i * self.gConf["outSize"] + (o - self.gConf["inSize"])
         innovMap["SIZE"] = len(innovMap)
-
-        # filenames of saved config
-        configSaves: List[str] = []
 
         # initial mutation
         for i, genome in enumerate(pop):
@@ -162,7 +160,8 @@ class NEATTraining:
 
             # save genome config every N generations
             if gen % self.saving == 0 and gen != 0:
-                configSaves.append(GenomeUtils.save(tGenomes[0], gen))
+                GenomeUtils.save(tGenomes[0], runPref, gen)
+                GenomeUtils.saveInnov(innovMap, runPref, gen)
 
             # exit evoluation loop if end
             if gen + 1 == self.genCap:
@@ -183,7 +182,8 @@ class NEATTraining:
 
         # save best performing genome after training process
         # get best performing genome
-        configSaves.append(GenomeUtils.save(tGenomes[0], self.genCap))
+        GenomeUtils.save(tGenomes[0], runPref, self.genCap)
+        GenomeUtils.saveInnov(innovMap, runPref, gen)
 
 
 if __name__ == "__main__":
