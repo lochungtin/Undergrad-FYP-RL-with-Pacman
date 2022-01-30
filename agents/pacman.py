@@ -60,6 +60,14 @@ class NEATAgent(PacmanBaseAgent, IntelligentBase):
     def __init__(self, predictable: Predictable) -> None:
         IntelligentBase.__init__(self, POS.PACMAN, REP.PACMAN, predictable)
 
+    def locComp(self, pov: CPair, loc: CPair) -> List[int]:
+        return [
+            int(pov.row > loc.row), # should move up
+            int(pov.row < loc.row), # should move down
+            int(pov.col > loc.col), # should move left
+            int(pov.col < loc.col), # should move right
+        ]
+
     def processState(self, game: "Game") -> List[int]:
         input: List[int] = []
 
@@ -69,8 +77,8 @@ class NEATAgent(PacmanBaseAgent, IntelligentBase):
 
             valid: bool = False
             if CPair.isValid(newPos):
-                valid = REP.isWall(game.state[newPos.row][newPos.col])
-            
+                valid = not REP.isWall(game.state[newPos.row][newPos.col])
+
             input.append(int(valid))
 
         pltDist: int = 2 * BOARD.row
@@ -92,15 +100,13 @@ class NEATAgent(PacmanBaseAgent, IntelligentBase):
                     pwrDist = manDist
                     pwrPos = CPair(r, c)
 
-        input.append(int(pltPos.row < pacPos.row))
-        input.append(int(pltPos.row > pacPos.row))
-        input.append(int(pltPos.col < pacPos.col))
-        input.append(int(pltPos.col > pacPos.col))
+        pltPos = game.pathfinder.start(pacPos, pltPos, -1).path[0]
+        # pwrPos = game.pathfinder.start(pacPos, pwrPos, -1).path[0]
 
-        input.append(int(pwrPos.row < pacPos.row))
-        input.append(int(pwrPos.row > pacPos.row))
-        input.append(int(pwrPos.col < pacPos.col))
-        input.append(int(pwrPos.col > pacPos.col))
+        input += self.locComp(pacPos, pltPos)
+        input += self.locComp(pacPos, pwrPos)
+
+        # print(input[0:4], input[4:8], pacPos, pltPos)
 
         if hasattr(game, "ghosts"):
             for ghost in game.ghosts:

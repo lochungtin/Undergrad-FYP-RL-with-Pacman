@@ -17,7 +17,7 @@ class App:
         self.display: Display = Display(self.main)
         self.display.newGame(self.game)
 
-        self.timeController: TimeController = TimeController(0.1, self.nextStep)
+        self.timeController: TimeController = TimeController(0.05, self.nextStep)
 
         _thread.start_new_thread(self.timeController.start, ())
 
@@ -35,5 +35,5 @@ class App:
 
 
 if __name__ == "__main__":
-    app = App("ne-gen150-30_01_2022_02_28_11.json")
+    app = App("ne-gen50-30_01_2022_21_09_27.json")
     app.run()

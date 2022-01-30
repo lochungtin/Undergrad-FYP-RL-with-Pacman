@@ -3,6 +3,7 @@ from random import randint, random, choice
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game.game import Game
 
@@ -48,7 +49,7 @@ class IntelligentBase(Base):
     # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         # action index
-        index: int = -1
+        index: int = 0
 
         if self.undeterministic > 1 - random():
             # explore
@@ -59,12 +60,23 @@ class IntelligentBase(Base):
                 self.processState(game)
             )
 
-            # select optimal action
-            value: float = float("-inf")
-            for i, val in enumerate(actionValues):
-                if val > value:
-                    index = i
-                    value = val
+            # select optimal valid action
+            actionIdx: List[Tuple[int, float]] = sorted(
+                [(i, val) for i, val in enumerate(actionValues)],
+                key=lambda p: p[1],
+                reverse=True,
+            )            
+
+            for i, p in enumerate(actionIdx):
+                newPos: CPair = self.pos.move(p[0])
+                if newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
+                    index = p[0]
+                    break
+
+            # print(actionIdx, index, i)
+
+            if hasattr(game, "invalidSteps"):
+                game.invalidSteps += i
 
         # update positions
         self.moved = False

@@ -52,16 +52,24 @@ class PathFinder:
 
             for index, neighbour in enumerate(searchPos.getNeighbours()):
                 # disallow expansion to opposite direction or current motion
-                if searchPos == start and DIR.getOpposite(direction) == index:
+                if (
+                    direction != -1
+                    and searchPos == start
+                    and DIR.getOpposite(direction) == index
+                ):
                     continue
 
                 # ignore areas that ghosts cant go up
                 if (
-                    searchPos == POS.GHOST_NO_UP_1
-                    or searchPos == POS.GHOST_NO_UP_2
-                    or searchPos == POS.GHOST_NO_UP_3
-                    or searchPos == POS.GHOST_NO_UP_4
-                ) and index == 0:
+                    direction != -1
+                    and (
+                        searchPos == POS.GHOST_NO_UP_1
+                        or searchPos == POS.GHOST_NO_UP_2
+                        or searchPos == POS.GHOST_NO_UP_3
+                        or searchPos == POS.GHOST_NO_UP_4
+                    )
+                    and index == 0
+                ):
                     continue
 
                 nX, nY = neighbour.row, neighbour.col
@@ -95,7 +103,7 @@ class PathFinder:
                         lowestScore = h
                         nearestPos = neighbour
 
-        return self.makePath(nearestPos, weightedList)  
+        return self.makePath(nearestPos, weightedList)
 
     # reconstruct path from weighted state
     def makePath(self, goal: CPair, weightedList: List[List[PathCell]]) -> Path:

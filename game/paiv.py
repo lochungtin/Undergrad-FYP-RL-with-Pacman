@@ -18,6 +18,7 @@ class PAIV(Game):
 
         self.timesteps: int = 0
         self.pelletDrought: int = 0
+        self.invalidSteps: int = 0
 
     def nextStep(self) -> Tuple[bool, bool, bool]:
         self.timesteps += 1
