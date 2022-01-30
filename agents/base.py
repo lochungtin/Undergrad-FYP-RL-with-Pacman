@@ -1,5 +1,5 @@
 from copy import deepcopy
-from random import randint, random
+from random import randint, random, choice
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING

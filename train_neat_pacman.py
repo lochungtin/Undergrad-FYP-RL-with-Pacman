@@ -29,6 +29,7 @@ class NEATTraining:
 
         # training config
         self.popSize: int = trainingConfig["populationSize"]
+        self.selSize: int = trainingConfig["selectionSize"]
         self.genCap: int = trainingConfig["generationCap"]
 
         # genome config
@@ -139,7 +140,7 @@ class NEATTraining:
                 perf.append((i, fitness))
 
             # get top performing genomes
-            perf = sorted(perf, key=lambda p: p[1], reverse=True)[:4]
+            perf = sorted(perf, key=lambda p: p[1], reverse=True)[: self.selSize]
             tGenomes: List[Genome] = [deepcopy(pop[p[0]]) for p in perf]
 
             # save genome config every N generations
@@ -153,15 +154,17 @@ class NEATTraining:
             # mutate and cross top genomes
             for i in range(self.popSize):
                 if i < self.popSize / 2:
-                    pop[i] = tGenomes[i % 4].mutate(self.mutationConfig(), innovMap)
+                    pop[i] = tGenomes[i % self.selSize].mutate(self.mutationConfig(), innovMap)
                 else:
-                    p1: Genome = tGenomes[0 + i % 2 * 2]
-                    p2: Genome = tGenomes[1 + i % 2 * 2]
+                    cycle: int = i % (self.selSize - 1)
+                    p1: Genome = tGenomes[cycle]
+                    p2: Genome = tGenomes[cycle + 1]
                     pop[i] = GenomeUtils.cross(p1, p2, self.cOpt)
 
         # save best performing genome after training process
         # get best performing genome
         configSaves.append(GenomeUtils.save(tGenomes[0], self.genCap))
+
 
 if __name__ == "__main__":
     training: NEATTraining = NEATTraining(
@@ -174,25 +177,26 @@ if __name__ == "__main__":
             },
             "crossOpt": GenomeUtils.CROSS_OPTIONS["RAN"],
             "fitnessCoeff": {
-                "t": -0.1,
+                "t": -1,
                 "p": 1,
                 "w": 100,
                 "l": -100,
             },
-            "generationCap": 500,
+            "generationCap": 10000,
             "genomeConfig": {
                 "inSize": 37,
                 "outSize": 4,
             },
             "mutationConfig": {
-                "addNode": 0.05,
-                "addConn": 0.7,
-                "mutBias": 0.6,
+                "addNode": 0.15,
+                "addConn": 0.8,
+                "mutBias": 0.8,
                 "mutWeight": 0.8,
                 "mutConn": 0.4,
             },
-            "populationSize": 50,
-            "saveOpt": 50,
+            "populationSize": 100,
+            "saveOpt": 100,
+            "selectionSize": 6,
             "simulationConfig": {
                 "ghost": False,
                 "pwrplt": False,

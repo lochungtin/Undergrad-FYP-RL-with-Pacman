@@ -66,7 +66,12 @@ class NEATAgent(PacmanBaseAgent, IntelligentBase):
         pacPos: CPair = game.pacman.pos
         for dir in [DIR.UP, DIR.DW, DIR.LF, DIR.RT]:
             newPos: CPair = pacPos.move(dir)
-            input.append(int(REP.isWall(game.state[newPos.row][newPos.col])))
+
+            valid: bool = False
+            if CPair.isValid(newPos):
+                valid = REP.isWall(game.state[newPos.row][newPos.col])
+            
+            input.append(int(valid))
 
         pltDist: int = 2 * BOARD.row
         pwrDist: int = 2 * BOARD.row
