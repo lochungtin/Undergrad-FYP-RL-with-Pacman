@@ -17,6 +17,13 @@
             "request": "launch",
             "program": "train_neat_pacman.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Pacman Review Script",
+            "type": "python",
+            "request": "launch",
+            "program": "view_neat_pacman.py",
+            "console": "integratedTerminal"
         }
     ]
 }

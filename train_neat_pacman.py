@@ -133,14 +133,14 @@ class NEATTraining:
                 # adjust fitness to topology
                 fitness /= GenomeUtils.fitnessAdj(genome, pop, self.cConf)
 
+                print("Gen: {}\tgenome: {}\tfitness: {}".format(gen, i, fitness))
+
                 # save fitness value
                 perf.append((i, fitness))
 
             # get top performing genomes
             perf = sorted(perf, key=lambda p: p[1], reverse=True)[:4]
-            tGenomes: List[Genome] = [deepcopy(pop[p[1]]) for p in perf]
-
-            print("Gen: {}\tTopF: {}".format(gen, perf[0][1]))
+            tGenomes: List[Genome] = [deepcopy(pop[p[0]]) for p in perf]
 
             # save genome config every N generations
             if gen % self.saving == 0:
@@ -198,6 +198,6 @@ if __name__ == "__main__":
                 "pwrplt": False,
             },
         },
-        True,
+        False,
     )
     training.start()

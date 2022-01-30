@@ -39,7 +39,8 @@ class ConnGene:
 
         self.weight: float = config["weight"]
 
-        self.innov: int = config["innov"]
+        if "innov" in config:
+            self.innov: int = config["innov"]
 
     # mutation functions
     def setEnabled(self, enabled: bool) -> None:

@@ -153,31 +153,33 @@ class GenomeUtils:
 
                 genome: Genome = Genome(data)
 
-                genome.cStruct = data["cStruct"]
-                genome.layers = data["layers"]
+                genome.cStruct = {}
+                genome.layers = {}
                 genome.nodes = {}
                 genome.conns = {}
                 genome.pStruct = {}
                 genome.lMap = {}
 
                 for (key, node) in data["nodes"].items():
-                    genome.nodes[key] = NodeGene(node)
+                    genome.nodes[int(key)] = NodeGene(node)
 
                 for (key, conn) in data["conns"].items():
                     genome.conns[key] = ConnGene(conn)
 
                 # recreate pStruct from cStruct
                 for (p, children) in data["cStruct"].items():
+                    genome.cStruct[int(p)] = children
                     for c in children:
                         if c not in genome.pStruct:
-                            genome.pStruct[c] = []
+                            genome.pStruct[int(c)] = []
 
-                        genome.pStruct[c].append(p)
+                        genome.pStruct[int(c)].append(int(p))
 
                 # recreate lMap from layers
-                for (layer, nodes) in data["layers"]:
+                for (layer, nodes) in data["layers"].items():
+                    genome.layers[int(layer)] = nodes
                     for node in nodes:
-                        genome.lMap[node] = layer
+                        genome.lMap[int(node)] = int(layer)
 
                 # set layer num
                 genome.layerNum = len(genome.layers)
