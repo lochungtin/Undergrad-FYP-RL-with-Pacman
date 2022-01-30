@@ -203,4 +203,4 @@ class GenomeUtils:
             filename = "./out/{}".format(filename)
 
         with open(filename, "r") as infile:
-            return json.load(infile)                
+            return json.load(infile)
