@@ -35,5 +35,7 @@ class App:
 
 
 if __name__ == "__main__":
-    app = App("ne-gen50-30_01_2022_21_09_27.json")
+    run: str = "R3001_2239"
+    file: str = "150"
+    app = App("{}/ne-genome-gen{}.json".format(run, file))
     app.run()

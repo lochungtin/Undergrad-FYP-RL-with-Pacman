@@ -106,7 +106,7 @@ class Visualiser:
         )
 
 if __name__ == "__main__":
-    filename: str = "NP-NG_GEN50.json"
+    filename: str = "NP-NG_GENOME_GEN50.json"
     viz: Visualiser = Visualiser()
     viz.load(filename)
     viz.display()
