@@ -142,7 +142,7 @@ class GenomeUtils:
 
     # save innovation map data
     def saveInnov(innov: dict[str, int], runPref: str, generation: int) -> str:
-        filename: str = "/out/{}/ne-innov-gen{}.json".format(runPref, generation)
+        filename: str = "./out/{}/ne-innov-gen{}.json".format(runPref, generation)
         with open(filename, "w+") as outfile:
             json.dump(innov, outfile)
 
