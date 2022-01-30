@@ -35,7 +35,7 @@ class Visualiser:
     # load neural network from data file
     def load(self, filename: str) -> None:
         # load data
-        self.raw: dict[str, object] = GenomeUtils.load(filename, True)
+        self.raw: dict[str, object] = GenomeUtils.load(filename, plain=True)
         self.data: dict[int, object] = {}
 
         maxSize: int = 0

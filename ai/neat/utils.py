@@ -141,29 +141,26 @@ class GenomeUtils:
         return filename
 
     # save innovation map data
-    def saveInnov(innov: dict[str, int], runPref: str, generation: int) -> str:
-        filename: str = "./out/{}/ne-innov-gen{}.json".format(runPref, generation)
+    def saveInnov(
+        innov: dict[str, int], runPref: str, generation: int, baseFile: str = "out"
+    ) -> str:
+        filename: str = "./{}/{}/ne-innov-gen{}.json".format(
+            baseFile, runPref, generation
+        )
         with open(filename, "w+") as outfile:
             json.dump(innov, outfile)
 
         return filename
 
     # load genome
-    def load(filename: str, plain: bool = False) -> Genome:
-
-        if not filename.startswith("./out"):
-            filename = "./out/{}".format(filename)
-
-        genome: Genome = None
-        with open(filename, "r") as infile:
+    def load(filename: str, baseFile: str = "out", plain: bool = False) -> Genome:
+        with open("./{}/{}".format(baseFile, filename), "r") as infile:
+            data: dict[str, object] = json.load(infile)
             if plain:
-                return json.load(infile)
+                return data
 
             else:
-                data: dict[str, object] = json.load(infile)
-
                 genome: Genome = Genome(data)
-
                 genome.cStruct = {}
                 genome.layers = {}
                 genome.nodes = {}
@@ -198,9 +195,6 @@ class GenomeUtils:
                 return genome
 
     # load innovation map
-    def loadInnov(filename: str) -> dict[str, int]:
-        if not filename.startswith("./out"):
-            filename = "./out/{}".format(filename)
-
-        with open(filename, "r") as infile:
+    def loadInnov(filename: str, baseFile: str = "out") -> dict[str, int]:
+        with open("./{}/{}".format(baseFile, filename), "r") as infile:
             return json.load(infile)

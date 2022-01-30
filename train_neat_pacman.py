@@ -6,6 +6,7 @@ from typing import List, Tuple
 import _thread
 import os
 import time
+from ai.neat.gene import ConnGene
 
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
@@ -106,11 +107,8 @@ class NEATTraining:
         else:
             self.evolution()
 
-    # start neuro evolution
-    def evolution(self) -> None:
-        runPref: str = "R{}".format(datetime.now().strftime("%d%m_%H%M"))
-        os.mkdir("out/{}".format(runPref))
-
+    # create fresh population
+    def newPop(self) -> Tuple[List[Genome], dict[str, int]]:
         # create population
         pop: List[Genome] = [Genome(self.gConf, True) for _ in range(self.popSize)]
 
@@ -128,6 +126,37 @@ class NEATTraining:
         # initial mutation
         for i, genome in enumerate(pop):
             pop[i] = genome.mutate(self.mutationConfig(), innovMap)
+
+        return pop, innovMap
+
+    # load best genome and repopulate
+    def loadPop(
+        self, gFilename: str, iFilename: str
+    ) -> Tuple[List[Genome], dict[str, int]]:
+        # load genome and innovMap from config file
+        genome: Genome = GenomeUtils.load(gFilename, "milestones")
+        innovMap: dict[str, int] = GenomeUtils.loadInnov(iFilename, "milestones")
+
+        for (key, conn) in genome.conns.items():
+            i, o = ConnGene.parseKey(key)
+            innovKey = Genome.genInnovKey(genome.lMap[i], genome.lMap[o], i, o)
+            conn.innov = innovMap[innovKey]
+
+        # repopulate with mutation
+        pop: List[Genome] = [
+            deepcopy(genome).mutate(self.mutationConfig(), innovMap)
+            for _ in range(self.popSize)
+        ]
+
+        return pop, innovMap
+
+    # start neuro evolution
+    def evolution(self) -> None:
+        runPref: str = "R{}".format(datetime.now().strftime("%d%m_%H%M"))
+        os.mkdir("out/{}".format(runPref))
+
+        # initialise population and innovation map
+        pop, innovMap = self.loadPop("NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json")
 
         bestScore: float = float("-inf")
 
@@ -171,9 +200,7 @@ class NEATTraining:
             size: int = len(tGenomes)
             for i in range(self.popSize):
                 if i < self.popSize / 3:
-                    pop[i] = tGenomes[i % size].mutate(
-                        self.mutationConfig(), innovMap
-                    )
+                    pop[i] = tGenomes[i % size].mutate(self.mutationConfig(), innovMap)
                 else:
                     cycle: int = i % (self.selSize - 1)
                     p1: Genome = tGenomes[cycle]
@@ -212,7 +239,7 @@ if __name__ == "__main__":
                 "addNode": 0.1,
                 "addConn": 0.7,
                 "mutBias": 0.4,
-                "mutWeight": 0.8, 
+                "mutWeight": 0.8,
                 "mutConn": 0.5,
             },
             "populationSize": 100,
