@@ -77,6 +77,8 @@ class NEATTraining:
         while game.pelletDrought < 50 and not gameover and not won:
             gameover, won, atePellet = game.nextStep()
 
+            print("{}".format(pelletCount + emptyStep), end="\r")
+
             # enable display
             if self.hasDisplay:
                 self.display.rerender(atePellet)
@@ -107,6 +109,7 @@ class NEATTraining:
         else:
             self.evolution()
 
+    # ===== population creation =====
     # create fresh population
     def newPop(self) -> Tuple[List[Genome], dict[str, int]]:
         # create population
@@ -150,14 +153,18 @@ class NEATTraining:
 
         return pop, innovMap
 
-    # start neuro evolution
+    # ===== main evoluation function =====
     def evolution(self) -> None:
         runPref: str = "R{}".format(datetime.now().strftime("%d%m_%H%M"))
         os.mkdir("out/{}".format(runPref))
 
         # initialise population and innovation map
-        pop, innovMap = self.loadPop("NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json")
+        # pop, innovMap = self.newPop()
+        pop, innovMap = self.loadPop(
+            "NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json"
+        )
 
+        # best score so far
         bestScore: float = float("-inf")
 
         # evolution process
@@ -174,11 +181,8 @@ class NEATTraining:
                 if fitness > bestScore:
                     bestScore = fitness
 
-                print(
-                    "Gen: {}\tgenome: {}\tfitness: {}\tbest:{}".format(
-                        gen, i, fitness, bestScore
-                    )
-                )
+                # print run result
+                print("Gen: {}  \tgId: {}  \tfV: {} \tfM:{}".format(gen, i, fitness, bestScore))
 
                 # save fitness value
                 perf.append((i, fitness))
@@ -199,7 +203,7 @@ class NEATTraining:
             # mutate and cross top genomes
             size: int = len(tGenomes)
             for i in range(self.popSize):
-                if i < self.popSize / 3:
+                if i < 2 * self.popSize / 3:
                     pop[i] = tGenomes[i % size].mutate(self.mutationConfig(), innovMap)
                 else:
                     cycle: int = i % (self.selSize - 1)
@@ -214,42 +218,43 @@ class NEATTraining:
 
 
 if __name__ == "__main__":
-    training: NEATTraining = NEATTraining(
-        {
-            "comp": {
-                "cD": 1,
-                "cE": 1,
-                "cW": 1,
-                "dThres": 0.4,
+    for _ in range(50):
+        training: NEATTraining = NEATTraining(
+            {
+                "comp": {
+                    "cD": 1,
+                    "cE": 1,
+                    "cW": 1,
+                    "dThres": 0.4,
+                },
+                "crossOpt": GenomeUtils.CROSS_OPTIONS["MAX"],
+                "fitnessCoeff": {
+                    "p": 5,
+                    "e": -5,
+                    "i": -10,
+                    "w": 1000,
+                    "l": -1000,
+                },
+                "generationCap": 200,
+                "genomeConfig": {
+                    "inSize": 37,
+                    "outSize": 4,
+                },
+                "mutationConfig": {
+                    "addNode": 0.2,
+                    "addConn": 0.75,
+                    "mutBias": 0.5,
+                    "mutWeight": 0.85,
+                    "mutConn": 0.6,
+                },
+                "populationSize": 100,
+                "saveOpt": 25,
+                "selectionSize": 15,
+                "simulationConfig": {
+                    "ghost": True,
+                    "pwrplt": False,
+                },
             },
-            "crossOpt": GenomeUtils.CROSS_OPTIONS["MAX"],
-            "fitnessCoeff": {
-                "p": 5,
-                "e": -5,
-                "i": -10,
-                "w": 1000,
-                "l": -1000,
-            },
-            "generationCap": 300,
-            "genomeConfig": {
-                "inSize": 37,
-                "outSize": 4,
-            },
-            "mutationConfig": {
-                "addNode": 0.1,
-                "addConn": 0.7,
-                "mutBias": 0.4,
-                "mutWeight": 0.8,
-                "mutConn": 0.5,
-            },
-            "populationSize": 100,
-            "saveOpt": 25,
-            "selectionSize": 15,
-            "simulationConfig": {
-                "ghost": False,
-                "pwrplt": False,
-            },
-        },
-        False,
-    )
-    training.start()
+            False,
+        )
+        training.start()

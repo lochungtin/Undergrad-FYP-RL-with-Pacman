@@ -51,7 +51,7 @@ class CPair:
         return -1
 
     # get all valid neighbouring coordinates
-    def getNeighbours(self) -> List[CPair]:
+    def getNeighbours(self, appendEmpty: bool = False) -> List[CPair]:
         rt: List[CPair] = []
 
         for neighbour in [
@@ -66,6 +66,8 @@ class CPair:
                 rt.append(CPair(14, 0))
             elif neighbour.isValid():
                 rt.append(neighbour)
+            elif appendEmpty:
+                rt.append(None)
 
         return rt
 

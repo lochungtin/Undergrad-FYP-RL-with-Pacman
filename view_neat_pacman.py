@@ -9,7 +9,7 @@ from gui.display import Display
 
 class App:
     def __init__(self, filename) -> None:
-        self.game: PAIV = PAIV(GenomeUtils.load(filename), False, False)
+        self.game: PAIV = PAIV(GenomeUtils.load(filename), True, False)
 
         self.main: Tk = Tk()
         self.main.title("NEAT Performance View")
@@ -35,7 +35,8 @@ class App:
 
 
 if __name__ == "__main__":
-    run: str = "R3001_2239"
-    file: str = "150"
+    run: str = "R3101_0213"
+    file: int = 2
+
     app = App("{}/ne-genome-gen{}.json".format(run, file))
     app.run()
