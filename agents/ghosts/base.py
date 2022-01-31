@@ -117,7 +117,8 @@ class ClassicGhostBase(GhostBase):
 
         # generate path
         self.prevPath = self.path
-        self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
+        if self.pos != targetTile:
+            self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
 
         self.prevPos = self.pos
         if len(self.path.path) > 0:

@@ -6,8 +6,8 @@ from typing import List, Tuple
 import _thread
 import os
 import time
-from ai.neat.gene import ConnGene
 
+from ai.neat.gene import ConnGene
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
 from game.paiv import PAIV

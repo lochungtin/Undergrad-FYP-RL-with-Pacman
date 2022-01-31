@@ -33,8 +33,9 @@ class ClydeClassicAgent(ClydeBaseAgent, ClassicGhostBase):
             return POS.CLYDE_CORNER
 
         # chase mode
-        if len(self.pathfinder.start(self.pos, pacman.pos, self.direction).path) < 8:
-            return POS.CLYDE_CORNER
+        if self.pos != pacman.pos:
+            if len(self.pathfinder.start(self.pos, pacman.pos, self.direction).path) < 8:
+                return POS.CLYDE_CORNER
 
         return pacman.pos
 
@@ -53,8 +54,9 @@ class ClydeClassicAggrAgent(ClydeBaseAgent, ClassicGhostBase):
             return POS.GHOST_HOUSE_CENTER
 
         # chase mode
-        if len(self.pathfinder.start(self.pos, pacman.pos, self.direction).path) < 8:
-            return POS.CLYDE_CORNER
+        if self.pos != pacman.pos:
+            if len(self.pathfinder.start(self.pos, pacman.pos, self.direction).path) < 8:
+                return POS.CLYDE_CORNER
 
         return pacman.pos
 

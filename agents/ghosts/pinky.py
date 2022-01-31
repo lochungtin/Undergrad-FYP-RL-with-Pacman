@@ -77,10 +77,11 @@ class PinkyClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
         if self.mode == GHOST_MODE.CRUISE_ELROY:
             # generate path
             self.prevPath = self.path
-            self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
+            if self.pos != game.pacman.pos:
+                self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
 
-            self.prevPos = self.pos
-            self.pos = self.path.path[0]
+                self.prevPos = self.pos
+                self.pos = self.path.path[0]
 
             # update direction of travel
             if self.pos != self.prevPos:
