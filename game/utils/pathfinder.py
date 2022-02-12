@@ -52,11 +52,7 @@ class PathFinder:
 
             for index, neighbour in enumerate(searchPos.getNeighbours()):
                 # disallow expansion to opposite direction or current motion
-                if (
-                    direction != -1
-                    and searchPos == start
-                    and DIR.getOpposite(direction) == index
-                ):
+                if direction != -1 and searchPos == start and DIR.getOpposite(direction) == index:
                     continue
 
                 # ignore areas that ghosts cant go up

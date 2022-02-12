@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game.game import Game
 
@@ -22,9 +23,7 @@ class InkyBaseAgent(GhostBase):
 # classic ai agent for inky
 class InkyClassicAgent(InkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(
-            self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf
-        )
+        ClassicGhostBase.__init__(self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf)
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
@@ -54,9 +53,7 @@ class InkyClassicAgent(InkyBaseAgent, ClassicGhostBase):
 # classic aggressive ai agent for inky
 class InkyClassicAggrAgent(InkyBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(
-            self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf
-        )
+        ClassicGhostBase.__init__(self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf)
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:

@@ -15,9 +15,7 @@ from gui.display import Display
 
 
 class NEATTraining:
-    def __init__(
-        self, trainingConfig: dict[str, object], hasDisplay: bool = False
-    ) -> None:
+    def __init__(self, trainingConfig: dict[str, object], hasDisplay: bool = False) -> None:
         # display
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
@@ -70,34 +68,31 @@ class NEATTraining:
         if self.hasDisplay:
             self.display.newGame(game)
 
-        pelletCount: int = 0
-        emptyStep: int = 0
+        pellets: int = 0
+        timesteps: int = 0
         gameover: bool = False
         won: bool = False
         while game.pelletDrought < 50 and not gameover and not won:
             gameover, won, atePellet = game.nextStep()
 
-            print("{}".format(pelletCount + emptyStep), end="\r")
+            if atePellet:
+                pellets += 1
+
+            timesteps += 1
 
             # enable display
             if self.hasDisplay:
                 self.display.rerender(atePellet)
                 time.sleep(0.01)
 
-            if atePellet:
-                pelletCount += 1
-            else:
-                emptyStep += 1
-
         fitness: float = (
-            self.fCoef["p"] * pelletCount
-            + self.fCoef["e"] * emptyStep
-            + self.fCoef["i"] * game.invalidSteps
+            self.fCoef["p"] * pellets
+            + self.fCoef["t"] * timesteps
             + self.fCoef["w"] * won
             + self.fCoef["l"] * (gameover or game.pelletDrought >= 45)
         )
 
-        return fitness
+        return fitness, gameover
 
     # start training (main function)
     def start(self) -> None:
@@ -133,9 +128,7 @@ class NEATTraining:
         return pop, innovMap
 
     # load best genome and repopulate
-    def loadPop(
-        self, gFilename: str, iFilename: str
-    ) -> Tuple[List[Genome], dict[str, int]]:
+    def loadPop(self, gFilename: str, iFilename: str) -> Tuple[List[Genome], dict[str, int]]:
         # load genome and innovMap from config file
         genome: Genome = GenomeUtils.load(gFilename, "milestones")
         innovMap: dict[str, int] = GenomeUtils.loadInnov(iFilename, "milestones")
@@ -146,10 +139,7 @@ class NEATTraining:
             conn.innov = innovMap[innovKey]
 
         # repopulate with mutation
-        pop: List[Genome] = [
-            deepcopy(genome).mutate(self.mutationConfig(), innovMap)
-            for _ in range(self.popSize)
-        ]
+        pop: List[Genome] = [deepcopy(genome).mutate(self.mutationConfig(), innovMap) for _ in range(self.popSize)]
 
         return pop, innovMap
 
@@ -160,9 +150,7 @@ class NEATTraining:
 
         # initialise population and innovation map
         # pop, innovMap = self.newPop()
-        pop, innovMap = self.loadPop(
-            "NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json"
-        )
+        pop, innovMap = self.loadPop("NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json")
 
         # best score so far
         bestScore: float = float("-inf")
@@ -173,7 +161,7 @@ class NEATTraining:
             perf: List[Tuple[int, float]] = []
             for i, genome in enumerate(pop):
                 # run simulation
-                fitness: float = self.runSim(genome)
+                fitness, gameover = self.runSim(genome)
 
                 # adjust fitness to topology
                 fitness /= GenomeUtils.fitnessAdj(genome, pop, self.cConf)
@@ -182,7 +170,7 @@ class NEATTraining:
                     bestScore = fitness
 
                 # print run result
-                print("Gen: {}  \tgId: {}  \tfV: {} \tfM:{}".format(gen, i, fitness, bestScore))
+                print("Gen: {}  \tgId: {}  \tfV: {} \tfM:{} \tGO: {}".format(gen, i, fitness, bestScore, gameover))
 
                 # save fitness value
                 perf.append((i, fitness))
@@ -229,13 +217,12 @@ if __name__ == "__main__":
                 },
                 "crossOpt": GenomeUtils.CROSS_OPTIONS["MAX"],
                 "fitnessCoeff": {
-                    "p": 5,
-                    "e": -5,
-                    "i": -10,
+                    "p": 2,
+                    "t": 1,
                     "w": 1000,
                     "l": -1000,
                 },
-                "generationCap": 200,
+                "generationCap": 5000,
                 "genomeConfig": {
                     "inSize": 37,
                     "outSize": 4,
@@ -247,8 +234,8 @@ if __name__ == "__main__":
                     "mutWeight": 0.85,
                     "mutConn": 0.6,
                 },
-                "populationSize": 100,
-                "saveOpt": 25,
+                "populationSize": 50,
+                "saveOpt": 20,
                 "selectionSize": 15,
                 "simulationConfig": {
                     "ghost": True,

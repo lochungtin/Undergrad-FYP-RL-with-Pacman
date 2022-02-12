@@ -27,7 +27,7 @@ class PAIV(Game):
 
         if atePellet:
             self.pelletDrought = 0
-            
+
         self.pelletDrought += 1
 
         return gameover, won, atePellet

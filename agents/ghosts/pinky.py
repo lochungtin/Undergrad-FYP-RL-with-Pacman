@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game.game import Game
 
@@ -71,9 +72,7 @@ class PinkyClassicAggrAgent(PinkyBaseAgent, ClassicGhostBase):
         return targetTile
 
     # get next postition of pinky (overrided for cruise elroy mode)
-    def getNextPos(
-        self, game: "Game"
-    ) -> Tuple[CPair, CPair]:
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair]:
         if self.mode == GHOST_MODE.CRUISE_ELROY:
             # generate path
             self.prevPath = self.path

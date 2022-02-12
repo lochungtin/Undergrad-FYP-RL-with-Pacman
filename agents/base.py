@@ -56,16 +56,14 @@ class IntelligentBase(Base):
             index = randint(0, 3)
         else:
             # predict action values
-            actionValues: List[float] = self.predictable.predict(
-                self.processState(game)
-            )
+            actionValues: List[float] = self.predictable.predict(self.processState(game))
 
             # select optimal valid action
             actionIdx: List[Tuple[int, float]] = sorted(
                 [(i, val) for i, val in enumerate(actionValues)],
                 key=lambda p: p[1],
                 reverse=True,
-            )            
+            )
 
             for i, p in enumerate(actionIdx):
                 newPos: CPair = self.pos.move(p[0])

@@ -69,9 +69,7 @@ class Game:
 
             self.pellets.append(row)
 
-        self.pelletCount = (
-            DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT * enablePwrPlt
-        )
+        self.pelletCount = DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT * enablePwrPlt
 
         # initialise countdown step count and set ghost schedule index
         self.stepCount: int = DATA.TOTAL_STEP_COUNT

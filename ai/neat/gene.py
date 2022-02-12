@@ -66,4 +66,4 @@ class ConnGene:
         return "{}-{}".format(inId, outId)
 
     def parseKey(key: str) -> Tuple[int, int]:
-        return map(lambda n: int(n) ,key.split("-"))
+        return map(lambda n: int(n), key.split("-"))

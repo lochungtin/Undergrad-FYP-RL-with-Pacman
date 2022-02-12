@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game.game import Game
 

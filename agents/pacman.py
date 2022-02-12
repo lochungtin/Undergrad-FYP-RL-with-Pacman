@@ -110,10 +110,7 @@ class NEATAgent(PacmanBaseAgent, IntelligentBase):
         if hasattr(game, "ghosts"):
             for ghost in game.ghosts:
                 input += self.locComp(pacPos, ghost.pos)
-                input.append(
-                    abs(pacPos.row - ghost.pos.row) + abs(pacPos.col - ghost.pos.col)
-                )
-
+                input.append(abs(pacPos.row - ghost.pos.row) + abs(pacPos.col - ghost.pos.col))
                 input.append(int(ghost.isFrightened))
 
             input.append(int(game.inky.mode == GHOST_MODE.CHASE))

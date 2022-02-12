@@ -70,9 +70,7 @@ class Visualiser:
             node1: Tuple[int, int] = self.data[int(n1)]
             node2: Tuple[int, int] = self.data[int(n2)]
 
-            self.canvas.create_line(
-                node1[0], node1[1], node2[0], node2[1], fill=color, width=WIDTH
-            )
+            self.canvas.create_line(node1[0], node1[1], node2[0], node2[1], fill=color, width=WIDTH)
 
         # draw nodes
         for (key, node) in self.raw["nodes"].items():
@@ -87,10 +85,8 @@ class Visualiser:
             self.drawCircle(pos, color)
 
             # draw node id
-            self.canvas.create_text(
-                pos[0], pos[1], text=node["id"], fill=LABEL, font=("Arial", 8)
-            )
-        
+            self.canvas.create_text(pos[0], pos[1], text=node["id"], fill=LABEL, font=("Arial", 8))
+
         self.main.mainloop()
 
     # draw circle
@@ -104,6 +100,7 @@ class Visualiser:
             outline=color,
             width=WIDTH,
         )
+
 
 if __name__ == "__main__":
     filename: str = "NP-NG_GENOME_GEN50.json"

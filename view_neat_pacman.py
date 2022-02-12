@@ -35,8 +35,8 @@ class App:
 
 
 if __name__ == "__main__":
-    run: str = "R3101_0213"
-    file: int = 2
+    run: str = "R3101_1433"
+    file: int = 200
 
     app = App("{}/ne-genome-gen{}.json".format(run, file))
     app.run()

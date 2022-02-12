@@ -79,10 +79,7 @@ class Genome(Predictable):
         for idx, val in enumerate(input):
             outputList[idx] = val
 
-        return [
-            self.evalRec(i, outputList)
-            for i in range(self.inSize, self.outSize + self.inSize)
-        ]
+        return [self.evalRec(i, outputList) for i in range(self.inSize, self.outSize + self.inSize)]
 
     def evalRec(self, id: int, outputList: dict[int, float]) -> float:
         if id in outputList:
@@ -96,9 +93,7 @@ class Genome(Predictable):
             for pId in self.pStruct[id]:
                 key: str = ConnGene.genKey(pId, id)
                 conn: ConnGene = self.conns[key]
-                output += (
-                    self.evalRec(pId, outputList) * conn.weight + self.nodes[id].bias
-                )
+                output += self.evalRec(pId, outputList) * conn.weight + self.nodes[id].bias
 
             outputList[id] = max(0, output)
             return output
@@ -160,7 +155,7 @@ class Genome(Predictable):
                 innovMap["SIZE"] += 1
             else:
                 innov = innovMap[innovKey]
-            
+
             genome.addConn({"inId": f, "outId": b, "innov": innov})
 
         # mutate bias
@@ -232,7 +227,7 @@ class Genome(Predictable):
 
         # layer map and layer dict
         toUpdate: List[int] = [config["outId"]]
-        while (len(toUpdate) > 0):
+        while len(toUpdate) > 0:
             head: int = toUpdate.pop(0)
 
             # remove head from old layer list

@@ -116,24 +116,16 @@ class Display:
 
                     if len(displayPath) > 2:
                         ghost.path.setCanvasItemId(
-                            self.canvas.create_line(
-                                displayPath, width=3, fill=self.color[ghost.repId]
-                            )
+                            self.canvas.create_line(displayPath, width=3, fill=self.color[ghost.repId])
                         )
 
                     # update color
                     if ghost.isDead:
-                        self.canvas.itemconfig(
-                            ghost.canvasItemId, fill=self.color[REP.DEAD]
-                        )
+                        self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.DEAD])
                     else:
-                        self.canvas.itemconfig(
-                            ghost.canvasItemId, fill=self.color[ghost.repId]
-                        )
+                        self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[ghost.repId])
                 else:
-                    self.canvas.itemconfig(
-                        ghost.canvasItemId, fill=self.color[REP.FRIGHTENED]
-                    )
+                    self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.FRIGHTENED])
 
                 # update location
                 if ghost.moved:

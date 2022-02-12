@@ -11,12 +11,7 @@ class CPair:
 
     # check if coordinate is valid
     def isValid(self) -> bool:
-        return (
-            self.row >= 0
-            and self.col >= 0
-            and self.row < BOARD.row
-            and self.col < BOARD.col
-        )
+        return self.row >= 0 and self.col >= 0 and self.row < BOARD.row and self.col < BOARD.col
 
     # translate coordinate according to direction
     def move(self, dir: int) -> CPair:

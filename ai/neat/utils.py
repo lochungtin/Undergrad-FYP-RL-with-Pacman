@@ -61,9 +61,7 @@ class GenomeUtils:
     def fitnessAdj(g: Genome, pop: List[Genome], conf: dict[str, float]) -> float:
         adjustment: int = 0
         for genome in pop:
-            adjustment += (
-                GenomeUtils.getCompDist(g, genome, conf) <= conf["dThres"]
-            ) * 1
+            adjustment += (GenomeUtils.getCompDist(g, genome, conf) <= conf["dThres"]) * 1
 
         return adjustment
 
@@ -75,11 +73,7 @@ class GenomeUtils:
         for (key, gene) in g2.conns.items():
             if (
                 options == GenomeUtils.CROSS_OPTIONS["MAX"]
-                or (
-                    options == GenomeUtils.CROSS_OPTIONS["MIN"]
-                    and key in g.conns
-                    and random() > 0.5
-                )
+                or (options == GenomeUtils.CROSS_OPTIONS["MIN"] and key in g.conns and random() > 0.5)
                 or (options == GenomeUtils.CROSS_OPTIONS["MAX"] and random() > 0.5)
             ):
 
@@ -141,12 +135,8 @@ class GenomeUtils:
         return filename
 
     # save innovation map data
-    def saveInnov(
-        innov: dict[str, int], runPref: str, generation: int, baseFile: str = "out"
-    ) -> str:
-        filename: str = "./{}/{}/ne-innov-gen{}.json".format(
-            baseFile, runPref, generation
-        )
+    def saveInnov(innov: dict[str, int], runPref: str, generation: int, baseFile: str = "out") -> str:
+        filename: str = "./{}/{}/ne-innov-gen{}.json".format(baseFile, runPref, generation)
         with open(filename, "w+") as outfile:
             json.dump(innov, outfile)
 

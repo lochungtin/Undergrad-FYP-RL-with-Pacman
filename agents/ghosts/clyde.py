@@ -18,9 +18,7 @@ class ClydeBaseAgent(GhostBase):
 # classic ai agent for clyde
 class ClydeClassicAgent(ClydeBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(
-            self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf
-        )
+        ClassicGhostBase.__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
@@ -43,9 +41,7 @@ class ClydeClassicAgent(ClydeBaseAgent, ClassicGhostBase):
 # classic aggressive ai for clyde
 class ClydeClassicAggrAgent(ClydeBaseAgent, ClassicGhostBase):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(
-            self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf
-        )
+        ClassicGhostBase.__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
 
     # get target tile of ghost
     def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:

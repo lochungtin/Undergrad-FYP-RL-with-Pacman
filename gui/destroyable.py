@@ -13,5 +13,5 @@ class Destroyable(Displayable):
 
         if hasattr(self, "canvasItemId"):
             return self.canvasItemId
-    
+
         return 0

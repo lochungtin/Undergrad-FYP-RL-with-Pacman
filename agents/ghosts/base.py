@@ -2,6 +2,7 @@ from random import choice
 from typing import List, Tuple
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from game.game import Game
 
@@ -74,17 +75,13 @@ class GhostBase(Base):
             # hold position if reverse is invalid
             if self.speedReducer == DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE:
                 newPos = self.pos.move(DIR.getOpposite(self.direction))
-                if newPos.isValid() and not REP.isWall(
-                    game.state[newPos.row][newPos.col]
-                ):
+                if newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
                     self.pos = newPos
 
                 self.speedReducer = DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
 
             # slow down ghost speed
-            self.speedReducer = (
-                self.speedReducer + 1
-            ) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
+            self.speedReducer = (self.speedReducer + 1) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
                 self.pos = choice(self.getNeighbours(game.state))
 

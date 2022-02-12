@@ -17,7 +17,4 @@ class GUIUtil:
 
     # calculate the delta of display objects
     def calculateDxDy(curPos: CPair, prevPos: CPair) -> Tuple[int, int]:
-        return (
-            (curPos.col - prevPos.col) * DIM.JUMP,
-            (curPos.row - prevPos.row) * DIM.JUMP,
-        )
+        return ((curPos.col - prevPos.col) * DIM.JUMP, (curPos.row - prevPos.row) * DIM.JUMP)
