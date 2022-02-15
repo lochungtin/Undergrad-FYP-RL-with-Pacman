@@ -32,14 +32,14 @@ class NNUtils:
         tN.setVals(adam.updateValues(tN.getVals(), tdUpdate))
 
     def getTDError(tN: NeuralNet, cN: NeuralNet, s, a, r, t, nS, discount: float, tau: float):
-        nextQVals = cN.getActionValues(nS)
+        nextQVals = cN.predict(nS)
         probsVals = NNUtils.softmax(nextQVals, tau)
 
         vNVector = np.sum(nextQVals * probsVals, axis=1) * (1 - t)
 
         targetVector = r + discount * vNVector
 
-        curQVals = tN.getActionValues(s)
+        curQVals = tN.predict(s)
         indices = np.arange(curQVals.shape[0])
         qVector = curQVals[indices, a]
 

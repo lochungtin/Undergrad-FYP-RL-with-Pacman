@@ -2,8 +2,10 @@ from copy import deepcopy
 from typing import List
 import numpy as np
 
+from ai.predictable import Predictable
 
-class NeuralNet:
+
+class NeuralNet(Predictable):
     def __init__(self, config: dict[str, object]) -> None:
         self.inSize: int = config["inSize"]
         self.outSize: int = config["outSize"]
@@ -36,7 +38,7 @@ class NeuralNet:
 
         return tensor
 
-    def getQVals(self, input: List[float]) -> List[float]:
+    def predict(self, input: List[float]) -> List[float]:
         layers: int = len(self.lDims)
 
         for i in range(layers):
