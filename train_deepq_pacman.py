@@ -16,7 +16,7 @@ from game.paiv import PAIV
 from gui.display import Display
 
 
-class DeepQRLTraining:
+class DeepQLTraining:
     def __init__(self, trainingConfig: dict[str, object], hasDisplay: bool = False) -> None:
         # display
         self.hasDisplay: bool = hasDisplay
@@ -129,7 +129,7 @@ class DeepQRLTraining:
 
 
 if __name__ == "__main__":
-    training: DeepQRLTraining = DeepQRLTraining(
+    training: DeepQLTraining = DeepQLTraining(
         {
             "adamConfig": {
                 "stepSize": 1e-3,
