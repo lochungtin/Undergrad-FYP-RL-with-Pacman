@@ -1,27 +1,21 @@
-from typing import List
+from typing import TYPE_CHECKING
 
-from agents.base import IntelligentBase
-from agents.ghosts.base import ClassicGhostBase, GhostBase
-from agents.pacman import PacmanBaseAgent
-from ai.predictable import Predictable
+if TYPE_CHECKING:
+    from game.game import Game
+
+from agents.base import ClassicGhostAgent
 from data.data import DATA, GHOST_MODE, POS, REP
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 
-# clyde base class
-class ClydeBaseAgent(GhostBase):
-    def __init__(self, pf: PathFinder) -> None:
-        super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
-
-
 # classic ai agent for clyde
-class ClydeClassicAgent(ClydeBaseAgent, ClassicGhostBase):
+class ClydeClassicAgent(ClassicGhostAgent):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
+        super().__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
 
     # get target tile of ghost
-    def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
+    def getTargetTile(self, game: "Game") -> CPair:
         # dead
         if self.isDead:
             return POS.GHOST_HOUSE_CENTER
@@ -31,47 +25,27 @@ class ClydeClassicAgent(ClydeBaseAgent, ClassicGhostBase):
             return POS.CLYDE_CORNER
 
         # chase mode
-        if self.pos != pacman.pos:
-            if len(self.pathfinder.start(self.pos, pacman.pos, self.direction).path) < 8:
+        if self.pos != game.pacman.pos:
+            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction).path) < 8:
                 return POS.CLYDE_CORNER
 
-        return pacman.pos
+        return game.pacman.pos
 
 
 # classic aggressive ai for clyde
-class ClydeClassicAggrAgent(ClydeBaseAgent, ClassicGhostBase):
+class ClydeClassicAggrAgent(ClassicGhostAgent):
     def __init__(self, pf: PathFinder) -> None:
-        ClassicGhostBase.__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
+        super().__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
 
     # get target tile of ghost
-    def getTargetTile(self, pacman: PacmanBaseAgent, blinkyPos: CPair) -> CPair:
+    def getTargetTile(self, game: "Game") -> CPair:
         # dead
         if self.isDead:
             return POS.GHOST_HOUSE_CENTER
 
         # chase mode
-        if self.pos != pacman.pos:
-            if len(self.pathfinder.start(self.pos, pacman.pos, self.direction).path) < 8:
+        if self.pos != game.pacman.pos:
+            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction).path) < 8:
                 return POS.CLYDE_CORNER
 
-        return pacman.pos
-
-
-# neural q agent for clyde
-class ClydeNeuralQAgent(ClydeBaseAgent, IntelligentBase):
-    def __init__(self, predictable: Predictable) -> None:
-        ClydeBaseAgent.__init__(self, None)
-        IntelligentBase.__init__(self, POS.CLYDE, REP.CLYDE, predictable)
-
-    def processState(self, state: List[List[int]]) -> List[int]:
-        return super().processState(state)
-
-
-# neat agent for clyde
-class ClydeNEATAgent(ClydeBaseAgent, IntelligentBase):
-    def __init__(self, predictable: Predictable) -> None:
-        ClydeBaseAgent.__init__(self, None)
-        IntelligentBase.__init__(self, POS.CLYDE, REP.CLYDE, predictable)
-
-    def processState(self, state: List[List[int]]) -> List[int]:
-        return super().processState(state)
+        return game.pacman.pos

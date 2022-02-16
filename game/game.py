@@ -2,7 +2,7 @@ from copy import deepcopy
 from tkinter import Canvas
 from typing import List, Tuple
 
-from agents.ghosts.base import ClassicGhostBase as Ghost
+from agents.base import ClassicGhostAgent as Ghost
 from agents.ghosts.blinky import BlinkyClassicAgent as Blinky
 from agents.ghosts.clyde import ClydeClassicAgent as Clyde
 from agents.ghosts.inky import InkyClassicAgent as Inky
