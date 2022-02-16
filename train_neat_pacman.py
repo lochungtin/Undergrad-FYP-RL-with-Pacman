@@ -11,7 +11,7 @@ from ai.neat.gene import ConnGene
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
 from game.paiv import PAIV
-from gui.display import Display
+from gui.display import Display 
 
 
 class NEATTraining:

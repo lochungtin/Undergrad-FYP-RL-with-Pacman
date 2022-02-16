@@ -3,15 +3,15 @@ import numpy as np
 
 
 class Adam:
-    def __init__(self, layerSizes: int, stepSize: float, epsilon: float, bM: float = 0.9, bV: float = 0.999):
+    def __init__(self, layerSizes: List[int], config: dict[str, float]):
         # initialise hyperparams
-        self.layerSizes = layerSizes
-        self.stepSize = stepSize
-        self.bM = bM
-        self.bV = bV
-        self.bMProd = self.bM
-        self.bVProd = self.bV
-        self.epsilon = epsilon
+        self.layerSizes: List[int] = layerSizes
+        self.stepSize: float = config["stepsize"]
+        self.bM: float = config["bM"]
+        self.bV: float = config["bV"]
+        self.bMProd: float = self.bM
+        self.bVProd: float = self.bV
+        self.epsilon: float = config["epsilon"]
 
         # initialise mean variance value storage
         self.m = [dict() for i in range(1, len(self.layerSizes))]

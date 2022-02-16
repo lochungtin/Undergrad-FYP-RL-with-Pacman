@@ -3,11 +3,11 @@ from typing import List
 
 
 class ReplayBuffer:
-    def __init__(self, size: int, batchSize: int) -> None:
+    def __init__(self, config: dict[str, int]) -> None:
         self.buffer: List[List[object]] = []
 
-        self.maxSize: int = size
-        self.batchSize: int = batchSize
+        self.maxSize: int = config["rbSize"]
+        self.batchSize: int = config["batchSize"]
 
     def append(self, s: List[int], a: int, r: float, t: int, nS: List[int]) -> None:
         if len(self.buffer) == self.maxSize:
