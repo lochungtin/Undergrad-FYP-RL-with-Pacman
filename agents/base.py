@@ -1,10 +1,15 @@
 from copy import deepcopy
 from random import randint, random, choice
 from typing import List, Tuple, TYPE_CHECKING
+import numpy as np
 
 if TYPE_CHECKING:
     from game.game import Game
 
+from ai.deepq.adam import Adam
+from ai.deepq.neuralnet import NeuralNet
+from ai.deepq.replaybuf import ReplayBuffer
+from ai.deepq.utils import NNUtils
 from data.data import DATA, DIR, GHOST_MODE, POS, REP
 from game.components.component import Component
 from game.utils.path import Path
@@ -27,7 +32,7 @@ class Agent(Component):
         raise NotImplementedError
 
 
-# bass class for all (pacman and ghosts) direction controllable game agents
+# base class for all (pacman and ghosts) direction controllable game agents
 class DirectionAgent(Agent):
     def __init__(self, pos: CPair, repId: int) -> None:
         super().__init__(pos, repId)
@@ -71,6 +76,7 @@ class GhostAgent(Agent):
         self.speedReducer: int = 2
 
         self.isClassic: bool = isClassic
+
 
 # base class for classic ghost implementations
 class ClassicGhostAgent(GhostAgent):

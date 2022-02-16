@@ -74,6 +74,9 @@ class Game:
 
         self.ghostFrightenedCount: int = -1
 
+        # game status
+        self.timesteps: int = 0
+
         # set canvas to None as default
         self.canvas: Canvas = None
 
@@ -83,6 +86,8 @@ class Game:
 
     # proceed to next time step
     def nextStep(self) -> Tuple[bool, bool, bool]:
+        self.timesteps += 1
+
         # update pacman location
         pCurPos, pPrevPos, pacmanMoved = self.pacman.getNextPos(self)
         prevState = self.state[pCurPos.row][pCurPos.col]

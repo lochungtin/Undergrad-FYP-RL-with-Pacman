@@ -85,5 +85,5 @@ class App:
 
 # execute app
 if __name__ == "__main__":
-    app = App(manualControl=True, enableGhost=True, enablePwrPlt=True)
+    app = App(manualControl=False, enableGhost=True, enablePwrPlt=True)
     app.run()

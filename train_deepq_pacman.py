@@ -7,12 +7,17 @@ import _thread
 import numpy as np
 import os
 import time
+from agents.base import DirectionAgent
 
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
-from game.paiv import PAIV
+from agents.blinky import BlinkyClassicAgent
+from agents.clyde import ClydeClassicAgent
+from agents.inky import InkyClassicAgent
+from agents.pinky import PinkyClassicAgent
+from game.game import Game
 from gui.display import Display
 
 
@@ -47,6 +52,9 @@ class DeepQLTraining:
         self.pState: List[List[int]] = None
         self.pAction: int = None
 
+        # simluation config
+        self.simCap: int = trainingConfig["simulationCap"]
+
         # training status
         self.rewardSum: float = 0
         self.epSteps: int = 0
@@ -61,11 +69,42 @@ class DeepQLTraining:
         else:
             self.training()
 
+    def newGame(self) -> Game:
+        return Game(
+            DirectionAgent(),
+            BlinkyClassicAgent(),
+            InkyClassicAgent(),
+            ClydeClassicAgent(),
+            PinkyClassicAgent(),
+            enableGhost=True,
+            enablePwrPlt=True,
+        )
+
     # ===== main training function =====
     def training(self) -> None:
-        pass
+        game: Game = self.newGame()
+
+        action: int = self.agentInit(self.processState(game))
+        game.pacman.setDir(action)
+
+        for i in range(self.simCap):
+            gameover, won, atePellet = game.nextStep()
+
+            if gameover:
+                self.agentEnd(-1000)
+
+                game = self.newGame()
+                action: int = self.agentInit(self.processState(game))
+                game.pacman.setDir(action)
+
+            else:
+                reward: int = 1 + atePellet * -2
+            
 
     # ===== auxiliary training functions =====
+    def processState(self, game: Game) -> List[int]:
+        return []
+
     # softmax policy for probabilistic action selection
     def policy(self, state: List[int]):
         return self.rand.choice(
