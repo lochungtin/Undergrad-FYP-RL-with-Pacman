@@ -9,7 +9,7 @@ class ReplayBuffer:
         self.maxSize: int = config["rbSize"]
         self.batchSize: int = config["batchSize"]
 
-    def append(self, s: List[int], a: int, r: float, t: int, nS: List[int]) -> None:
+    def append(self, s: List[List[int]], a: int, r: float, t: int, nS: List[List[int]]) -> None:
         if len(self.buffer) == self.maxSize:
             del self.buffer[0]
 
@@ -19,4 +19,4 @@ class ReplayBuffer:
         return choices(self.buffer, k=self.batchSize)
 
     def isReady(self):
-        return len(self.buffer) == self.maxSize
+        return len(self.buffer) > self.batchSize

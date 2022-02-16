@@ -6,7 +6,7 @@ from ai.deepq.neuralnet import NeuralNet
 
 
 class NNUtils:
-    def optimiseNN(self, tN: NeuralNet, cN: NeuralNet, replays: List[object], discount: float, tau: float, adam: Adam):
+    def optimiseNN(tN: NeuralNet, cN: NeuralNet, replays: List[object], gamma: float, tau: float, adam: Adam):
         # explode replays into separate lists
         s, a, r, t, nS = map(list, zip(*replays))
 
@@ -17,7 +17,7 @@ class NNUtils:
         batchSize = s.shape[0]
 
         # get TD error of network from replays
-        tdError = NNUtils.getTDError(tN, cN, s, a, r, t, nS, discount, tau)
+        tdError = NNUtils.getTDError(tN, cN, s, a, r, t, nS, gamma, tau)
 
         # create delta matrix for batch td update
         indices = np.arange(batchSize)
@@ -31,13 +31,13 @@ class NNUtils:
         # pass td update to adam optimiser to get a new set of values for the target network
         tN.setVals(adam.updateValues(tN.getVals(), tdUpdate))
 
-    def getTDError(tN: NeuralNet, cN: NeuralNet, s, a, r, t, nS, discount: float, tau: float):
+    def getTDError(tN: NeuralNet, cN: NeuralNet, s, a, r, t, nS, gamma: float, tau: float):
         nextQVals = cN.predict(nS)
         probsVals = NNUtils.softmax(nextQVals, tau)
 
         vNVector = np.sum(nextQVals * probsVals, axis=1) * (1 - t)
 
-        targetVector = r + discount * vNVector
+        targetVector = r + gamma * vNVector
 
         curQVals = tN.predict(s)
         indices = np.arange(curQVals.shape[0])
