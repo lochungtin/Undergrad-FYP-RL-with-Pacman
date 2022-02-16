@@ -5,14 +5,13 @@ if TYPE_CHECKING:
 
 from agents.base import ClassicGhostAgent
 from data.data import DATA, GHOST_MODE, POS, REP
-from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 
 # classic ai agent for clyde
 class ClydeClassicAgent(ClassicGhostAgent):
-    def __init__(self, pf: PathFinder) -> None:
-        super().__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
+    def __init__(self) -> None:
+        super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -34,8 +33,8 @@ class ClydeClassicAgent(ClassicGhostAgent):
 
 # classic aggressive ai for clyde
 class ClydeClassicAggrAgent(ClassicGhostAgent):
-    def __init__(self, pf: PathFinder) -> None:
-        super().__init__(self, POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2, pf)
+    def __init__(self) -> None:
+        super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:

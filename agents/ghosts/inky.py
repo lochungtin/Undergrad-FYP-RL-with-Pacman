@@ -5,13 +5,12 @@ if TYPE_CHECKING:
 
 from agents.base import ClassicGhostAgent
 from data.data import DATA, DIR, GHOST_MODE, POS, REP
-from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 # classic ai agent for inky
 class InkyClassicAgent(ClassicGhostAgent):
-    def __init__(self, pf: PathFinder) -> None:
-        super().__init__(self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf)
+    def __init__(self) -> None:
+        super().__init__(POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -40,8 +39,8 @@ class InkyClassicAgent(ClassicGhostAgent):
 
 # classic aggressive ai agent for inky
 class InkyClassicAggrAgent(ClassicGhostAgent):
-    def __init__(self, pf: PathFinder) -> None:
-        super().__init__(self, POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL * 1, pf)
+    def __init__(self) -> None:
+        super().__init__(POS.INKY, REP.INKY, DATA.GHOST_EXIT_INTERVAL)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:

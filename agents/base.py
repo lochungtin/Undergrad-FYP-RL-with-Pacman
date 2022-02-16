@@ -12,14 +12,13 @@ from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 
-# base class for game agents (pacman and ghosts)
+# base class for game agents
 class Agent(Component):
     def __init__(self, pos: CPair, repId: int) -> None:
         super().__init__(pos, repId)
 
         self.direction: int = DIR.UP
         self.prevPos: CPair = deepcopy(pos)
-
         self.moved: bool = True
 
     # ===== REQUIRED TO OVERRIDE =====
@@ -62,21 +61,32 @@ class DirectionAgent(Agent):
         return self.pos, self.prevPos, self.moved
 
 
-# base class for classic ghost implementations
-class ClassicGhostAgent(Agent):
-    def __init__(self, pos: CPair, repId: int, initWait: int, pf: PathFinder) -> None:
+# base class for ghost agents
+class GhostAgent(Agent):
+    def __init__(self, pos: CPair, repId: int, isClassic: bool) -> None:
         super().__init__(pos, repId)
 
-        self.mode: int = GHOST_MODE.SCATTER
         self.isDead: bool = False
         self.isFrightened: bool = False
         self.speedReducer: int = 2
 
-        self.pathfinder: PathFinder = pf
+        self.isClassic: bool = isClassic
+
+# base class for classic ghost implementations
+class ClassicGhostAgent(GhostAgent):
+    def __init__(self, pos: CPair, repId: int, initWait: int) -> None:
+        super().__init__(pos, repId, True)
+
+        self.mode: int = GHOST_MODE.SCATTER
+
         self.path: Path = Path()
         self.prevPath: Path = Path()
 
         self.initWait: int = initWait
+
+    # bind pathfinder
+    def bindPathFinder(self, pathFinder: PathFinder) -> None:
+        self.pathfinder: PathFinder = pathFinder
 
     # modified version of getNeighbours to accomodate for "no go up" zones
     def getNeighbours(self, state: List[List[int]]) -> List[CPair]:
@@ -132,7 +142,7 @@ class ClassicGhostAgent(Agent):
 
         # normal behaviour
         else:
-            self.updatePositions(game.pacman, game.blinky.pos)
+            self.updatePositions(game)
 
         # update direction of travel
         if self.pos != self.prevPos:

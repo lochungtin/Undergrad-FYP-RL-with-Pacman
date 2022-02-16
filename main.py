@@ -1,3 +1,10 @@
+from typing import Tuple
+from agents.base import GhostAgent
+from agents.ghosts.blinky import BlinkyClassicAgent
+from agents.ghosts.clyde import ClydeClassicAgent
+from agents.ghosts.inky import InkyClassicAgent
+from agents.ghosts.pinky import PinkyClassicAgent
+from agents.pacman import PlayableAgent
 from game.game import Game
 from tkinter import Tk
 import _thread
@@ -10,17 +17,21 @@ from gui.display import Display
 
 # app class
 class App:
-    def __init__(
-        self,
-        manualControl: bool,
-        enableGhost: bool = True,
-        enablePwrPlt: bool = True,
-    ) -> None:
-        # create game object
-        self.game: Game = Game(enableGhost, enablePwrPlt)
+    def __init__(self, manualControl: bool, enableGhost: bool = True, enablePwrPlt: bool = True) -> None:
         # save game config
         self.enableGhost: bool = enableGhost
         self.enablePwrPlt: bool = enablePwrPlt
+
+        # create game object
+        self.game: Game = Game(
+            PlayableAgent(),
+            BlinkyClassicAgent(),
+            InkyClassicAgent(),
+            ClydeClassicAgent(),
+            PinkyClassicAgent(),
+            self.enableGhost,
+            self.enablePwrPlt,
+        )
 
         # create time controller object
         self.timeController: TimeController = TimeController(0.075, self.nextStep)
@@ -53,7 +64,15 @@ class App:
         # handle gameover
         if gameover:
             # create new game
-            self.game = Game(self.enableGhost, self.enablePwrPlt)
+            self.game = Game(
+                PlayableAgent(),
+                BlinkyClassicAgent(),
+                InkyClassicAgent(),
+                ClydeClassicAgent(),
+                PinkyClassicAgent(),
+                self.enableGhost,
+                self.enablePwrPlt,
+            )
             self.display.newGame(self.game)
 
         # update display
@@ -66,5 +85,5 @@ class App:
 
 # execute app
 if __name__ == "__main__":
-    app = App(manualControl=False, enableGhost=True, enablePwrPlt=True)
+    app = App(manualControl=True, enableGhost=True, enablePwrPlt=True)
     app.run()
