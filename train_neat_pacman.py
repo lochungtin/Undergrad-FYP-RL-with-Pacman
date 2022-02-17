@@ -145,7 +145,7 @@ class NEATTraining:
 
     # ===== main evoluation function =====
     def evolution(self) -> None:
-        runPref: str = "R{}".format(datetime.now().strftime("%d%m_%H%M"))
+        runPref: str = "NE{}".format(datetime.now().strftime("%d%m_%H%M"))
         os.mkdir("out/{}".format(runPref))
 
         # initialise population and innovation map

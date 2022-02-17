@@ -56,6 +56,7 @@ class DeepQLTraining:
 
         # simluation config
         self.simCap: int = trainingConfig["simulationCap"]
+        self.saveOpt: int = trainingConfig["saveOpt"]
 
         # training status
         self.rSum: float = 0
@@ -84,6 +85,9 @@ class DeepQLTraining:
 
     # ===== main training function =====
     def training(self) -> None:
+        runPref: str = "RL{}".format(datetime.now().strftime("%d%m_%H%M"))
+        os.mkdir("out/{}".format(runPref))
+
         game: Game = self.newGame()
         if self.hasDisplay:
             self.display.newGame(game)
@@ -114,6 +118,9 @@ class DeepQLTraining:
                     self.agentEnd(-200)
 
                 eps += 1
+
+                if eps % self.saveOpt == 0:
+                    self.network.save(eps, runPref)
 
                 print("ep{}: r{} | e{}".format(eps, self.rSum, self.epSteps))
 
@@ -269,13 +276,14 @@ if __name__ == "__main__":
                 "batchSize": 8,
                 "updatePerStep": 4,
             },
-            "simulationCap": 50000,
+            "saveOpt": 100,
+            "simulationCap": 100000,
             "simulationConfig": {
                 "ghost": True,
                 "pwrplt": False,
             },
             "tau": 0.001,
         },
-        True,
+        False,
     )
     training.start()

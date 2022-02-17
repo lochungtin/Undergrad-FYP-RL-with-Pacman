@@ -74,8 +74,7 @@ class NeuralNet(Predictable):
         with open(filename, "w+") as outfile:
             json.dump({"inSize": self.inSize, "outSize": self.outSize, "lDim": self.lDim, "vals": vals}, outfile)
 
-    def load(self, epCount: int, runPref: str, parentFolder: str = "out") -> NeuralNet:
-        filename: str = "./{}/{}/rl_nnconf_ep{}.json".format(parentFolder, runPref, epCount)
+    def load(filename: str) -> NeuralNet:
         with open(filename, "r") as inFile:
             data: dict[str, object] = json.load(inFile)
 
@@ -89,6 +88,6 @@ class NeuralNet(Predictable):
                 i["W"] = np.array(i["W"])
                 i["b"] = np.array(i["b"])
 
-            self.vals = data["vals"]
+            net.vals = data["vals"]
 
             return net
