@@ -7,7 +7,7 @@ import _thread
 import numpy as np
 import os
 import time
-from agents.base import DirectionAgent
+from agents.base import DGhostAgent, DirectionAgent
 
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
@@ -80,9 +80,9 @@ class DeepQLTraining:
         return Game(
             DirectionAgent(POS.PACMAN, REP.PACMAN),
             BlinkyClassicAgent(),
-            InkyClassicAgent(),
-            ClydeClassicAgent(),
-            PinkyClassicAgent(),
+            DGhostAgent(POS.INKY, REP.INKY),
+            DGhostAgent(POS.CLYDE, REP.CLYDE),
+            DGhostAgent(POS.PINKY, REP.PINKY),
             enableGhost=self.enableGhost,
             enablePwrPlt=self.enablePwrPlt,
         )
@@ -102,33 +102,28 @@ class DeepQLTraining:
         game.pacman.setDir(action)
 
         eps: int = 0
-        pelletDrought: int = 1
+        avgSteps: int = 0
         while eps < self.simCap:
-            gameover, won, atePellet = game.nextStep()
-
-            if atePellet:
-                pelletDrought = 1
-            else:
-                pelletDrought += 1
+            gameover, won, atePellet, pacmanMoved = game.nextStep()
 
             # enable display
             if self.hasDisplay:
                 self.display.rerender(atePellet)
                 time.sleep(0.01)
 
-            if gameover or pelletDrought > 50:
+            if gameover:
                 if won:
-                    self.agentEnd(1000)
+                    self.agentEnd(500)
                 else:
-                    self.agentEnd(-1000)
+                    self.agentEnd(-500)
 
+                avgSteps = (avgSteps * eps + self.epSteps) / (eps + 1)
                 eps += 1
-                pelletDrought = 1
 
                 if eps % self.saveOpt == 0:
                     self.network.save(eps, runPref)
 
-                print("ep{}: r: {} | e: {} | w: {}".format(eps, self.rSum, self.epSteps, won))
+                print("ep{}: r: {} | e: {} | a: {} | w: {}".format(eps, self.rSum, self.epSteps, avgSteps, won))
 
                 game = self.newGame()
                 if self.hasDisplay:
@@ -138,8 +133,10 @@ class DeepQLTraining:
                 game.pacman.setDir(action)
 
             else:
-                reward: int = 1
+                reward: int = -10
 
+                if pacmanMoved:
+                    reward = 1
                 if atePellet:
                     reward = 5
 
@@ -234,6 +231,7 @@ if __name__ == "__main__":
                 "inSize": 101,
                 "hidden": [
                     128,
+                    64,
                     16,
                 ],
                 "outSize": 4,
@@ -246,11 +244,11 @@ if __name__ == "__main__":
             "saveOpt": 50,
             "simulationCap": 100000,
             "simulationConfig": {
-                "ghost": False,
-                "pwrplt": False,
+                "ghost": True,
+                "pwrplt": True,
             },
             "tau": 0.001,
         },
-        True,
+        False,
     )
     training.start()

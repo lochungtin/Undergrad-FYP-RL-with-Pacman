@@ -78,6 +78,24 @@ class GhostAgent(Agent):
         self.isClassic: bool = isClassic
 
 
+class DGhostAgent(GhostAgent):
+    def __init__(self, pos: CPair, repId: int) -> None:
+        super().__init__(pos, repId, True)
+
+        self.mode: int = GHOST_MODE.SCATTER
+
+        self.path: Path = Path()
+        self.prevPath: Path = Path()
+
+        self.initWait: int = 0
+
+    def bindPathFinder(self, pathFinder: PathFinder) -> None:
+        self.pathfinder: PathFinder = pathFinder
+
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return self.pos, self.pos, False
+
+
 # base class for classic ghost implementations
 class ClassicGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int, initWait: int) -> None:

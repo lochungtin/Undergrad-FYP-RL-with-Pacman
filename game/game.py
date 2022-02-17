@@ -104,7 +104,7 @@ class Game:
                             ghost.isFrightened = False
                             ghost.isDead = True
                         else:
-                            return True, False, False
+                            return True, False, False, pacmanMoved
 
         # perform actions if new position had pellets
         atePellet: bool = prevState == REP.PELLET or prevState == REP.PWRPLT
@@ -129,7 +129,7 @@ class Game:
 
             # end game if all pellets have been eaten
             if self.pelletCount == 0:
-                return False, True, False
+                return False, True, False, pacmanMoved
 
         # update ghosts' locations
         if self.enableGhost:
@@ -143,7 +143,7 @@ class Game:
                             ghost.isFrightened = False
                             ghost.isDead = True
                         else:
-                            return True, False, False
+                            return True, False, False, pacmanMoved
 
                 pellet: PelletType = self.pellets[gPrevPos.row][gPrevPos.col]
                 if pellet != None and pellet.valid:
@@ -174,4 +174,4 @@ class Game:
                     for ghost in self.ghosts:
                         ghost.isFrightened = False
 
-        return False, False, atePellet
+        return False, False, atePellet, pacmanMoved

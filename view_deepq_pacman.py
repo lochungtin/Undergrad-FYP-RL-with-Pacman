@@ -5,7 +5,7 @@ import numpy as np
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.utils import NNUtils
-from agents.base import DirectionAgent
+from agents.base import DirectionAgent, DGhostAgent
 from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
@@ -22,9 +22,9 @@ class App:
         self.game = Game(
             DirectionAgent(POS.PACMAN, REP.PACMAN),
             BlinkyClassicAgent(),
-            InkyClassicAgent(),
-            ClydeClassicAgent(),
-            PinkyClassicAgent(),
+            DGhostAgent(POS.INKY, REP.INKY),
+            DGhostAgent(POS.CLYDE, REP.CLYDE),
+            DGhostAgent(POS.PINKY, REP.PINKY),
             enableGhost=True,
             enablePwrPlt=False,
         )
