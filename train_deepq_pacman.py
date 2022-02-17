@@ -113,9 +113,9 @@ class DeepQLTraining:
 
             if gameover:
                 if won:
-                    self.agentEnd(500)
+                    self.agentEnd(700)
                 else:
-                    self.agentEnd(-500)
+                    self.agentEnd(-(game.pelletCount * 50))
 
                 avgSteps = (avgSteps * eps + self.epSteps) / (eps + 1)
                 eps += 1
@@ -123,7 +123,7 @@ class DeepQLTraining:
                 if eps % self.saveOpt == 0:
                     self.network.save(eps, runPref)
 
-                print("ep{}: r: {} | e: {} | a: {} | w: {}".format(eps, self.rSum, self.epSteps, avgSteps, won))
+                print("ep{}: r: {} | e: {} | a: {} | p: {} | w: {}".format(eps, self.rSum, self.epSteps, avgSteps, game.pelletCount, won))
 
                 game = self.newGame()
                 if self.hasDisplay:
@@ -133,12 +133,12 @@ class DeepQLTraining:
                 game.pacman.setDir(action)
 
             else:
-                reward: int = -10
+                reward: int = -game.pelletCount * 2
 
                 if pacmanMoved:
-                    reward = 1
+                    reward = -game.pelletCount
                 if atePellet:
-                    reward = 5
+                    reward = 10
 
                 action = self.agentStep(self.processState(game), reward)
                 game.pacman.setDir(action)
@@ -146,14 +146,7 @@ class DeepQLTraining:
 
     # ===== auxiliary training functions =====
     def processState(self, game: Game) -> List[int]:
-        rt: List[int] = []
-
-        for i, row in enumerate(CONFIG.BOARD):
-            for j, cell in enumerate(row):
-                if cell == REP.EMPTY:
-                    rt.append(game.state[i][j])
-
-        return rt
+        return np.array(game.state).flatten()
 
     # softmax policy for probabilistic action selection
     def policy(self, state: List[int]):
@@ -228,9 +221,9 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 101,
+                "inSize": 195,
                 "hidden": [
-                    128,
+                    256,
                     64,
                     16,
                 ],
@@ -241,7 +234,7 @@ if __name__ == "__main__":
                 "batchSize": 8,
                 "updatePerStep": 4,
             },
-            "saveOpt": 50,
+            "saveOpt": 250,
             "simulationCap": 100000,
             "simulationConfig": {
                 "ghost": True,
