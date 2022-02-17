@@ -17,6 +17,7 @@ from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
+from data.config import CONFIG
 from data.data import BOARD, POS, REP
 from game.game import Game
 from gui.display import Display
@@ -150,42 +151,12 @@ class DeepQLTraining:
     def processState(self, game: Game) -> List[int]:
         rt: List[int] = []
 
-        pacPos: CPair = game.pacman.pos        
-        pRow, pCol, = pacPos.row, pacPos.col
+        for i, row in enumerate(CONFIG.BOARD):
+            for j, cell in enumerate(row):
+                if cell == REP.EMPTY:
+                    rt.append(game.state[i][j])
 
-        # valid actions
-        for pos in pacPos.getNeighbours(True):
-            if hasattr(pos, "row"):
-                rt.append(int(not REP.isWall(game.state[pos.row][pos.col])))
-            else:
-                rt.append(0)
-            
-        # ghost data
-        for ghost in game.ghosts:
-            gRow, gCol = ghost.pos.row, ghost.pos.col
-            rt.append(pRow - gRow)
-            rt.append(pCol - gCol)
-            rt.append(int(ghost.isDead))
-            rt.append(int(ghost.isFrightened))
-
-        # pellet data
-        minDist: int = BOARD.row + BOARD.col + 2
-        minR: int = -1
-        minC: int = -1
-
-        for r in range(BOARD.row):
-            for c in range(BOARD.col):
-                cell: int = game.state[r][c]
-                if cell == REP.PELLET:
-                    dist: int = abs(pRow - r) + abs(pCol - c)
-                    if dist < minDist:
-                        minDist = dist
-                        minR = r
-                        minC = c
-
-        rt.append(pRow - minR)
-        rt.append(pCol - minC)
-        rt.append(game.pelletCount)
+        len(rt)
 
         return rt
 
