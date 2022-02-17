@@ -78,8 +78,8 @@ class DeepQLTraining:
             InkyClassicAgent(),
             ClydeClassicAgent(),
             PinkyClassicAgent(),
-            enableGhost=True,
-            enablePwrPlt=True,
+            enableGhost=False,
+            enablePwrPlt=False,
         )
 
     # ===== main training function =====
@@ -92,19 +92,26 @@ class DeepQLTraining:
         game.pacman.setDir(action)
 
         eps: int = 0
+        pelletDrought: int = 1
         while eps < self.simCap:
             gameover, won, atePellet = game.nextStep()
+
+            if atePellet:
+                pelletDrought = 1
+            else:
+                pelletDrought += 1
 
             # enable display
             if self.hasDisplay:
                 self.display.rerender(atePellet)
                 time.sleep(0.01)
 
-            if gameover:
+            if gameover or pelletDrought > 50:
+                pelletDrought = 1
                 if won:
-                    self.agentEnd(1000)
+                    self.agentEnd(200)
                 else:
-                    self.agentEnd(-1000)
+                    self.agentEnd(-200)
 
                 eps += 1
 
@@ -121,7 +128,7 @@ class DeepQLTraining:
                 reward: int = -1
 
                 if atePellet:
-                    reward = 10
+                    reward = 2
 
                 action = self.agentStep(self.processState(game), reward)
                 game.pacman.setDir(action)
@@ -136,15 +143,24 @@ class DeepQLTraining:
 
         # valid actions
         for pos in pacPos.getNeighbours(True):
-            rt.append(int(hasattr(pos, "row")))
+            if hasattr(pos, "row"):
+                rt.append(int(not REP.isWall(game.state[pos.row][pos.col])))
+            else:
+                rt.append(0)
+
+        # pacman data
+        rt.append(pRow)
+        rt.append(pCol)
             
         # ghost data
-        for ghost in game.ghosts:
-            gRow, gCol = ghost.pos.row, ghost.pos.col
-            rt.append(pRow - gRow)
-            rt.append(pCol - gCol)
-            rt.append(int(ghost.isDead))
-            rt.append(int(ghost.isFrightened))
+        # for ghost in game.ghosts:
+        #     gRow, gCol = ghost.pos.row, ghost.pos.col
+        #     rt.append(gRow)
+        #     rt.append(gCol)
+        #     rt.append(int(ghost.isDead))
+        #     rt.append(int(ghost.isFrightened))
+        for i in range(16):
+            rt.append(0)
 
         # pellet data
         minDist: int = BOARD.row + BOARD.col + 2
@@ -189,7 +205,7 @@ class DeepQLTraining:
         return self.pAction
 
     # episode step
-    def agentStep(self, state: List[int], reward: float) -> int:
+    def agentStep(self, state: List[int], reward: float) -> int:        
         # perform next step
         state: List[List[int]] = np.array([state])
         action = self.policy(state)
@@ -240,7 +256,7 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 23,
+                "inSize": 25,
                 "hidden": [
                     256,
                     16,
