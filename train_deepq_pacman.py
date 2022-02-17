@@ -17,8 +17,10 @@ from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
+from data.data import BOARD, REP
 from game.game import Game
 from gui.display import Display
+from utils.coordinate import CPair
 
 
 class DeepQLTraining:
@@ -94,16 +96,59 @@ class DeepQLTraining:
                 self.agentEnd(-1000)
 
                 game = self.newGame()
-                action: int = self.agentInit(self.processState(game))
+
+                action = self.agentInit(self.processState(game))
                 game.pacman.setDir(action)
 
             else:
-                reward: int = 1 + atePellet * -2
-            
+                reward: int = -1
+
+                if atePellet:
+                    reward = 10
+
+                action = self.agentStep(self.processState(game), reward)
+                game.pacman.setDir(action)
+                            
 
     # ===== auxiliary training functions =====
     def processState(self, game: Game) -> List[int]:
-        return []
+        rt: List[int] = []
+
+        pacPos: CPair = game.pacman.pos        
+        pRow, pCol, = pacPos.row, pacPos.col
+
+        # valid actions
+        for pos in pacPos.getNeighbours(True):
+            rt.append((pos != None) * 1)
+            
+        # ghost data
+        for ghost in game.ghosts:
+            gRow, gCol = ghost.pos.row, ghost.pos.col
+            rt.append(pRow - gRow)
+            rt.append(pCol - gCol)
+            rt.append(int(ghost.isDead))
+            rt.append(int(ghost.isFrightened))
+
+        # pellet data
+        minDist: int = BOARD.row + BOARD.col + 2
+        minR: int = -1
+        minC: int = -1
+
+        for r in range(BOARD.row):
+            for c in range(BOARD.col):
+                cell: int = game.state[r][c]
+                if cell == REP.PELLET:
+                    dist: int = abs(pRow - r) + abs(pCol - c)
+                    if dist < minDist:
+                        minDist = dist
+                        minR = r
+                        minC = c
+
+        rt.append(minR)
+        rt.append(minC)
+        rt.append(game.pelletCount)
+
+        return rt
 
     # softmax policy for probabilistic action selection
     def policy(self, state: List[int]):
@@ -178,7 +223,7 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 37,
+                "inSize": 23,
                 "hidden": [
                     256,
                     16,
@@ -194,7 +239,7 @@ if __name__ == "__main__":
             "simluationCap": 100,
             "simulationConfig": {
                 "ghost": True,
-                "pwrplt": True,
+                "pwrplt": False,
             },
             "tau": 0.001,
         },
