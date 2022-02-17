@@ -6,7 +6,7 @@ class Adam:
     def __init__(self, layerSizes: List[int], config: dict[str, float]):
         # initialise hyperparams
         self.layerSizes: List[int] = layerSizes
-        self.stepSize: float = config["stepsize"]
+        self.stepSize: float = config["stepSize"]
         self.bM: float = config["bM"]
         self.bV: float = config["bV"]
         self.bMProd: float = self.bM
@@ -23,8 +23,8 @@ class Adam:
             self.v[i]["W"] = np.zeros((self.layerSizes[i], self.layerSizes[i + 1]))
             self.v[i]["b"] = np.zeros((1, self.layerSizes[i + 1]))
 
-    # update weights with the adam optimizer
-    def updateWeights(self, vals: List[dict[str, object]], tdUpdate: List[dict[str, object]]):
+    # update values with the adam optimizer
+    def updateVals(self, vals: List[dict[str, object]], tdUpdate: List[dict[str, object]]):
         for i in range(len(vals)):
             for param in vals[i].keys():
                 self.m[i][param] = self.bM * self.m[i][param] + (1 - self.bM) * tdUpdate[i][param]

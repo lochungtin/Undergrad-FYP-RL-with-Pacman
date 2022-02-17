@@ -38,19 +38,20 @@ class NeuralNet(Predictable):
 
         return tensor
 
-    def predict(self, input: List[float]) -> List[float]:
-        layers: int = len(self.lDims)
-
+    def predict(self, input: List[List[int]]) -> List[float]:
+        layers = len(self.vals) - 1
+        x = input
         for i in range(layers):
-            # weight bias calculation
-            w, b = self.vals[i]["W"], self.vals[i]["b"]
-            prod = np.dot(input, w) + b
+            w, b = self.vals[i]['W'], self.vals[i]['b']
+            psi = np.dot(x, w) + b
 
-            if i == layers - 1:
-                return prod
+            # relu
+            x = np.maximum(psi, 0)
 
-            # relu activiation
-            input = np.maximum(prod, 0)
+        w, b = self.vals[layers]['W'], self.vals[layers]['b']
+        q_vals = np.dot(x, w) + b
+
+        return q_vals
 
     def getVals(self):
         return deepcopy(self.vals)

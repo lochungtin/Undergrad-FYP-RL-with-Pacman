@@ -29,7 +29,7 @@ class NNUtils:
         tdUpdate = NNUtils.getTDUpdate(tN, s, deltaMatrix)
 
         # pass td update to adam optimiser to get a new set of values for the target network
-        tN.setVals(adam.updateValues(tN.getVals(), tdUpdate))
+        tN.setVals(adam.updateVals(tN.getVals(), tdUpdate))
 
     def getTDError(tN: NeuralNet, cN: NeuralNet, s, a, r, t, nS, gamma: float, tau: float):
         nextQVals = cN.predict(nS)

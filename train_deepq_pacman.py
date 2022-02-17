@@ -17,7 +17,7 @@ from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
-from data.data import BOARD, REP
+from data.data import BOARD, POS, REP
 from game.game import Game
 from gui.display import Display
 from utils.coordinate import CPair
@@ -58,7 +58,7 @@ class DeepQLTraining:
         self.simCap: int = trainingConfig["simulationCap"]
 
         # training status
-        self.rewardSum: float = 0
+        self.rSum: float = 0
         self.epSteps: int = 0
 
     # start training (main function)
@@ -73,7 +73,7 @@ class DeepQLTraining:
 
     def newGame(self) -> Game:
         return Game(
-            DirectionAgent(),
+            DirectionAgent(POS.PACMAN, REP.PACMAN),
             BlinkyClassicAgent(),
             InkyClassicAgent(),
             ClydeClassicAgent(),
@@ -85,17 +85,34 @@ class DeepQLTraining:
     # ===== main training function =====
     def training(self) -> None:
         game: Game = self.newGame()
+        if self.hasDisplay:
+            self.display.newGame(game)
 
         action: int = self.agentInit(self.processState(game))
         game.pacman.setDir(action)
 
-        for i in range(self.simCap):
+        eps: int = 0
+        while eps < self.simCap:
             gameover, won, atePellet = game.nextStep()
 
+            # enable display
+            if self.hasDisplay:
+                self.display.rerender(atePellet)
+                time.sleep(0.01)
+
             if gameover:
-                self.agentEnd(-1000)
+                if won:
+                    self.agentEnd(1000)
+                else:
+                    self.agentEnd(-1000)
+
+                eps += 1
+
+                print("ep{}: r{} | e{}".format(eps, self.rSum, self.epSteps))
 
                 game = self.newGame()
+                if self.hasDisplay:
+                    self.display.newGame(game)
 
                 action = self.agentInit(self.processState(game))
                 game.pacman.setDir(action)
@@ -119,7 +136,7 @@ class DeepQLTraining:
 
         # valid actions
         for pos in pacPos.getNeighbours(True):
-            rt.append((pos != None) * 1)
+            rt.append(int(hasattr(pos, "row")))
             
         # ghost data
         for ghost in game.ghosts:
@@ -236,7 +253,7 @@ if __name__ == "__main__":
                 "batchSize": 8,
                 "updatePerStep": 4,
             },
-            "simluationCap": 100,
+            "simulationCap": 100,
             "simulationConfig": {
                 "ghost": True,
                 "pwrplt": False,
