@@ -253,7 +253,7 @@ if __name__ == "__main__":
                 "batchSize": 8,
                 "updatePerStep": 4,
             },
-            "simulationCap": 100,
+            "simulationCap": 50000,
             "simulationConfig": {
                 "ghost": True,
                 "pwrplt": False,
