@@ -156,8 +156,6 @@ class DeepQLTraining:
                 if cell == REP.EMPTY:
                     rt.append(game.state[i][j])
 
-        len(rt)
-
         return rt
 
     # softmax policy for probabilistic action selection
@@ -233,7 +231,7 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 23,
+                "inSize": 101,
                 "hidden": [
                     128,
                     16,
@@ -248,11 +246,11 @@ if __name__ == "__main__":
             "saveOpt": 50,
             "simulationCap": 100000,
             "simulationConfig": {
-                "ghost": True,
+                "ghost": False,
                 "pwrplt": False,
             },
             "tau": 0.001,
         },
-        False,
+        True,
     )
     training.start()
