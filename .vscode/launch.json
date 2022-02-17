@@ -12,18 +12,32 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Pacman Training Script",
+            "name": "Pacman NE Training Script",
             "type": "python",
             "request": "launch",
             "program": "train_neat_pacman.py",
             "console": "integratedTerminal"
         },
         {
-            "name": "Pacman Review Script",
+            "name": "Pacman NE Review Script",
             "type": "python",
             "request": "launch",
             "program": "view_neat_pacman.py",
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name": "Pacman DQ Training Script",
+            "type": "python",
+            "request": "launch",
+            "program": "train_deepq_pacman.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Pacman DQ Review Script",
+            "type": "python",
+            "request": "launch",
+            "program": "view_deepq_pacman.py",
+            "console": "integratedTerminal"
+        },
     ]
 }
