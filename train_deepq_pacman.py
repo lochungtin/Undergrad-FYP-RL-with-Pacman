@@ -55,6 +55,9 @@ class DeepQLTraining:
         self.pAction: int = None
 
         # simluation config
+        self.enableGhost: bool = trainingConfig["simulationConfig"]["ghost"]
+        self.enablePwrPlt: bool = trainingConfig["simulationConfig"]["pwrplt"]
+
         self.simCap: int = trainingConfig["simulationCap"]
         self.saveOpt: int = trainingConfig["saveOpt"]
 
@@ -79,12 +82,14 @@ class DeepQLTraining:
             InkyClassicAgent(),
             ClydeClassicAgent(),
             PinkyClassicAgent(),
-            enableGhost=False,
-            enablePwrPlt=False,
+            enableGhost=self.enableGhost,
+            enablePwrPlt=self.enablePwrPlt,
         )
 
     # ===== main training function =====
     def training(self) -> None:
+        print('start')
+
         runPref: str = "RL{}".format(datetime.now().strftime("%d%m_%H%M"))
         os.mkdir("out/{}".format(runPref))
 
@@ -111,18 +116,18 @@ class DeepQLTraining:
                 time.sleep(0.01)
 
             if gameover or pelletDrought > 50:
-                pelletDrought = 1
                 if won:
-                    self.agentEnd(200)
+                    self.agentEnd(1000)
                 else:
-                    self.agentEnd(-200)
+                    self.agentEnd(-1000)
 
                 eps += 1
+                pelletDrought = 1
 
                 if eps % self.saveOpt == 0:
                     self.network.save(eps, runPref)
 
-                print("ep{}: r{} | e{}".format(eps, self.rSum, self.epSteps))
+                print("ep{}: r: {} | e: {} | w: {}".format(eps, self.rSum, self.epSteps, won))
 
                 game = self.newGame()
                 if self.hasDisplay:
@@ -132,10 +137,10 @@ class DeepQLTraining:
                 game.pacman.setDir(action)
 
             else:
-                reward: int = -1
+                reward: int = 1
 
                 if atePellet:
-                    reward = 2
+                    reward = 5
 
                 action = self.agentStep(self.processState(game), reward)
                 game.pacman.setDir(action)
@@ -154,20 +159,14 @@ class DeepQLTraining:
                 rt.append(int(not REP.isWall(game.state[pos.row][pos.col])))
             else:
                 rt.append(0)
-
-        # pacman data
-        rt.append(pRow)
-        rt.append(pCol)
             
         # ghost data
-        # for ghost in game.ghosts:
-        #     gRow, gCol = ghost.pos.row, ghost.pos.col
-        #     rt.append(gRow)
-        #     rt.append(gCol)
-        #     rt.append(int(ghost.isDead))
-        #     rt.append(int(ghost.isFrightened))
-        for i in range(16):
-            rt.append(0)
+        for ghost in game.ghosts:
+            gRow, gCol = ghost.pos.row, ghost.pos.col
+            rt.append(pRow - gRow)
+            rt.append(pCol - gCol)
+            rt.append(int(ghost.isDead))
+            rt.append(int(ghost.isFrightened))
 
         # pellet data
         minDist: int = BOARD.row + BOARD.col + 2
@@ -184,8 +183,8 @@ class DeepQLTraining:
                         minR = r
                         minC = c
 
-        rt.append(minR)
-        rt.append(minC)
+        rt.append(pRow - minR)
+        rt.append(pCol - minC)
         rt.append(game.pelletCount)
 
         return rt
@@ -263,10 +262,9 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 25,
+                "inSize": 23,
                 "hidden": [
-                    256,
-                    16,
+                    128,
                     16,
                 ],
                 "outSize": 4,
@@ -276,7 +274,7 @@ if __name__ == "__main__":
                 "batchSize": 8,
                 "updatePerStep": 4,
             },
-            "saveOpt": 100,
+            "saveOpt": 50,
             "simulationCap": 100000,
             "simulationConfig": {
                 "ghost": True,

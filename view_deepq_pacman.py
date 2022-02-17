@@ -25,7 +25,7 @@ class App:
             InkyClassicAgent(),
             ClydeClassicAgent(),
             PinkyClassicAgent(),
-            enableGhost=False,
+            enableGhost=True,
             enablePwrPlt=False,
         )
 
@@ -44,11 +44,8 @@ class App:
     def processState(self, game: Game) -> List[int]:
         rt: List[int] = []
 
-        pacPos: CPair = game.pacman.pos
-        pRow, pCol, = (
-            pacPos.row,
-            pacPos.col,
-        )
+        pacPos: CPair = game.pacman.pos        
+        pRow, pCol, = pacPos.row, pacPos.col
 
         # valid actions
         for pos in pacPos.getNeighbours(True):
@@ -56,20 +53,14 @@ class App:
                 rt.append(int(not REP.isWall(game.state[pos.row][pos.col])))
             else:
                 rt.append(0)
-
-        # pacman data
-        rt.append(pRow)
-        rt.append(pCol)
-
+            
         # ghost data
-        # for ghost in game.ghosts:
-        #     gRow, gCol = ghost.pos.row, ghost.pos.col
-        #     rt.append(gRow)
-        #     rt.append(gCol)
-        #     rt.append(int(ghost.isDead))
-        #     rt.append(int(ghost.isFrightened))
-        for i in range(16):
-            rt.append(0)
+        for ghost in game.ghosts:
+            gRow, gCol = ghost.pos.row, ghost.pos.col
+            rt.append(pRow - gRow)
+            rt.append(pCol - gCol)
+            rt.append(int(ghost.isDead))
+            rt.append(int(ghost.isFrightened))
 
         # pellet data
         minDist: int = BOARD.row + BOARD.col + 2
@@ -86,8 +77,8 @@ class App:
                         minR = r
                         minC = c
 
-        rt.append(minR)
-        rt.append(minC)
+        rt.append(pRow - minR)
+        rt.append(pCol - minC)
         rt.append(game.pelletCount)
 
         return rt
@@ -96,6 +87,7 @@ class App:
         state: List[int] = self.processState(self.game)
         qVals: List[float] = self.network.predict(np.array([state]))
         self.game.pacman.setDir(np.argmax(qVals))
+        print(state)
 
         gameover, won, atePellet = self.game.nextStep()
 
@@ -111,8 +103,8 @@ class App:
 
 if __name__ == "__main__":
     parent: str = "out"
-    runPref: str = "RL1702_0403"
-    epCount: int = 300
+    runPref: str = "RL1702_0548"
+    epCount: int = 41200
 
     app = App("./{}/{}/rl_nnconf_ep{}.json".format(parent, runPref, epCount))
     app.run()
