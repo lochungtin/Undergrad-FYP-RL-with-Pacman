@@ -92,6 +92,8 @@ class Game:
         pCurPos, pPrevPos, pacmanMoved = self.pacman.getNextPos(self)
         prevState = self.state[pCurPos.row][pCurPos.col]
 
+        print(pCurPos)
+
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
         self.state[pCurPos.row][pCurPos.col] = REP.PACMAN
 

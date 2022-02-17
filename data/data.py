@@ -3,8 +3,8 @@ from typing import List, Tuple
 
 # dimension values of the board
 class BOARD:
-    row: int = 31
-    col: int = 27
+    row: int = 15
+    col: int = 13
 
 
 # ghost ai modes
@@ -21,25 +21,25 @@ class GHOST_MODE:
 # game related data constants
 class DATA:
     # number of pellets
-    TOTAL_PELLET_COUNT: int = 238
-    TOTAL_PWRPLT_COUNT: int = 4
+    TOTAL_PELLET_COUNT: int = 70
+    TOTAL_PWRPLT_COUNT: int = 2
 
     CRUISE_ELROY_TRIGGER: int = 20
 
     # ghost mode and step counter
-    TOTAL_STEP_COUNT: int = 840
+    TOTAL_STEP_COUNT: int = 84
 
-    GHOST_EXIT_INTERVAL: int = 30
+    GHOST_EXIT_INTERVAL: int = 3
 
     GHOST_FRIGHTENED_SPEED_REDUCTION_RATE: int = 3
-    GHOST_FRIGHTENED_STEP_COUNT: int = 80
+    GHOST_FRIGHTENED_STEP_COUNT: int = 10
     GHOST_MODE_SCHEDULE: List[Tuple[int, int]] = [
-        (GHOST_MODE.SCATTER, 770),
-        (GHOST_MODE.CHASE, 570),
-        (GHOST_MODE.SCATTER, 500),
-        (GHOST_MODE.CHASE, 300),
-        (GHOST_MODE.SCATTER, 250),
-        (GHOST_MODE.CHASE, 50),
+        (GHOST_MODE.SCATTER, 77),
+        (GHOST_MODE.CHASE, 57),
+        (GHOST_MODE.SCATTER, 50),
+        (GHOST_MODE.CHASE, 30),
+        (GHOST_MODE.SCATTER, 25),
+        (GHOST_MODE.CHASE, 5),
         (GHOST_MODE.SCATTER, 0),
         (GHOST_MODE.CHASE, -1),
     ]
@@ -47,14 +47,14 @@ class DATA:
 
 # pixel values of components
 class DIM:
-    # canvas pixel count
-    GBL_H: int = 925
-    GBL_W: int = 805
-
     # grid cell and gap size
     JUMP: int = 30
     CELL: int = 25
     GAP: int = 5
+
+    # canvas pixel count
+    GBL_H: int = BOARD.row * JUMP - GAP
+    GBL_W: int = BOARD.col * JUMP - GAP
 
     # padding for objects
     PAD_PELLET: int = 9
@@ -85,36 +85,36 @@ from utils.coordinate import CPair
 
 class POS:
     # initial pacman location
-    PACMAN: CPair = CPair(23, 13)
+    PACMAN: CPair = CPair(9, 6)
 
     # initial ghost locations
-    BLINKY: CPair = CPair(11, 13)
-    INKY: CPair = CPair(14, 11)
-    CLYDE: CPair = CPair(14, 15)
-    PINKY: CPair = CPair(14, 13)
+    BLINKY: CPair = CPair(5, 6)
+    INKY: CPair = CPair(6, 5)
+    CLYDE: CPair = CPair(6, 6)
+    PINKY: CPair = CPair(6, 7)
 
     # special locations
     # ghost house reset location
-    GHOST_HOUSE_CENTER: CPair = CPair(14, 13)
+    GHOST_HOUSE_CENTER: CPair = CPair(1, 1)
 
     # scatter mode target corners
-    BLINKY_CORNER: CPair = CPair(1, 25)
-    INKY_CORNER: CPair = CPair(29, 25)
-    CLYDE_CORNER: CPair = CPair(29, 1)
-    PINKY_CORNER: CPair = CPair(1, 1)
+    BLINKY_CORNER: CPair = CPair(1, 1)
+    INKY_CORNER: CPair = CPair(13, 1)
+    CLYDE_CORNER: CPair = CPair(13, 11)
+    PINKY_CORNER: CPair = CPair(1, 11)
 
     # loop triggers
-    LEFT_LOOP_TRIGGER: CPair = CPair(14, -1)
-    LEFT_LOOP: CPair = CPair(14, 0)
+    LEFT_LOOP_TRIGGER: CPair = CPair(7, -1)
+    LEFT_LOOP: CPair = CPair(7, 0)
 
-    RIGHT_LOOP_TRIGGER: CPair = CPair(14, 27)
-    RIGHT_LOOP: CPair = CPair(14, 26)
+    RIGHT_LOOP_TRIGGER: CPair = CPair(7, 13)
+    RIGHT_LOOP: CPair = CPair(7, 12)
 
     # "no go up" zones
-    GHOST_NO_UP_1: CPair = CPair(11, 12)
-    GHOST_NO_UP_2: CPair = CPair(11, 14)
-    GHOST_NO_UP_3: CPair = CPair(23, 12)
-    GHOST_NO_UP_4: CPair = CPair(23, 14)
+    GHOST_NO_UP_1: CPair = CPair(3, 5)
+    GHOST_NO_UP_2: CPair = CPair(3, 7)
+    GHOST_NO_UP_3: CPair = CPair(10, 5)
+    GHOST_NO_UP_4: CPair = CPair(10, 7)
 
 
 # state representations
