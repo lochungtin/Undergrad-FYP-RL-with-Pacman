@@ -35,7 +35,8 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
+        # NeuralNet(trainingConfig["nnConfig"])
+        self.network: NeuralNet = NeuralNet.load("./out/RL1802_1039/rl_nnconf_ep6500.json")
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -64,7 +65,7 @@ class DeepQLTraining:
 
         # training status
         self.rSum: float = 0
-        self.epSteps: int = 0
+        self.timesteps: int = 0
 
     # start training (main function)
     def start(self) -> None:
@@ -89,7 +90,7 @@ class DeepQLTraining:
 
     # ===== main training function =====
     def training(self) -> None:
-        print('start')
+        print("start")
 
         runPref: str = "RL{}".format(datetime.now().strftime("%d%m_%H%M"))
         os.mkdir("out/{}".format(runPref))
@@ -101,8 +102,11 @@ class DeepQLTraining:
         action: int = self.agentInit(self.processState(game))
         game.pacman.setDir(action)
 
+        avgRScore: float = 0
+        avgSteps: float = 0
+        avgPCount: float = 0
+
         eps: int = 0
-        avgSteps: int = 0
         while eps < self.simCap:
             gameover, won, atePellet, pacmanMoved = game.nextStep()
 
@@ -117,13 +121,27 @@ class DeepQLTraining:
                 else:
                     self.agentEnd(-(game.pelletCount * 50))
 
-                avgSteps = (avgSteps * eps + self.epSteps) / (eps + 1)
+                avgRScore = (avgRScore * eps + self.rSum) / (eps + 1)
+                avgSteps = (avgSteps * eps + self.timesteps) / (eps + 1)
+                avgPCount = (avgPCount * eps + game.pelletCount) / (eps + 1)
+
                 eps += 1
 
                 if eps % self.saveOpt == 0:
                     self.network.save(eps, runPref)
 
-                print("ep{}: r: {} | e: {} | a: {} | p: {} | w: {}".format(eps, self.rSum, self.epSteps, avgSteps, game.pelletCount, won))
+                print(
+                    "ep{}  \tr[{} | {}]  \ts[{} | {}]  \tp[{} | {}]  \tw[{}]".format(
+                        eps,
+                        self.rSum,
+                        round(avgRScore, 2),
+                        self.timesteps,
+                        round(avgSteps, 2),
+                        game.pelletCount,
+                        round(avgPCount, 2),
+                        won,
+                    )
+                )
 
                 game = self.newGame()
                 if self.hasDisplay:
@@ -142,7 +160,6 @@ class DeepQLTraining:
 
                 action = self.agentStep(self.processState(game), reward)
                 game.pacman.setDir(action)
-                            
 
     # ===== auxiliary training functions =====
     def processState(self, game: Game) -> List[int]:
@@ -165,12 +182,12 @@ class DeepQLTraining:
 
         # reset training status
         self.rSum = 0
-        self.epSteps = 0
+        self.timesteps = 0
 
         return self.pAction
 
     # episode step
-    def agentStep(self, state: List[int], reward: float) -> int:        
+    def agentStep(self, state: List[int], reward: float) -> int:
         # perform next step
         state: List[List[int]] = np.array([state])
         action = self.policy(state)
@@ -190,7 +207,7 @@ class DeepQLTraining:
 
         # update training status
         self.rSum += reward
-        self.epSteps += 1
+        self.timesteps += 1
 
         return action
 
@@ -207,7 +224,7 @@ class DeepQLTraining:
 
         # update training status
         self.rSum += reward
-        self.epSteps += 1
+        self.timesteps += 1
 
 
 if __name__ == "__main__":

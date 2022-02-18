@@ -24,7 +24,7 @@ class DATA:
     TOTAL_PELLET_COUNT: int = 70
     TOTAL_PWRPLT_COUNT: int = 2
 
-    CRUISE_ELROY_TRIGGER: int = 20
+    CRUISE_ELROY_TRIGGER: int = 12
 
     # ghost mode and step counter
     TOTAL_STEP_COUNT: int = 84

@@ -43,14 +43,7 @@ class App:
         _thread.start_new_thread(self.timeController.start, ())
 
     def processState(self, game: Game) -> List[int]:
-        rt: List[int] = []
-
-        for i, row in enumerate(CONFIG.BOARD):
-            for j, cell in enumerate(row):
-                if cell == REP.EMPTY:
-                    rt.append(game.state[i][j])
-
-        return rt
+        return np.array(game.state).flatten()
 
     def nextStep(self):
         state: List[int] = self.processState(self.game)
@@ -71,8 +64,8 @@ class App:
 
 if __name__ == "__main__":
     parent: str = "out"
-    runPref: str = "RL1702_2022"
-    epCount: int = 2000
+    runPref: str = "RL1802_1240"
+    epCount: int = 10000
 
     app = App("./{}/{}/rl_nnconf_ep{}.json".format(parent, runPref, epCount))
     app.run()

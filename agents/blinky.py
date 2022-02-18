@@ -41,7 +41,7 @@ class BlinkyClassicAgent(ClassicGhostAgent):
             if self.pos != self.prevPos:
                 self.direction = self.pos.relate(self.prevPos)
 
-            return self.pos, self.prevPos
+            return self.pos, self.prevPos, True
 
         return super().getNextPos(game)
 
@@ -75,6 +75,6 @@ class BlinkyClassicAggrAgent(ClassicGhostAgent):
             if self.pos != self.prevPos:
                 self.direction = self.pos.relate(self.prevPos)
 
-            return self.pos, self.prevPos
+            return self.pos, self.prevPos, True
 
         return super().getNextPos(game)
