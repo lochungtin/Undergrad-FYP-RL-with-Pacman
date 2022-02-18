@@ -1,15 +1,13 @@
 from copy import deepcopy
-from random import randint, random, choice
+from random import choice
 from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
     from game.game import Game
 
-from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
-from ai.deepq.replaybuf import ReplayBuffer
-from ai.deepq.utils import NNUtils
+from ai.neat.genome import Genome
 from data.data import DATA, DIR, GHOST_MODE, POS, REP
 from game.components.component import Component
 from game.utils.path import Path
@@ -41,7 +39,7 @@ class DirectionAgent(Agent):
     def setDir(self, direction: int) -> None:
         self.direction: int = direction
 
-    # get next position of pacman
+    # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         newPos: CPair = self.pos.move(self.direction)
         self.moved = False
@@ -78,25 +76,7 @@ class GhostAgent(Agent):
         self.isClassic: bool = isClassic
 
 
-class DGhostAgent(GhostAgent):
-    def __init__(self, pos: CPair, repId: int) -> None:
-        super().__init__(pos, repId, True)
-
-        self.mode: int = GHOST_MODE.SCATTER
-
-        self.path: Path = Path()
-        self.prevPath: Path = Path()
-
-        self.initWait: int = 0
-
-    def bindPathFinder(self, pathFinder: PathFinder) -> None:
-        self.pathfinder: PathFinder = pathFinder
-
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        return self.pos, self.pos, False
-
-
-# base class for classic ghost implementations
+# base class for classic ghost agents
 class ClassicGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int, initWait: int) -> None:
         super().__init__(pos, repId, True)
@@ -193,4 +173,58 @@ class ClassicGhostAgent(GhostAgent):
     # ===== REQUIRED TO OVERRIDE =====
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
+        raise NotImplementedError
+
+
+# base class for all (pacman and ghosts) deep q learning based agents
+class DQLAgent(DirectionAgent):
+    def __init__(self, pos: CPair, repId: int, neuralNet: NeuralNet) -> None:
+        super().__init__(pos, repId)
+
+        self.neuralNet: NeuralNet = neuralNet
+
+    # get next position of agent
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        # get action vals
+        state: List[int] = self.processGameState(game.state)
+        qVals: List[float] = self.neuralNet.predict(np.array([state]))
+
+        # get optimal action
+        action: int = np.argmax(qVals)
+
+        # selection action direction
+        self.setDir(action)
+
+        return super().getNextPos(game)
+
+    # ===== REQUIRED TO OVERRIDE =====
+    # preprocess game state for neural network
+    def processGameState(self, state: List[List[int]]) -> List[int]:
+        raise NotImplementedError
+
+
+# base class for all ghost neuro-evolution based agents
+class NEATGhostAgent(GhostAgent, DirectionAgent):
+    def __init__(self, pos: CPair, repId: int, genome: Genome) -> None:
+        GhostAgent().__init__(pos, repId, False)
+
+        self.genome: Genome = genome
+
+    # get next position of ghost
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        # get action vals
+        state: List[int] = self.processGameState(game.state)
+        qVals: List[float] = self.genome.predict(self.processGameState(state))
+
+        # get optimal action
+        action: int = np.argmax(qVals)
+
+        # selection action direction
+        self.setDir(action)
+
+        return DirectionAgent().getNextPos(game)
+
+    # ===== REQUIRED TO OVERRIDE =====
+    # preprocess game state for neural network
+    def processGameState(self, state: List[List[int]]) -> List[int]:
         raise NotImplementedError

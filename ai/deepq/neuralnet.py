@@ -4,10 +4,8 @@ from typing import List
 import json
 import numpy as np
 
-from ai.predictable import Predictable
 
-
-class NeuralNet(Predictable):
+class NeuralNet:
     def __init__(self, config: dict[str, object]) -> None:
         if config != None:
             self.inSize: int = config["inSize"]
@@ -23,6 +21,7 @@ class NeuralNet(Predictable):
                 self.vals[i]["W"] = self.genWeights(self.lDim[i], self.lDim[i + 1])
                 self.vals[i]["b"] = np.zeros((1, self.lDim[i + 1]))
 
+    # create random weights for weight matrix
     def genWeights(self, inCount: int, outCount: int) -> List[List[float]]:
         # create weight matrix
         tensor = np.random.RandomState().normal(0, 1, (inCount, outCount))
@@ -41,6 +40,7 @@ class NeuralNet(Predictable):
 
         return tensor
 
+    # predict values
     def predict(self, input: List[List[int]]) -> List[float]:
         layers = len(self.vals) - 1
         x = input
@@ -56,6 +56,7 @@ class NeuralNet(Predictable):
 
         return q_vals
 
+    # getters and setters for updating
     def getVals(self):
         return deepcopy(self.vals)
 

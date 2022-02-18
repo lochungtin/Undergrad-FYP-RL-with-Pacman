@@ -3,11 +3,10 @@ from copy import deepcopy
 from random import choice, randint, random, uniform
 from typing import List
 
-from ai.predictable import Predictable
 from ai.neat.gene import ConnGene, NodeGene, NodeType
 
 
-class Genome(Predictable):
+class Genome():
     def __init__(self, config: dict[str, object], gen1: bool = False) -> None:
         self.inSize: int = config["inSize"]
         self.outSize: int = config["outSize"]
@@ -24,10 +23,7 @@ class Genome(Predictable):
         # id: layer
         self.lMap: dict[int, int] = {}
         # layer: List[id]
-        self.layers: dict[int, List[int]] = {
-            0: [],
-            1: [],
-        }
+        self.layers: dict[int, List[int]] = {0: [], 1: []}
         self.layerNum: int = len(self.layers)
 
         # create IO nodes
@@ -70,7 +66,7 @@ class Genome(Predictable):
                     self.cStruct[i].append(o)
                     self.pStruct[o].append(i)
 
-    # evaluate neural net - predict actino values
+    # evaluate neural net
     def predict(self, input: List[float]) -> List[float]:
         if len(input) != self.inSize:
             return None
@@ -289,35 +285,3 @@ class Genome(Predictable):
     # generate innovation key
     def genInnovKey(fL: int, bL: int, f: int, b: int) -> str:
         return "{}.{}-{}.{}".format(fL, bL, f, b)
-
-    # ===== DEBUG / PRINTERS ======
-    # custom string representation
-    def __str__(self) -> str:
-        return self.__repr__()
-
-    def __repr__(self) -> str:
-        rt: str = ""
-
-        nL: int = len(self.nodes) - 1
-        for i, (_, v) in enumerate(self.nodes.items()):
-            if i == 0:
-                b = "╔═ "
-            elif i == nL:
-                b = "\n╠═ "
-            else:
-                b = "\n║  "
-
-            rt += b + str(v)
-
-        cL: int = len(self.conns) - 1
-        for i, (_, v) in enumerate(self.conns.items()):
-            if i == 0 and cL != 0:
-                b = "\n╠═ "
-            elif i == cL:
-                b = "\n╚═ "
-            else:
-                b = "\n║  "
-
-            rt += b + str(v)
-
-        return rt

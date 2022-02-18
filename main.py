@@ -1,14 +1,12 @@
-from typing import Tuple
-from agents.base import GhostAgent
+import _thread
+from tkinter import Tk
+
+
 from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
 from agents.pacman import PlayableAgent
-from game.game import Game
-from tkinter import Tk
-import _thread
-
 from data.data import DIR
 from game.game import Game
 from gui.controller import TimeController
@@ -17,21 +15,9 @@ from gui.display import Display
 
 # app class
 class App:
-    def __init__(self, manualControl: bool, enableGhost: bool = True, enablePwrPlt: bool = True) -> None:
-        # save game config
-        self.enableGhost: bool = enableGhost
-        self.enablePwrPlt: bool = enablePwrPlt
-
+    def __init__(self, manualControl: bool) -> None:
         # create game object
-        self.game: Game = Game(
-            PlayableAgent(),
-            BlinkyClassicAgent(),
-            InkyClassicAgent(),
-            ClydeClassicAgent(),
-            PinkyClassicAgent(),
-            self.enableGhost,
-            self.enablePwrPlt,
-        )
+        self.game: Game = self.newGame()
 
         # create time controller object
         self.timeController: TimeController = TimeController(0.075, self.nextStep)
@@ -56,23 +42,20 @@ class App:
         else:
             _thread.start_new_thread(self.timeController.start, ())
 
+    def newGame(self):
+        return Game(
+            PlayableAgent(), BlinkyClassicAgent(), InkyClassicAgent(), ClydeClassicAgent(), PinkyClassicAgent(), True
+        )
+
     # trigger Game.nextStep() and update dislay, reset if gameover
     def nextStep(self):
         # update game, proceed to next step
-        gameover, won, atePellet = self.game.nextStep()
+        gameover, won, atePellet, ateGhost, pacmanMoved = self.game.nextStep()
 
         # handle gameover
         if gameover:
             # create new game
-            self.game = Game(
-                PlayableAgent(),
-                BlinkyClassicAgent(),
-                InkyClassicAgent(),
-                ClydeClassicAgent(),
-                PinkyClassicAgent(),
-                self.enableGhost,
-                self.enablePwrPlt,
-            )
+            self.game = self.newGame()
             self.display.newGame(self.game)
 
         # update display
@@ -85,5 +68,4 @@ class App:
 
 # execute app
 if __name__ == "__main__":
-    app = App(manualControl=True, enableGhost=True, enablePwrPlt=True)
-    app.run()
+    App(manualControl=True).run()

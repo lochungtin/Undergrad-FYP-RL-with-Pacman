@@ -4,7 +4,7 @@ import _thread
 import numpy as np
 
 from ai.deepq.neuralnet import NeuralNet
-from agents.base import DirectionAgent
+from agents.pacman import PacmanDQLAgent
 from agents.blinky import BlinkyClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.clyde import ClydeClassicAgent
@@ -18,7 +18,7 @@ from gui.display import Display
 class App:
     def __init__(self, filename) -> None:
         self.game = Game(
-            DirectionAgent(POS.PACMAN, REP.PACMAN),
+            PacmanDQLAgent(NeuralNet.load(filename)),
             blinky=BlinkyClassicAgent(),
             pinky=PinkyClassicAgent()
         )
@@ -29,29 +29,11 @@ class App:
         self.display: Display = Display(self.main)
         self.display.newGame(self.game)
 
-        self.network = NeuralNet.load(filename)
-
-        self.tc: TimeController = TimeController(0.05, self.nextStep)
+        self.tc: TimeController = TimeController(0.10, self.nextStep)
 
         _thread.start_new_thread(self.tc.start, ())
 
-    def processState(self, game: Game) -> List[int]:
-        rt: List[int] = []
-
-        for row in game.state:
-            for cell in row:
-                if REP.isGhost(cell):
-                    rt.append(6)
-                else:
-                    rt.append(cell)
-
-        return rt
-
     def nextStep(self):
-        state: List[int] = self.processState(self.game)
-        qVals: List[float] = self.network.predict(np.array([state]))
-        self.game.pacman.setDir(np.argmax(qVals))
-
         gameover, won, atePellet, ateGhost, pacmanMoved = self.game.nextStep()
 
         if gameover or won:
@@ -67,7 +49,7 @@ class App:
 if __name__ == "__main__":
     parent: str = "out"
     runPref: str = "RL1802_1614"
-    epCount: int = 5000
+    epCount: int = 12000
 
     app = App("./{}/{}/rl_nnconf_ep{}.json".format(parent, runPref, epCount))
     app.run()

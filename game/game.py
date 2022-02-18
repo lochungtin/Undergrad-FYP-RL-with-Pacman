@@ -2,8 +2,7 @@ from copy import deepcopy
 from tkinter import Canvas
 from typing import List, Tuple
 
-from agents.base import GhostAgent
-from agents.pacman import PacmanBaseAgent
+from agents.base import DirectionAgent, GhostAgent
 from data.config import CONFIG
 from data.data import DATA, POS, REP
 from game.components.pellet import Pellet, PowerPellet, PelletType
@@ -14,7 +13,7 @@ from utils.coordinate import CPair
 class Game:
     def __init__(
         self,
-        pacman: PacmanBaseAgent,
+        pacman: DirectionAgent,
         blinky: GhostAgent = None,
         inky: GhostAgent = None,
         clyde: GhostAgent = None,
@@ -31,7 +30,7 @@ class Game:
         self.pathfinder: PathFinder = PathFinder()
 
         # create agents
-        self.pacman: PacmanBaseAgent = pacman
+        self.pacman: DirectionAgent = pacman
         self.state[POS.PACMAN.row][POS.PACMAN.col] = REP.PACMAN
 
         self.ghosts: List[GhostAgent] = []
