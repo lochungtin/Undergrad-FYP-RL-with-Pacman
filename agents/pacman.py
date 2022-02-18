@@ -1,4 +1,8 @@
-from typing import List
+from typing import List, TYPE_CHECKING
+import numpy as np
+
+if TYPE_CHECKING:
+    from game.game import Game
 
 from ai.deepq.neuralnet import NeuralNet
 from agents.base import DQLAgent, DirectionAgent
@@ -17,13 +21,19 @@ class PacmanDQLAgent(DQLAgent):
         super().__init__(POS.PACMAN, REP.PACMAN, neuralNet)
 
     # preprocess game state for neural network
-    def processGameState(self, state: List[List[int]]) -> List[int]:
+    def processGameState(self, game: "Game") -> List[int]:
         rt: List[int] = []
 
-        for row in state:
+        for row in game.state:
             for cell in row:
-                if REP.isGhost(cell):
-                    rt.append(6)
+                if cell == REP.BLINKY:
+                    rt.append((6 + game.blinky.isFrightened * 4) * game.blinky.isDead * 1)
+                elif cell == REP.INKY:
+                    rt.append((6 + game.inky.isFrightened * 4) * game.inky.isDead * 1)
+                elif cell == REP.CLYDE:
+                    rt.append((6 + game.clyde.isFrightened * 4) * game.clyde.isDead * 1)
+                elif cell == REP.PINKY:
+                    rt.append((6 + game.pinky.isFrightened * 4) * game.pinky.isDead * 1)
                 else:
                     rt.append(cell)
 

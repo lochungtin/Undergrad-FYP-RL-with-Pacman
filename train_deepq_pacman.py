@@ -31,6 +31,7 @@ class DeepQLTraining:
 
         # setup neural network
         self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
+        # self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1802_1614", 20000))
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -151,8 +152,14 @@ class DeepQLTraining:
 
         for row in game.state:
             for cell in row:
-                if REP.isGhost(cell):
-                    rt.append(6)
+                if cell == REP.BLINKY:
+                    rt.append(6 + game.blinky.isFrightened * 4)
+                elif cell == REP.INKY:
+                    rt.append(6 + game.inky.isFrightened * 4)
+                elif cell == REP.CLYDE:
+                    rt.append(6 + game.clyde.isFrightened * 4)
+                elif cell == REP.PINKY:
+                    rt.append(6 + game.pinky.isFrightened * 4)
                 else:
                     rt.append(cell)
 

@@ -186,7 +186,7 @@ class DQLAgent(DirectionAgent):
     # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         # get action vals
-        state: List[int] = self.processGameState(game.state)
+        state: List[int] = self.processGameState(game)
         qVals: List[float] = self.neuralNet.predict(np.array([state]))
 
         # get optimal action
@@ -199,7 +199,7 @@ class DQLAgent(DirectionAgent):
 
     # ===== REQUIRED TO OVERRIDE =====
     # preprocess game state for neural network
-    def processGameState(self, state: List[List[int]]) -> List[int]:
+    def processGameState(self, game: "Game") -> List[int]:
         raise NotImplementedError
 
 

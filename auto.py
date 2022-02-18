@@ -33,7 +33,8 @@ class App:
         self.display: Display = Display(self.main)
         self.display.newGame(self.game)
 
-        self.tc: TimeController = TimeController(gameConfig["gameSpeed"], self.nextStep)
+        self.tc: TimeController = TimeController(
+            gameConfig["gameSpeed"], self.nextStep)
 
         _thread.start_new_thread(self.tc.start, ())
 
@@ -52,27 +53,25 @@ class App:
 
 # load neural network from config json
 def loadNeuralNet(parentFolder: str, prefix: str, ep: int) -> NeuralNet:
-    filename: str = "./{}/{}/rl_nnconf_ep{}.json".format(parentFolder, prefix, ep)
-    return NeuralNet.load(filename)
+    return NeuralNet.load("./{}/{}/rl_nnconf_ep{}.json".format(parentFolder, prefix, ep))
 
 
 # load genome from config json
 def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
-    filename: str = "./{}/{}/ga_nnconf_ep{}.json".format(parentFolder, prefix, gen)
-    return GenomeUtils.load(filename)
+    return GenomeUtils.load("./{}/{}/ga_nnconf_ep{}.json".format(parentFolder, prefix, gen))
 
 
 if __name__ == "__main__":
     gameConfig: dict[str, object] = {
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL1802_1614", 14500)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL1802_2056", 2000)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,
             "pinky": PinkyClassicAgent(),
         },
         "enablePwrPlt": True,
-        "gameSpeed": 0.1,
+        "gameSpeed": 0.10,
     }
 
     App(gameConfig).run()
