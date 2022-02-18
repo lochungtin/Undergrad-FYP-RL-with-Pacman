@@ -8,21 +8,14 @@
             "name": "Main Game Script",
             "type": "python",
             "request": "launch",
-            "program": "main.py",
+            "program": "play.py",
             "console": "integratedTerminal"
         },
         {
-            "name": "Pacman NE Training Script",
+            "name": "Auto Game Script",
             "type": "python",
             "request": "launch",
-            "program": "train_neat_pacman.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Pacman NE Review Script",
-            "type": "python",
-            "request": "launch",
-            "program": "view_neat_pacman.py",
+            "program": "auto.py",
             "console": "integratedTerminal"
         },
         {
@@ -30,13 +23,6 @@
             "type": "python",
             "request": "launch",
             "program": "train_deepq_pacman.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Pacman DQ Review Script",
-            "type": "python",
-            "request": "launch",
-            "program": "view_deepq_pacman.py",
             "console": "integratedTerminal"
         },
     ]

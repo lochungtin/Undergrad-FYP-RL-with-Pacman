@@ -24,7 +24,7 @@ class App:
         )
 
         self.main: Tk = Tk()
-        self.main.title("NEAT Performance View")
+        self.main.title("Auto Pacman")
 
         self.display: Display = Display(self.main)
         self.display.newGame(self.game)
@@ -49,7 +49,7 @@ class App:
 if __name__ == "__main__":
     parent: str = "out"
     runPref: str = "RL1802_1614"
-    epCount: int = 12000
+    epCount: int = 13000
 
     app = App("./{}/{}/rl_nnconf_ep{}.json".format(parent, runPref, epCount))
     app.run()
