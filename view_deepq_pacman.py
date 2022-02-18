@@ -35,7 +35,16 @@ class App:
         _thread.start_new_thread(self.timeController.start, ())
 
     def processState(self, game: Game) -> List[int]:
-        return np.array(game.state).flatten()
+        rt: List[int] = []
+
+        for row in game.state:
+            for cell in row:
+                if REP.isGhost(cell):
+                    rt.append(6)
+                else:
+                    rt.append(cell)
+
+        return rt
 
     def nextStep(self):
         state: List[int] = self.processState(self.game)

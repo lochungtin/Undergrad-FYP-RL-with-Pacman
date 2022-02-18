@@ -1,8 +1,7 @@
 from copy import deepcopy
 from datetime import datetime
-from random import random
 from tkinter import Tk
-from typing import List, Tuple
+from typing import List
 import _thread
 import numpy as np
 import os
@@ -14,7 +13,9 @@ from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
+from agents.inky import InkyClassicAgent
 from agents.clyde import ClydeClassicAgent
+from agents.pinky import PinkyClassicAgent
 from data.data import POS, REP
 from game.game import Game
 from gui.display import Display
@@ -31,8 +32,7 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        self.network: NeuralNet =  NeuralNet(trainingConfig["nnConfig"])
-        # self.network: NeuralNet = NeuralNet.load("./out/RL1802_1240/rl_nnconf_ep10000.json")
+        self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -70,7 +70,7 @@ class DeepQLTraining:
             self.training()
 
     def newGame(self) -> Game:
-        return Game(DirectionAgent(POS.PACMAN, REP.PACMAN), blinky=BlinkyClassicAgent())
+        return Game(DirectionAgent(POS.PACMAN, REP.PACMAN), blinky=BlinkyClassicAgent(), pinky=PinkyClassicAgent())
 
     # ===== main training function =====
     def training(self) -> None:
@@ -246,7 +246,7 @@ if __name__ == "__main__":
                 "batchSize": 8,
                 "updatePerStep": 4,
             },
-            "saveOpt": 250,
+            "saveOpt": 500,
             "simulationCap": 100000,
             "tau": 0.001,
         },
