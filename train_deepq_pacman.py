@@ -7,21 +7,17 @@ import _thread
 import numpy as np
 import os
 import time
-from agents.base import DGhostAgent, DirectionAgent
 
+from agents.base import DirectionAgent
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.pinky import PinkyClassicAgent
-from data.config import CONFIG
-from data.data import BOARD, POS, REP
+from data.data import POS, REP
 from game.game import Game
 from gui.display import Display
-from utils.coordinate import CPair
 
 
 class DeepQLTraining:
@@ -35,8 +31,8 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        # NeuralNet(trainingConfig["nnConfig"])
-        self.network: NeuralNet = NeuralNet.load("./out/RL1802_1039/rl_nnconf_ep6500.json")
+        self.network: NeuralNet =  NeuralNet(trainingConfig["nnConfig"])
+        # self.network: NeuralNet = NeuralNet.load("./out/RL1802_1240/rl_nnconf_ep10000.json")
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -56,10 +52,6 @@ class DeepQLTraining:
         self.pState: List[List[int]] = None
         self.pAction: int = None
 
-        # simluation config
-        self.enableGhost: bool = trainingConfig["simulationConfig"]["ghost"]
-        self.enablePwrPlt: bool = trainingConfig["simulationConfig"]["pwrplt"]
-
         self.simCap: int = trainingConfig["simulationCap"]
         self.saveOpt: int = trainingConfig["saveOpt"]
 
@@ -78,15 +70,7 @@ class DeepQLTraining:
             self.training()
 
     def newGame(self) -> Game:
-        return Game(
-            DirectionAgent(POS.PACMAN, REP.PACMAN),
-            BlinkyClassicAgent(),
-            DGhostAgent(POS.INKY, REP.INKY),
-            DGhostAgent(POS.CLYDE, REP.CLYDE),
-            DGhostAgent(POS.PINKY, REP.PINKY),
-            enableGhost=self.enableGhost,
-            enablePwrPlt=self.enablePwrPlt,
-        )
+        return Game(DirectionAgent(POS.PACMAN, REP.PACMAN), blinky=BlinkyClassicAgent())
 
     # ===== main training function =====
     def training(self) -> None:
@@ -108,7 +92,7 @@ class DeepQLTraining:
 
         eps: int = 0
         while eps < self.simCap:
-            gameover, won, atePellet, pacmanMoved = game.nextStep()
+            gameover, won, atePellet, ateGhost, pacmanMoved = game.nextStep()
 
             # enable display
             if self.hasDisplay:
@@ -117,9 +101,9 @@ class DeepQLTraining:
 
             if gameover:
                 if won:
-                    self.agentEnd(700)
+                    self.agentEnd(1000)
                 else:
-                    self.agentEnd(-(game.pelletCount * 50))
+                    self.agentEnd(-game.pelletCount * 50)
 
                 avgRScore = (avgRScore * eps + self.rSum) / (eps + 1)
                 avgSteps = (avgSteps * eps + self.timesteps) / (eps + 1)
@@ -157,13 +141,24 @@ class DeepQLTraining:
                     reward = -game.pelletCount
                 if atePellet:
                     reward = 10
+                if ateGhost:
+                    reward = 100
 
                 action = self.agentStep(self.processState(game), reward)
                 game.pacman.setDir(action)
 
     # ===== auxiliary training functions =====
     def processState(self, game: Game) -> List[int]:
-        return np.array(game.state).flatten()
+        rt: List[int] = []
+
+        for row in game.state:
+            for cell in row:
+                if REP.isGhost(cell):
+                    rt.append(6)
+                else:
+                    rt.append(cell)
+
+        return rt
 
     # softmax policy for probabilistic action selection
     def policy(self, state: List[int]):
@@ -253,10 +248,6 @@ if __name__ == "__main__":
             },
             "saveOpt": 250,
             "simulationCap": 100000,
-            "simulationConfig": {
-                "ghost": True,
-                "pwrplt": True,
-            },
             "tau": 0.001,
         },
         False,

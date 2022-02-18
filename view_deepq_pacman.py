@@ -4,29 +4,21 @@ import _thread
 import numpy as np
 
 from ai.deepq.neuralnet import NeuralNet
-from ai.deepq.utils import NNUtils
-from agents.base import DirectionAgent, DGhostAgent
+from agents.base import DirectionAgent
 from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.pinky import PinkyClassicAgent
-from data.data import BOARD, POS, REP
-from data.config import CONFIG
+from data.data import POS, REP
 from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display
-from utils.coordinate import CPair
 
 
 class App:
     def __init__(self, filename) -> None:
         self.game = Game(
             DirectionAgent(POS.PACMAN, REP.PACMAN),
-            BlinkyClassicAgent(),
-            DGhostAgent(POS.INKY, REP.INKY),
-            DGhostAgent(POS.CLYDE, REP.CLYDE),
-            DGhostAgent(POS.PINKY, REP.PINKY),
-            enableGhost=True,
+            blinky=BlinkyClassicAgent(),
+            clyde=ClydeClassicAgent(),
             enablePwrPlt=False,
         )
 
@@ -50,7 +42,7 @@ class App:
         qVals: List[float] = self.network.predict(np.array([state]))
         self.game.pacman.setDir(np.argmax(qVals))
 
-        gameover, won, atePellet, pacmanMoved = self.game.nextStep()
+        gameover, won, atePellet, ateGhost, pacmanMoved = self.game.nextStep()
 
         if gameover or won:
             self.timeController.end()

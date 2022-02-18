@@ -15,15 +15,13 @@ class Game:
     def __init__(
         self,
         pacman: PacmanBaseAgent,
-        blinky: GhostAgent,
-        inky: GhostAgent,
-        clyde: GhostAgent,
-        pinky: GhostAgent,
-        enableGhost: bool = True,
+        blinky: GhostAgent = None,
+        inky: GhostAgent = None,
+        clyde: GhostAgent = None,
+        pinky: GhostAgent = None,
         enablePwrPlt: bool = True,
     ) -> None:
         # save game config
-        self.enableGhost: bool = enableGhost
         self.enablePwrPlt: bool = enablePwrPlt
 
         # set state from template
@@ -36,17 +34,28 @@ class Game:
         self.pacman: PacmanBaseAgent = pacman
         self.state[POS.PACMAN.row][POS.PACMAN.col] = REP.PACMAN
 
-        if enableGhost:
-            self.blinky: GhostAgent = blinky
-            self.inky: GhostAgent = inky
-            self.clyde: GhostAgent = clyde
-            self.pinky: GhostAgent = pinky
-            self.ghosts: List[GhostAgent] = [self.blinky, self.inky, self.clyde, self.pinky]
+        self.ghosts: List[GhostAgent] = []
 
-            for ghost in self.ghosts:
-                self.state[ghost.pos.row][ghost.pos.col] = ghost.repId
-                if ghost.isClassic:
-                    ghost.bindPathFinder(self.pathfinder)
+        self.blinky: GhostAgent = blinky
+        if hasattr(blinky, "pos"):
+            self.ghosts.append(blinky)
+
+        self.inky: GhostAgent = inky
+        if hasattr(inky, "pos"):
+            self.ghosts.append(inky)
+
+        self.clyde: GhostAgent = clyde
+        if hasattr(clyde, "pos"):
+            self.ghosts.append(clyde)
+
+        self.pinky: GhostAgent = pinky
+        if hasattr(pinky, "pos"):
+            self.ghosts.append(pinky)
+
+        for ghost in self.ghosts:
+            self.state[ghost.pos.row][ghost.pos.col] = ghost.repId
+            if ghost.isClassic:
+                ghost.bindPathFinder(self.pathfinder)
 
         # create pellets and update state
         self.pellets: List[List[PelletType]] = []
@@ -85,7 +94,7 @@ class Game:
         self.canvas = canvas
 
     # proceed to next time step
-    def nextStep(self) -> Tuple[bool, bool, bool]:
+    def nextStep(self) -> Tuple[bool, bool, bool, bool]:
         self.timesteps += 1
 
         # update pacman location
@@ -95,16 +104,17 @@ class Game:
         self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
         self.state[pCurPos.row][pCurPos.col] = REP.PACMAN
 
+        ateGhost: bool = False
         # handle ghost collision
-        if self.enableGhost:
-            for ghost in self.ghosts:
-                if pCurPos == ghost.pos:
-                    if not ghost.isDead:
-                        if ghost.isFrightened:
-                            ghost.isFrightened = False
-                            ghost.isDead = True
-                        else:
-                            return True, False, False, pacmanMoved
+        for ghost in self.ghosts:
+            if pCurPos == ghost.pos:
+                if not ghost.isDead:
+                    if ghost.isFrightened:
+                        ghost.isFrightened = False
+                        ghost.isDead = True
+                        ateGhost = True
+                    else:
+                        return True, False, False, ateGhost, pacmanMoved
 
         # perform actions if new position had pellets
         atePellet: bool = prevState == REP.PELLET or prevState == REP.PWRPLT
@@ -132,46 +142,46 @@ class Game:
                 return False, True, False, pacmanMoved
 
         # update ghosts' locations
-        if self.enableGhost:
-            for ghost in self.ghosts:
-                gCurPos, gPrevPos, ghostMoved = ghost.getNextPos(self)
+        for ghost in self.ghosts:
+            gCurPos, gPrevPos, ghostMoved = ghost.getNextPos(self)
 
-                # handle ghost collision
-                if gCurPos == pCurPos:
-                    if not ghost.isDead:
-                        if ghost.isFrightened:
-                            ghost.isFrightened = False
-                            ghost.isDead = True
-                        else:
-                            return True, False, False, pacmanMoved
-
-                pellet: PelletType = self.pellets[gPrevPos.row][gPrevPos.col]
-                if pellet != None and pellet.valid:
-                    self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
-                else:
-                    self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
-
-                self.state[gCurPos.row][gCurPos.col] = ghost.repId
-
-            # update counter and ghost modes
-            if self.stepCount > -1:
-                self.stepCount -= 1
-
-            if self.stepCount < DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][1]:
-                self.ghostSchedule += 1
-
-                # set all ghost to new mode
-                for ghost in self.ghosts:
-                    if ghost.isClassic:
-                        ghost.mode = DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][0]
-
-            # update frightened state
-            if self.ghostFrightenedCount > -1:
-                self.ghostFrightenedCount -= 1
-
-                # set all ghost to not frightened after some time steps
-                if self.ghostFrightenedCount == -1:
-                    for ghost in self.ghosts:
+            # handle ghost collision
+            if gCurPos == pCurPos:
+                if not ghost.isDead:
+                    if ghost.isFrightened:
                         ghost.isFrightened = False
+                        ghost.isDead = True
+                        ateGhost = True
+                    else:
+                        return True, False, False, ateGhost, pacmanMoved
 
-        return False, False, atePellet, pacmanMoved
+            pellet: PelletType = self.pellets[gPrevPos.row][gPrevPos.col]
+            if pellet != None and pellet.valid:
+                self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
+            else:
+                self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
+
+            self.state[gCurPos.row][gCurPos.col] = ghost.repId
+
+        # update counter and ghost modes
+        if self.stepCount > -1:
+            self.stepCount -= 1
+
+        if self.stepCount < DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][1]:
+            self.ghostSchedule += 1
+
+            # set all ghost to new mode
+            for ghost in self.ghosts:
+                if ghost.isClassic:
+                    ghost.mode = DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][0]
+
+        # update frightened state
+        if self.ghostFrightenedCount > -1:
+            self.ghostFrightenedCount -= 1
+
+            # set all ghost to not frightened after some time steps
+            if self.ghostFrightenedCount == -1:
+                for ghost in self.ghosts:
+                    ghost.isFrightened = False
+
+        return False, False, atePellet, ateGhost, pacmanMoved
