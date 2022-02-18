@@ -13,8 +13,6 @@ from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.clyde import ClydeClassicAgent
 from agents.pinky import PinkyClassicAgent
 from data.data import POS, REP
 from game.game import Game
