@@ -31,7 +31,7 @@ class DeepQLTraining:
 
         # setup neural network
         self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
-        # self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1802_1614", 20000))
+        # self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1802_2211", 11500))
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -69,7 +69,7 @@ class DeepQLTraining:
             self.training()
 
     def newGame(self) -> Game:
-        return Game(DirectionAgent(POS.PACMAN, REP.PACMAN), blinky=BlinkyClassicAgent(), pinky=PinkyClassicAgent())
+        return Game(DirectionAgent(POS.PACMAN, REP.PACMAN), blinky=BlinkyClassicAgent())
 
     # ===== main training function =====
     def training(self) -> None:
@@ -98,7 +98,7 @@ class DeepQLTraining:
                 self.display.rerender(atePellet)
                 time.sleep(0.01)
 
-            if gameover:
+            if gameover or game.timesteps > 1000:
                 if won:
                     self.agentEnd(1000)
                 else:
@@ -114,7 +114,7 @@ class DeepQLTraining:
                     self.network.save(eps, runPref)
 
                 print(
-                    "ep{}  \tr[{} | {}]  \ts[{} | {}]  \tp[{} | {}]  \tw[{}]".format(
+                    "ep{}\tr[{} | {}]\ts[{} | {}]\tp[{} | {}]\tw[{}]".format(
                         eps,
                         self.rSum,
                         round(avgRScore, 2),
@@ -153,15 +153,18 @@ class DeepQLTraining:
         for row in game.state:
             for cell in row:
                 if cell == REP.BLINKY:
-                    rt.append(6 + game.blinky.isFrightened * 4)
+                    rt.append((6 + game.blinky.isFrightened * 4) * (not game.blinky.isDead) * 1)
                 elif cell == REP.INKY:
-                    rt.append(6 + game.inky.isFrightened * 4)
+                    rt.append((6 + game.inky.isFrightened * 4) * (not game.inky.isDead) * 1)
                 elif cell == REP.CLYDE:
-                    rt.append(6 + game.clyde.isFrightened * 4)
+                    rt.append((6 + game.clyde.isFrightened * 4) * (not game.clyde.isDead) * 1)
                 elif cell == REP.PINKY:
-                    rt.append(6 + game.pinky.isFrightened * 4)
+                    rt.append((6 + game.pinky.isFrightened * 4) * (not game.pinky.isDead) * 1)
                 else:
                     rt.append(cell)
+
+
+        print(np.array(rt).reshape(15, 13))
 
         return rt
 

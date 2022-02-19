@@ -95,7 +95,7 @@ class POS:
 
     # special locations
     # ghost house reset location
-    GHOST_HOUSE_CENTER: CPair = CPair(1, 1)
+    GHOST_HOUSE_CENTER: CPair = CPair(6, 6)
 
     # scatter mode target corners
     BLINKY_CORNER: CPair = CPair(1, 1)
