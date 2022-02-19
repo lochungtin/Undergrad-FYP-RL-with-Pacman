@@ -27,6 +27,10 @@ class App:
             enablePwrPlt=gameConfig["enablePwrPlt"],
         )
 
+        self.pellets: int = 0
+        self.kills: int = 0
+        self.stationary: int = 0
+
         self.main: Tk = Tk()
         self.main.title("Auto Pacman Game Viewer")
 
@@ -41,7 +45,24 @@ class App:
     def nextStep(self):
         gameover, won, atePellet, ateGhost, pacmanMoved = self.game.nextStep()
 
+        if atePellet:
+            self.pellets += 1
+
+        if ateGhost: 
+            self.kills += 1
+
+        if not pacmanMoved:
+            self.stationary += 1
+
         if gameover or won:
+            print("P: {}/{} K: {} S: {}/{}".format(
+                self.pellets,
+                self.pellets + self.game.pelletCount,
+                self.kills,
+                self.stationary,
+                self.game.timesteps,
+            ))
+
             self.tc.end()
             self.main.destroy()
 
@@ -64,11 +85,11 @@ def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
 if __name__ == "__main__":
     gameConfig: dict[str, object] = {
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL1902_1137", 5000)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL1902_1730", 20000)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,
-            "pinky": PinkyClassicAgent(),
+            "pinky": None,
         },
         "enablePwrPlt": True,
         "gameSpeed": 0.10,

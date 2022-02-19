@@ -30,8 +30,8 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
-        # self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1802_2211", 11500))
+        # self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
+        self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1902_1730", 20000))
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -113,13 +113,10 @@ class DeepQLTraining:
 
                 eps += 1
 
-                if eps % self.saveOpt == 0:
-                    self.network.save(eps, runPref)
-
                 print(
                     "ep{}\tr[{} | {}]\ts[{} | {}]\tp[{} | {}]\tw[{}]".format(
                         eps,
-                        self.rSum,
+                        round(self.rSum, 2),
                         round(avgRScore, 2),
                         self.timesteps,
                         round(avgSteps, 2),
@@ -129,6 +126,9 @@ class DeepQLTraining:
                     )
                 )
 
+                if eps % self.saveOpt == 0:
+                    self.network.save(eps, runPref)
+
                 game = self.newGame()
                 if self.hasDisplay:
                     self.display.newGame(game)
@@ -137,14 +137,14 @@ class DeepQLTraining:
                 game.pacman.setDir(action)
 
             else:
-                reward: int = -game.pelletCount * 2
+                reward: int = -game.pelletCount / 3
 
-                if pacmanMoved:
+                if not pacmanMoved:
                     reward = -game.pelletCount
                 if atePellet:
-                    reward = 10
+                    reward = 5
                 if ateGhost:
-                    reward = 100
+                    reward = 10
 
                 action = self.agentStep(self.processState(game), reward)
                 game.pacman.setDir(action)
@@ -237,7 +237,9 @@ if __name__ == "__main__":
                 "stepSize": 1e-3,
                 "bM": 0.9,
                 "bV": 0.999,
-                "epsilon": 0.001,
+                "epsilon": 0.1,
+                "decay": 0.99999,
+                "decayMax": 0.001,
             },
             "gamma": 0.95,
             "nnConfig": {
@@ -261,3 +263,4 @@ if __name__ == "__main__":
         False,
     )
     training.start()
+

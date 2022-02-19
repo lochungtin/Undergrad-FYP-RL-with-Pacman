@@ -12,6 +12,8 @@ class Adam:
         self.bMProd: float = self.bM
         self.bVProd: float = self.bV
         self.epsilon: float = config["epsilon"]
+        self.eDecay: float = config["decay"]
+        self.eDecayMax: float = config["decayMax"]
 
         # initialise mean variance value storage
         self.m = [dict() for i in range(1, len(self.layerSizes))]
@@ -37,5 +39,8 @@ class Adam:
 
         self.bMProd *= self.bM
         self.bVProd *= self.bV
+
+        if self.epsilon > self.eDecayMax:
+            self.epsilon *= self.eDecay
 
         return vals
