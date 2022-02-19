@@ -64,7 +64,7 @@ def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
 if __name__ == "__main__":
     gameConfig: dict[str, object] = {
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL1802_2211", 11500)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL1902_1137", 5000)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,

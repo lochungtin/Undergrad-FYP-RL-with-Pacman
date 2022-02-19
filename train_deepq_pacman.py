@@ -69,7 +69,10 @@ class DeepQLTraining:
             self.training()
 
     def newGame(self) -> Game:
-        return Game(DirectionAgent(POS.PACMAN, REP.PACMAN), blinky=BlinkyClassicAgent())
+        return Game(
+            DirectionAgent(POS.PACMAN, REP.PACMAN),
+            blinky=BlinkyClassicAgent(),
+        )
 
     # ===== main training function =====
     def training(self) -> None:
@@ -153,18 +156,15 @@ class DeepQLTraining:
         for row in game.state:
             for cell in row:
                 if cell == REP.BLINKY:
-                    rt.append((6 + game.blinky.isFrightened * 4) * (not game.blinky.isDead) * 1)
+                    rt.append(6 + game.blinky.isFrightened * 4)
                 elif cell == REP.INKY:
-                    rt.append((6 + game.inky.isFrightened * 4) * (not game.inky.isDead) * 1)
+                    rt.append(6 + game.inky.isFrightened * 4)
                 elif cell == REP.CLYDE:
-                    rt.append((6 + game.clyde.isFrightened * 4) * (not game.clyde.isDead) * 1)
+                    rt.append(6 + game.clyde.isFrightened * 4)
                 elif cell == REP.PINKY:
-                    rt.append((6 + game.pinky.isFrightened * 4) * (not game.pinky.isDead) * 1)
+                    rt.append(6 + game.pinky.isFrightened * 4)
                 else:
                     rt.append(cell)
-
-
-        print(np.array(rt).reshape(15, 13))
 
         return rt
 
