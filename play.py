@@ -44,7 +44,7 @@ class App:
 
     def newGame(self):
         return Game(
-            PlayableAgent(), BlinkyClassicAgent(), InkyClassicAgent(), ClydeClassicAgent(), PinkyClassicAgent(), True
+            PlayableAgent(), BlinkyClassicAgent()
         )
 
     # trigger Game.nextStep() and update dislay, reset if gameover
@@ -52,8 +52,12 @@ class App:
         # update game, proceed to next step
         gameover, won, atePellet, ateGhost, pacmanMoved = self.game.nextStep()
 
+        print(gameover, won, self.game.pelletCount)
+
         # handle gameover
-        if gameover:
+        if gameover or won:
+            print(self.game.timesteps)
+
             # create new game
             self.game = self.newGame()
             self.display.newGame(self.game)

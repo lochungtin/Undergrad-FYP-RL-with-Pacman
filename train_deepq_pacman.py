@@ -14,7 +14,7 @@ from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
 from agents.pinky import PinkyClassicAgent
-from data.data import POS, REP
+from data.data import DATA, POS, REP
 from game.game import Game
 from gui.display import Display
 
@@ -30,8 +30,8 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        # self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
-        self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1902_1730", 20000))
+        self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
+        # self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1902_1730", 20000))
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -88,6 +88,8 @@ class DeepQLTraining:
         action: int = self.agentInit(self.processState(game))
         game.pacman.setDir(action)
 
+        tPellets: int = DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT
+
         avgRScore: float = 0
         avgSteps: float = 0
         avgPCount: float = 0
@@ -101,26 +103,29 @@ class DeepQLTraining:
                 self.display.rerender(atePellet)
                 time.sleep(0.01)
 
-            if gameover or game.timesteps > 1000:
+            if gameover or game.timesteps > 300:
+
+                pCount: int = tPellets - game.pelletCount
+
                 if won:
                     self.agentEnd(1000)
                 else:
-                    self.agentEnd(-game.pelletCount * 50)
+                    self.agentEnd(-1000)
 
                 avgRScore = (avgRScore * eps + self.rSum) / (eps + 1)
                 avgSteps = (avgSteps * eps + self.timesteps) / (eps + 1)
-                avgPCount = (avgPCount * eps + game.pelletCount) / (eps + 1)
+                avgPCount = (avgPCount * eps + pCount) / (eps + 1)
 
                 eps += 1
 
                 print(
-                    "ep{}\tr[{} | {}]\ts[{} | {}]\tp[{} | {}]\tw[{}]".format(
+                    "ep{}\tr[{} | {}]\ts[{} | {}]\tp[{}/68 | {}/68]\tw[{}]".format(
                         eps,
                         round(self.rSum, 2),
                         round(avgRScore, 2),
                         self.timesteps,
                         round(avgSteps, 2),
-                        game.pelletCount,
+                        pCount,
                         round(avgPCount, 2),
                         won,
                     )
@@ -137,10 +142,10 @@ class DeepQLTraining:
                 game.pacman.setDir(action)
 
             else:
-                reward: int = -game.pelletCount / 3
+                reward: int = -1
 
                 if not pacmanMoved:
-                    reward = -game.pelletCount
+                    reward = -5
                 if atePellet:
                     reward = 5
                 if ateGhost:
@@ -238,7 +243,7 @@ if __name__ == "__main__":
                 "bM": 0.9,
                 "bV": 0.999,
                 "epsilon": 0.1,
-                "decay": 0.99999,
+                "decay": 0.9999,
                 "decayMax": 0.001,
             },
             "gamma": 0.95,
@@ -263,4 +268,3 @@ if __name__ == "__main__":
         False,
     )
     training.start()
-

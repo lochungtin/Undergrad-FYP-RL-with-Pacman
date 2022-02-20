@@ -138,7 +138,7 @@ class Game:
 
             # end game if all pellets have been eaten
             if self.pelletCount == 0:
-                return False, True, False, pacmanMoved
+                return False, True, False, ateGhost, pacmanMoved
 
         # update ghosts' locations
         for ghost in self.ghosts:
