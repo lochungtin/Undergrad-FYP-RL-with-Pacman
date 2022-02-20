@@ -21,7 +21,7 @@ class GHOST_MODE:
 # game related data constants
 class DATA:
     # number of pellets
-    TOTAL_PELLET_COUNT: int = 66
+    TOTAL_PELLET_COUNT: int = 68
     TOTAL_PWRPLT_COUNT: int = 2
 
     CRUISE_ELROY_TRIGGER: int = 12
