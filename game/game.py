@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 from agents.base import DirectionAgent, GhostAgent
 from data.config import BOARD, POS
-from data.data import DATA, REP
+from data.data import DATA, GHOST_MODE, REP
 from game.components.pellet import Pellet, PowerPellet
 from game.utils.pathfinder import PathFinder
 from game.utils.cell import Cell
@@ -63,6 +63,10 @@ class Game:
                 self.ghostList.append(ghost)
                 self.getCell(ghost.pos).setVal(ghost.repId)
 
+        self.ghostModeIndex: int = 0
+        self.ghostMode: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
+        self.ghostModeCounter: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
+
         # state cell connections
         # loop connection
         self.getCell(POS.LOOP_POS[0]).setAdj(DIR.LF, self.getCell(POS.LOOP_POS[1]))
@@ -87,7 +91,6 @@ class Game:
 
         # pathfinder
         self.pf: PathFinder = PathFinder(self.state)
-
 
         for ghost in self.ghostList:
             if ghost.isClassic:
@@ -158,9 +161,20 @@ class Game:
         # timestep management
         self.timesteps += 1
 
-        if self.pwrpltEffectCounter > 0:
+        if self.pwrpltEffectCounter > -1:
             self.pwrpltEffectCounter -= 1
 
+        newGhostMode: bool = False
+        if self.ghostModeCounter > -1:
+            self.ghostModeCounter -= 1
+
+            if self.ghostModeCounter == 0:
+                self.ghostModeIndex += 1
+
+                self.ghostMode: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
+                self.ghostModeCounter: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
+
+                newGhostMode = True
 
         self.lastPelletId = -1
         self.lastPwrPltId = -1
@@ -181,9 +195,13 @@ class Game:
 
         # update ghost location
         for ghost in self.ghostList:
+            if newGhostMode:
+                if ghost.isClassic:
+                    ghost.mode = self.ghostMode
+
             gPos, gPrevPos, gMoved = ghost.getNextPos(self)
-            print(ghost.path)
             if gMoved:
                 self.moveGhost(gPos, gPrevPos)
 
         return False, self.pelletProgress == 0
+

@@ -135,8 +135,6 @@ class ClassicGhostAgent(GhostAgent):
             # get target tile
             targetTile: CPair = self.getTargetTile(game)
 
-            print(targetTile)
-
             # looping mechanic
             if self.pos == targetTile:
                 targetTile = self.prevPos

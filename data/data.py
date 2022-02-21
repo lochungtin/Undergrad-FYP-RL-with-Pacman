@@ -22,20 +22,19 @@ class DATA:
     CRUISE_ELROY_TRIGGER: int = 12
 
     # ghost mode and step counter
-    TOTAL_STEP_COUNT: int = 84
 
     GHOST_EXIT_INTERVAL: int = 3
 
     GHOST_FRIGHTENED_SPEED_REDUCTION_RATE: int = 3
     GHOST_FRIGHTENED_STEP_COUNT: int = 7
     GHOST_MODE_SCHEDULE: List[Tuple[int, int]] = [
-        (GHOST_MODE.SCATTER, 77),
-        (GHOST_MODE.CHASE, 57),
-        (GHOST_MODE.SCATTER, 50),
-        (GHOST_MODE.CHASE, 30),
-        (GHOST_MODE.SCATTER, 25),
-        (GHOST_MODE.CHASE, 5),
-        (GHOST_MODE.SCATTER, 0),
+        (GHOST_MODE.SCATTER, 9),
+        (GHOST_MODE.CHASE, 15),
+        (GHOST_MODE.SCATTER, 7),
+        (GHOST_MODE.CHASE, 17),
+        (GHOST_MODE.SCATTER, 5),
+        (GHOST_MODE.CHASE, 19),
+        (GHOST_MODE.SCATTER, 1),
         (GHOST_MODE.CHASE, -1),
     ]
 

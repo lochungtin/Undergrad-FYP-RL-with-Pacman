@@ -36,7 +36,7 @@ class InkyClassicAgent(ClassicGhostAgent):
                 pivot = pivot.move(DIR.LF)
 
         # reflect blinky's position wrt to reflection tile to get target tile
-        return game.blinky.pos.reflect(pivot)
+        return game.ghosts[REP.BLINKY].pos.reflect(pivot)
 
 
 # classic aggressive ai agent for inky
@@ -62,4 +62,4 @@ class InkyClassicAggrAgent(ClassicGhostAgent):
                 pivot = pivot.move(DIR.LF)
 
         # reflect blinky's position wrt to reflection tile to get target tile
-        return game.blinky.pos.reflect(pivot)
+        return game.ghosts[REP.BLINKY].pos.reflect(pivot)

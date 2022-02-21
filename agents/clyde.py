@@ -26,7 +26,7 @@ class ClydeClassicAgent(ClassicGhostAgent):
 
         # chase mode
         if self.pos != game.pacman.pos:
-            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction).path) < 8:
+            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction)) < 4:
                 return POS.CLYDE_CORNER
 
         return game.pacman.pos
@@ -45,7 +45,7 @@ class ClydeClassicAggrAgent(ClassicGhostAgent):
 
         # chase mode
         if self.pos != game.pacman.pos:
-            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction).path) < 8:
+            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction)) < 4:
                 return POS.CLYDE_CORNER
 
         return game.pacman.pos
