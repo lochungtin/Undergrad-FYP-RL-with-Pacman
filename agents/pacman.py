@@ -9,6 +9,9 @@ from agents.base import DQLAgent, DirectionAgent
 from data.data import POS, REP
 
 
+def pacmanFeatureExtraction(game: "Game") -> List[int]:
+    pass
+
 # playable keyboard agent for pacman
 class PlayableAgent(DirectionAgent):
     def __init__(self) -> None:
@@ -22,19 +25,4 @@ class PacmanDQLAgent(DQLAgent):
 
     # preprocess game state for neural network
     def processGameState(self, game: "Game") -> List[int]:
-        rt: List[int] = []
-
-        for row in game.state:
-            for cell in row:
-                if cell == REP.BLINKY:
-                    rt.append(6 + game.blinky.isFrightened * 4)
-                elif cell == REP.INKY:
-                    rt.append(6 + game.inky.isFrightened * 4)
-                elif cell == REP.CLYDE:
-                    rt.append(6 + game.clyde.isFrightened * 4)
-                elif cell == REP.PINKY:
-                    rt.append(6 + game.pinky.isFrightened * 4)
-                else:
-                    rt.append(cell)
-
-        return rt
+        return pacmanFeatureExtraction(game)

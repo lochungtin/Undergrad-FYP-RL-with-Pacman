@@ -71,7 +71,8 @@ class DeepQLTraining:
     def newGame(self) -> Game:
         return Game(
             DirectionAgent(POS.PACMAN, REP.PACMAN),
-            blinky=BlinkyClassicAgent(),
+            # blinky=BlinkyClassicAgent(),
+            # pinky=PinkyClassicAgent(),
         )
 
     # ===== main training function =====
@@ -88,7 +89,7 @@ class DeepQLTraining:
         action: int = self.agentInit(self.processState(game))
         game.pacman.setDir(action)
 
-        tPellets: int = DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT
+        tPellets: int = DATA.TOTAL_PELLET_COUNT + game.enablePwrPlt * DATA.TOTAL_PWRPLT_COUNT
 
         avgRScore: float = 0
         avgSteps: float = 0
@@ -103,7 +104,7 @@ class DeepQLTraining:
                 self.display.rerender(atePellet)
                 time.sleep(0.01)
 
-            if gameover or game.timesteps > 500:
+            if gameover or game.timesteps > 200:
 
                 pCount: int = tPellets - game.pelletCount
 
@@ -142,10 +143,10 @@ class DeepQLTraining:
                 game.pacman.setDir(action)
 
             else:
-                reward: int = -1
+                reward: int = -5
 
-                if not pacmanMoved:
-                    reward = -5
+                if pacmanMoved:
+                    reward = -1
                 if atePellet:
                     reward = 5
                 if ateGhost:
