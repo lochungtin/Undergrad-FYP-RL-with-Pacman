@@ -5,7 +5,7 @@ from typing import List, Tuple
 from agents.base import DirectionAgent, GhostAgent
 from data.config import BOARD, POS
 from data.data import DATA, REP
-from game.components.pellet import Pellet, PowerPellet, PelletType
+from game.components.pellet import Pellet, PowerPellet
 from game.utils.pathfinder.pathfinder import PathFinder
 from game.utils.state.cell import Cell
 from game.utils.state.state import State
@@ -166,4 +166,4 @@ class Game:
                 if self.canvas != None:
                     self.canvas.delete(self.lastPwrPltId)
 
-        return False, False
+        return False, self.pelletProgress == 0

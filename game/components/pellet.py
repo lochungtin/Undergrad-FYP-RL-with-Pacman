@@ -1,5 +1,3 @@
-from typing import Union
-from typing_extensions import TypeAlias
 from data.data import REP
 from game.components.component import Component
 from gui.destroyable import Destroyable
@@ -22,7 +20,3 @@ class PowerPellet(Component, Destroyable):
         self.repId: int = REP.PWRPLT
 
         self.valid: bool = True
-
-
-# pellet type
-PelletType: TypeAlias = Union[Pellet, PowerPellet]
