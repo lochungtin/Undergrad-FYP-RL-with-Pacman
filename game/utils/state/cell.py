@@ -25,3 +25,10 @@ class Cell:
 
     def getNeighbours(self) -> dict[int, Cell]:
         return deepcopy(self.adj)
+
+    # custom string representation
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        return "[{} = {}]".format(self.id, self.val)

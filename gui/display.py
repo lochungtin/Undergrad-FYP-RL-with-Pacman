@@ -1,9 +1,11 @@
+from calendar import c
 from tkinter import Canvas, Tk
 from typing import List
 from data.color import COLOR
 from data.data import DIM, REP
 from game.game import Game
 from gui.utils import GUIUtil
+from utils.coordinate import CPair
 
 
 class Display:
@@ -13,11 +15,7 @@ class Display:
 
         # create canvas and add to window
         self.canvas: Canvas = Canvas(
-            main,
-            width=DIM.GBL_W,
-            height=DIM.GBL_H,
-            background=self.color[REP.BG],
-            highlightthickness=0,
+            main, width=DIM.GBL_W, height=DIM.GBL_H, background=self.color[REP.BG], highlightthickness=0
         )
         self.canvas.pack()
 
@@ -27,63 +25,38 @@ class Display:
         self.canvas.delete("all")
         self.bindObjects()
 
+    def createCanvasObject(self, x0: int, y0: int, x1: int, y1: int, xPad: int, yPad: int, rep: int) -> int:
+        return self.canvas.create_rectangle(
+            x0 + xPad, y0 + yPad, x1 - xPad, y1 - yPad, fill=self.color[rep], outline=""
+        )
+
     def bindObjects(self) -> None:
-        # draw grid
         for rowIndex, stateRow in enumerate(self.game.state):
-            for colIndex, cell in enumerate(stateRow):
+            for colIndex, cellObj in enumerate(stateRow):
+                cellId: str = cellObj.id
+                cell: int = cellObj.val
+
                 x0, y0, x1, y1 = GUIUtil.calculatePos(rowIndex, colIndex)
 
-                if REP.isPellet(cell):
-                    # draw pellets
-                    if cell == REP.PELLET:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0 + DIM.PAD_PELLET,
-                            y0 + DIM.PAD_PELLET,
-                            x1 - DIM.PAD_PELLET,
-                            y1 - DIM.PAD_PELLET,
-                            fill=self.color[cell],
-                            outline="",
-                        )
-                    # draw power pellet
-                    else:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0 + DIM.PAD_PWRPLT,
-                            y0 + DIM.PAD_PWRPLT,
-                            x1 - DIM.PAD_PWRPLT,
-                            y1 - DIM.PAD_PWRPLT,
-                            fill=self.color[cell],
-                            outline="",
-                        )
+                if cell == REP.PELLET:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PELLET, DIM.PAD_PELLET, cell)
+                    self.game.pellets[cellId].setCanvasItemId(canvasItemId)
 
-                    # add canvas item id to pellet object
-                    self.game.pellets[rowIndex][colIndex].setCanvasItemId(canvasItemId)
+                elif cell == REP.PWRPLT:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, cell)
+                    self.game.pwrplts[cellId].setCanvasItemId(canvasItemId)
+
+                elif cell == REP.DOOR:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, DIM.PAD_DOOR, cell)
 
                 elif cell != REP.EMPTY:
-                    if cell == REP.DOOR:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0,
-                            y0 + DIM.PAD_DOOR,
-                            x1,
-                            y1 - DIM.PAD_DOOR,
-                            fill=self.color[cell],
-                            outline="",
-                        )
-                    else:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0, y0, x1, y1, fill=self.color[cell], outline=""
-                        )
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, 0, cell)
 
                     # add canvas item id to movable
                     if cell == REP.PACMAN:
                         self.game.pacman.setCanvasItemId(canvasItemId)
-                    elif cell == REP.BLINKY:
-                        self.game.blinky.setCanvasItemId(canvasItemId)
-                    elif cell == REP.INKY:
-                        self.game.inky.setCanvasItemId(canvasItemId)
-                    elif cell == REP.CLYDE:
-                        self.game.clyde.setCanvasItemId(canvasItemId)
-                    elif cell == REP.PINKY:
-                        self.game.pinky.setCanvasItemId(canvasItemId)
+                    elif REP.isGhost(cell):
+                        self.game.ghosts[cell].setCanvasItemId(canvasItemId)
 
     def rerender(self, atePellet: bool) -> None:
         # remove pellet

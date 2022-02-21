@@ -1,4 +1,5 @@
 from typing import List, Tuple
+
 from data.config import CONFIG
 
 

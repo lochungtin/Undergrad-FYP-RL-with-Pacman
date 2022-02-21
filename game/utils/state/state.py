@@ -9,7 +9,7 @@ from utils.direction import DIR
 
 
 class State:
-    def __init__(self, enabledPwrPlt: bool = True) -> None:
+    def __init__(self, enablePwrPlt: bool = True) -> None:
         # fill grid
         self.grid: List[List[Cell]] = []
 
@@ -21,14 +21,17 @@ class State:
         self.pwrpltEffectCounter: int = 0
 
         for i, row in enumerate(CONFIG.BOARD):
+            r: List[Cell] = []
             for j, val in enumerate(row):
                 cell = Cell(i, j, val)
-                self.grid[i][j] = cell
+                r.append(cell)
 
                 if val == REP.PELLET:
                     self.pellets[cell.coords.__str__()] = Pellet(cell.coords)
-                elif val == REP.PWRPLT and enabledPwrPlt:
+                elif val == REP.PWRPLT and enablePwrPlt:
                     self.pwrplts[cell.coords.__str__()] = PowerPellet(cell.coords)
+
+            self.grid.append(r)
 
         # make connections
         for row in self.grid:
@@ -42,7 +45,7 @@ class State:
                         cell.setAdj(dirVal, self.grid[newLoc.row][newLoc.col])
 
     def getCell(self, pos: CPair) -> Cell:
-        return self.grid[pos.row][pos.col]    
+        return self.grid[pos.row][pos.col]
 
     def eatPellet(self, pos: CPair) -> int:
         posStr: str = pos.__str__()
@@ -70,22 +73,14 @@ class State:
 
         return 0
 
-    def pacmanMove(self, pos: CPair, pPos: CPair) -> bool:
-        if pos == pPos:
-            return False
-
+    def movePacman(self, pos: CPair, pPos: CPair) -> None:
         cell: Cell = self.getCell(pos)
         pCell: Cell = self.getCell(pPos)
 
         cell.setVal(pCell.val)
         pCell.setVal(REP.EMPTY)
 
-        return True
-
-    def moveGhost(self, pos: CPair, pPos: CPair) -> bool:
-        if pos == pPos:
-            return False
-
+    def moveGhost(self, pos: CPair, pPos: CPair) -> None:
         cell: Cell = self.getCell(pos)
         pCell: Cell = self.getCell(pPos)
 
@@ -99,8 +94,6 @@ class State:
             pCell.setVal(REP.PWRPLT)
         else:
             pCell.setVal(REP.EMPTY)
-
-        return True 
 
     # return 2d array of grid values
     def getRawState(self) -> List[List[int]]:

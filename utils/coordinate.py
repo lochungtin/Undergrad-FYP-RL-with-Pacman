@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import List
 
-from data.data import BOARD
 from utils.direction import DIR
 
 
@@ -10,9 +9,6 @@ class CPair:
         self.row: int = row
         self.col: int = col
 
-    # check if coordinate is valid
-    def isValid(self) -> bool:
-        return self.row >= 0 and self.col >= 0 and self.row < BOARD.row and self.col < BOARD.col
 
     # translate coordinate according to direction
     def move(self, dir: int) -> CPair:
@@ -69,7 +65,7 @@ class CPair:
 
     # custom string representation
     def __str__(self) -> str:
-        return "({}, {})".format(self.row, self.col)
+        return self.__repr__()
 
     def __repr__(self) -> str:
         return "({}, {})".format(self.row, self.col)
