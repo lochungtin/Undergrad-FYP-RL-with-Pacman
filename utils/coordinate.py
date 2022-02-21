@@ -42,27 +42,6 @@ class CPair:
         # not a valid comparison
         return -1
 
-    # get all valid neighbouring coordinates
-    def getNeighbours(self, appendEmpty: bool = False) -> List[CPair]:
-        rt: List[CPair] = []
-
-        for neighbour in [
-            CPair(self.row - 1, self.col),
-            CPair(self.row + 1, self.col),
-            CPair(self.row, self.col - 1),
-            CPair(self.row, self.col + 1),
-        ]:
-            if neighbour == CPair(7, -1):
-                rt.append(CPair(7, 12))
-            elif neighbour == CPair(7, 13):
-                rt.append(CPair(7, 0))
-            elif neighbour.isValid():
-                rt.append(neighbour)
-            elif appendEmpty:
-                rt.append(None)
-
-        return rt
-
     # custom string representation
     def __str__(self) -> str:
         return self.__repr__()

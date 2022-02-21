@@ -1,5 +1,3 @@
-from copy import deepcopy
-from pathlib import Path
 from tkinter import Canvas
 from typing import List, Tuple
 
@@ -79,15 +77,9 @@ class Game:
                     continue
 
                 for dirVal in DIR.getList():
-                    newLoc: CPair = cell.coords.move(dirVal)
-                    if (
-                        newLoc.row > -1
-                        and newLoc.col > -1
-                        and newLoc.row < BOARD.ROW
-                        and newLoc.col < BOARD.COL
-                        and BOARD.DATA[newLoc.row][newLoc.col] != REP.WALL
-                    ):
-                        cell.setAdj(dirVal, self.state[newLoc.row][newLoc.col])
+                    newPos: CPair = cell.coords.move(dirVal)
+                    if BOARD.isValidPos(newPos) and BOARD.DATA[newPos.row][newPos.col] != REP.WALL:
+                        cell.setAdj(dirVal, self.state[newPos.row][newPos.col])
 
         # pathfinder
         self.pf: PathFinder = PathFinder(self.state)
@@ -102,12 +94,15 @@ class Game:
         self.lastPelletId: int = -1
         self.lastPwrPltId: int = -1
 
+    # bind cavnvas object to game
     def setCanvas(self, canvas: Canvas) -> None:
         self.canvas = canvas
 
+    # retrieve vertex from grid
     def getCell(self, pos: CPair) -> Cell:
         return self.state[pos.row][pos.col]
 
+    # handle eating of pellets
     def eatPellet(self, pos: CPair) -> int:
         posStr: str = pos.__str__()
         if posStr in self.pellets:
@@ -134,6 +129,7 @@ class Game:
 
         return -1
 
+    # handle agent movement
     def movePacman(self, pos: CPair, pPos: CPair) -> None:
         cell: Cell = self.getCell(pos)
         pCell: Cell = self.getCell(pPos)
@@ -156,11 +152,12 @@ class Game:
         else:
             pCell.setVal(REP.EMPTY)
 
+    # detect pacman and ghost collision
     def detectCollision(self, pPos: CPair, pPrevPos: CPair, gPos: CPair, gPrevPos: CPair) -> bool:
         return pPos == gPos or pPrevPos == gPrevPos
 
     # proceed to next time step
-    def nextStep(self):
+    def nextStep(self) -> Tuple[bool, bool]:
         # timestep management
         self.timesteps += 1
 

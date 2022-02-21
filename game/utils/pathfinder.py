@@ -1,9 +1,10 @@
+from copy import deepcopy
 from queue import PriorityQueue
 from typing import List, Tuple
 import math
 
 from data.config import BOARD, POS
-from data.data import BOARD
+from data.data import BOARD, REP
 from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.direction import DIR
@@ -31,15 +32,39 @@ class PathFinder:
     def __init__(self, board: List[List[Cell]]) -> None:
         self.board = board
 
+    def isValidPos(self, pos: CPair) -> bool:
+        return BOARD.isValidPos(pos) and self.board[pos.row][pos.col] != REP.WALL
+
     # heuristic function
     def h(self, pos: CPair, goal: CPair) -> float:
         return math.sqrt(pow(goal.row - pos.row, 2) + pow(goal.col - pos.col, 2))
 
     # start pathfinding
     def start(self, start: CPair, goal: CPair, initialDir: int = -1) -> List[CPair]:
+        print(start, goal, self.isValidPos(goal))
+
+        # fix goal location until valid        
+        if not self.isValidPos(goal):
+            nGoal: CPair = deepcopy(goal)
+
+            nGoal.row = max(nGoal.row, 1)
+            nGoal.row = min(nGoal.row, BOARD.ROW - 2)
+
+            nGoal.col = max(nGoal.col, 1)
+            nGoal.col = min(nGoal.col, BOARD.COL - 2)            
+
+            goal = nGoal
+
+            if self.board[nGoal.row][nGoal.col].val == REP.WALL:
+                for dir in DIR.getList():
+                    newGoal: CPair = nGoal.move(dir)
+                    if self.board[newGoal.row][newGoal.col].val != REP.WALL:
+                        goal = newGoal
+                        break               
+
         # initialise open list
         openList: PriorityQueue(Tuple[float, CPair]) = PriorityQueue()
-        
+
         # initialise close list
         closedList: List[List[bool]] = [[False for j in range(BOARD.COL)] for i in range(BOARD.ROW)]
 

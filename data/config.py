@@ -25,6 +25,9 @@ class BOARD:
     ROW = len(DATA)
     COL = len(DATA[0])
 
+    def isValidPos(pos: CPair):
+        return pos.row > -1 and pos.col > -1 and pos.row < BOARD.ROW and pos.col < BOARD.COL
+
 
 class POS:
     # initial pacman location
