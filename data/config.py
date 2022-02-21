@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 
 class CONFIG:
@@ -19,6 +19,10 @@ class CONFIG:
         [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1],
         [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    ]
+
+    R_GRAPH_EDGES: List[Tuple[int, int]] = [
+        ()
     ]
 
     # board pattern for pellets and power pellets
