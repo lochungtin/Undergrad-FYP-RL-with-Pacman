@@ -1,10 +1,11 @@
 from typing import List, Tuple
+from data.config import CONFIG
 
 
 # dimension values of the board
 class BOARD:
-    row: int = 15
-    col: int = 13
+    row: int = len(CONFIG.BOARD)
+    col: int = len(CONFIG.BOARD[0])
 
 
 # ghost ai modes
@@ -32,7 +33,7 @@ class DATA:
     GHOST_EXIT_INTERVAL: int = 3
 
     GHOST_FRIGHTENED_SPEED_REDUCTION_RATE: int = 3
-    GHOST_FRIGHTENED_STEP_COUNT: int = 10
+    GHOST_FRIGHTENED_STEP_COUNT: int = 7
     GHOST_MODE_SCHEDULE: List[Tuple[int, int]] = [
         (GHOST_MODE.SCATTER, 77),
         (GHOST_MODE.CHASE, 57),

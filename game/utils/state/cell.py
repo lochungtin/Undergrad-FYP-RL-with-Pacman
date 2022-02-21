@@ -1,20 +1,27 @@
 from __future__ import annotations
-from typing import List
+from copy import deepcopy
 
+from utils.coordinate import CPair
 from utils.direction import DIR
 
 
 class Cell:
-    def makeId(row: int, col: int) -> str:
-        return "{},{}".format(row, col)
+    def __init__(self, row: int, col: int, val: int) -> None:
+        self.coords: CPair = CPair(row, col)
+        self.id: str = self.coords.__str__()
 
-    def __init__(self, id: str, val: int) -> None:
-        self.id: str = id
         self.val: int = val
-        self.adj: dict[str, Cell] = {DIR.UP: None, DIR.DW: None, DIR.LF: None, DIR.RT: None}
+
+        self.adj: dict[int, Cell] = {DIR.UP: None, DIR.DW: None, DIR.LF: None, DIR.RT: None}
+
+    def setVal(self, val: int) -> int:
+        old: int = self.val
+        self.val = val
+
+        return old
 
     def setAdj(self, dir: int, neighbour: Cell) -> None:
         self.adj[dir] = neighbour
 
-    def getNeighbours(self) -> List[Cell]:
-        return [node for id, node in self.adj.items()]
+    def getNeighbours(self) -> dict[int, Cell]:
+        return deepcopy(self.adj)

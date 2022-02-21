@@ -1,10 +1,6 @@
 from typing import List, Tuple
 
 
-def generateReduceGraphVertexIds(prefix: str, count: int) -> List[str]:
-    return [prefix + num for num in range(count)]
-
-
 class CONFIG:
     # board pattern for path and walls
     BOARD: List[List[int]] = [

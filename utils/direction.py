@@ -1,6 +1,8 @@
 from typing import List
 
 
+dirList: List[int] = [0, 1, 2, 3]
+
 class DIR:
     UP = 0
     DW = 1
@@ -8,7 +10,7 @@ class DIR:
     RT = 3
 
     def getList() -> List[int]:
-        return [DIR.UP, DIR.DW, DIR.LF, DIR.RT]
+        return dirList
 
     def getOpposite(dir) -> int:
         if dir == DIR.UP:
