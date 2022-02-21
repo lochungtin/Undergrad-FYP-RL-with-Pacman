@@ -3,9 +3,8 @@ from typing import List, Tuple
 from utils.coordinate import CPair
 
 
-class CONFIG:
-    # board pattern for path and walls
-    BOARD: List[List[int]] = [
+class BOARD:
+    DATA: List[List[int]] = [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         [1, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 1],
         [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 4, 1],
@@ -23,10 +22,8 @@ class CONFIG:
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]
 
-
-class BOARD:
-    ROW = len(CONFIG.BOARD)
-    COL = len(CONFIG.BOARD[0])
+    ROW = len(DATA)
+    COL = len(DATA[0])
 
 
 class POS:

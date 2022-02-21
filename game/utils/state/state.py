@@ -1,5 +1,5 @@
 from typing import List
-from data.config import CONFIG
+from data.config import BOARD
 from data.data import DATA, REP
 
 from game.components.pellet import Pellet, PowerPellet
@@ -20,7 +20,7 @@ class State:
         self.pwrplts: dict[str, PowerPellet] = {}
         self.pwrpltEffectCounter: int = 0
 
-        for i, row in enumerate(CONFIG.BOARD):
+        for i, row in enumerate(BOARD.DATA):
             r: List[Cell] = []
             for j, val in enumerate(row):
                 cell = Cell(i, j, val)
@@ -41,7 +41,7 @@ class State:
 
                 for dirVal in DIR.getList():
                     newLoc: CPair = cell.coords.move(dirVal)
-                    if newLoc.isValid() and not REP.isWall(CONFIG.BOARD[newLoc.row][newLoc.col]):
+                    if newLoc.isValid() and not REP.isWall(BOARD.DATA[newLoc.row][newLoc.col]):
                         cell.setAdj(dirVal, self.grid[newLoc.row][newLoc.col])
 
     def getCell(self, pos: CPair) -> Cell:

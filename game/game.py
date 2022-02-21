@@ -3,7 +3,7 @@ from tkinter import Canvas
 from typing import List, Tuple
 
 from agents.base import DirectionAgent, GhostAgent
-from data.config import BOARD, CONFIG, POS
+from data.config import BOARD, POS
 from data.data import DATA, REP
 from game.components.pellet import Pellet, PowerPellet, PelletType
 from game.utils.pathfinder.pathfinder import PathFinder
@@ -39,7 +39,7 @@ class Game:
         # create pellets and fill game state
         self.state: List[List[Cell]] = []
 
-        for i, row in enumerate(CONFIG.BOARD):
+        for i, row in enumerate(BOARD.DATA):
             r: List[Cell] = []
             for j, val in enumerate(row):
                 cell = Cell(i, j, val)
@@ -81,7 +81,7 @@ class Game:
                         and newLoc.col > -1
                         and newLoc.row < BOARD.ROW
                         and newLoc.col < BOARD.COL
-                        and CONFIG.BOARD[newLoc.row][newLoc.col] != REP.WALL
+                        and BOARD.DATA[newLoc.row][newLoc.col] != REP.WALL
                     ):
                         cell.setAdj(dirVal, self.state[newLoc.row][newLoc.col])
 
