@@ -55,10 +55,10 @@ class CPair:
             CPair(self.row, self.col - 1),
             CPair(self.row, self.col + 1),
         ]:
-            if neighbour == CPair(14, -1):
-                rt.append(CPair(14, 26))
-            elif neighbour == CPair(14, 27):
-                rt.append(CPair(14, 0))
+            if neighbour == CPair(7, -1):
+                rt.append(CPair(7, 12))
+            elif neighbour == CPair(7, 13):
+                rt.append(CPair(7, 0))
             elif neighbour.isValid():
                 rt.append(neighbour)
             elif appendEmpty:

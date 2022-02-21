@@ -1,18 +1,21 @@
 from copy import deepcopy
 from datetime import datetime
-from random import random
 from tkinter import Tk
-from typing import List, Tuple
+from typing import List
 import _thread
 import numpy as np
 import os
 import time
 
+from agents.base import DirectionAgent
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
-from game.paiv import PAIV
+from agents.blinky import BlinkyClassicAgent
+from agents.pinky import PinkyClassicAgent
+from data.data import DATA, POS, REP
+from game.game import Game
 from gui.display import Display
 
 
@@ -28,6 +31,7 @@ class DeepQLTraining:
 
         # setup neural network
         self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
+        # self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1902_1730", 20000))
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -47,9 +51,12 @@ class DeepQLTraining:
         self.pState: List[List[int]] = None
         self.pAction: int = None
 
+        self.simCap: int = trainingConfig["simulationCap"]
+        self.saveOpt: int = trainingConfig["saveOpt"]
+
         # training status
-        self.rewardSum: float = 0
-        self.epSteps: int = 0
+        self.rSum: float = 0
+        self.timesteps: int = 0
 
     # start training (main function)
     def start(self) -> None:
@@ -61,11 +68,112 @@ class DeepQLTraining:
         else:
             self.training()
 
+    def newGame(self) -> Game:
+        return Game(
+            DirectionAgent(POS.PACMAN, REP.PACMAN),
+            # blinky=BlinkyClassicAgent(),
+            # pinky=PinkyClassicAgent(),
+        )
+
     # ===== main training function =====
     def training(self) -> None:
-        pass
+        print("start")
+
+        runPref: str = "RL{}".format(datetime.now().strftime("%d%m_%H%M"))
+        os.mkdir("out/{}".format(runPref))
+
+        game: Game = self.newGame()
+        if self.hasDisplay:
+            self.display.newGame(game)
+
+        action: int = self.agentInit(self.processState(game))
+        game.pacman.setDir(action)
+
+        tPellets: int = DATA.TOTAL_PELLET_COUNT + game.enablePwrPlt * DATA.TOTAL_PWRPLT_COUNT
+
+        avgRScore: float = 0
+        avgSteps: float = 0
+        avgPCount: float = 0
+
+        eps: int = 0
+        while eps < self.simCap:
+            gameover, won, atePellet, ateGhost, pacmanMoved = game.nextStep()
+
+            # enable display
+            if self.hasDisplay:
+                self.display.rerender(atePellet)
+                time.sleep(0.01)
+
+            if gameover or game.timesteps > 200:
+
+                pCount: int = tPellets - game.pelletCount
+
+                if won:
+                    self.agentEnd(1000)
+                else:
+                    self.agentEnd(-1000)
+
+                avgRScore = (avgRScore * eps + self.rSum) / (eps + 1)
+                avgSteps = (avgSteps * eps + self.timesteps) / (eps + 1)
+                avgPCount = (avgPCount * eps + pCount) / (eps + 1)
+
+                eps += 1
+
+                print(
+                    "ep{}\tr[{} | {}]\ts[{} | {}]\tp[{}/68 | {}/68]\tw[{}]".format(
+                        eps,
+                        round(self.rSum, 2),
+                        round(avgRScore, 2),
+                        self.timesteps,
+                        round(avgSteps, 2),
+                        pCount,
+                        round(avgPCount, 2),
+                        won,
+                    )
+                )
+
+                if eps % self.saveOpt == 0:
+                    self.network.save(eps, runPref)
+
+                game = self.newGame()
+                if self.hasDisplay:
+                    self.display.newGame(game)
+
+                action = self.agentInit(self.processState(game))
+                game.pacman.setDir(action)
+
+            else:
+                reward: int = -5
+
+                if pacmanMoved:
+                    reward = -1
+                if atePellet:
+                    reward = 5
+                if ateGhost:
+                    reward = 10
+
+                action = self.agentStep(self.processState(game), reward)
+                game.pacman.setDir(action)
 
     # ===== auxiliary training functions =====
+    def processState(self, game: Game) -> List[int]:
+        rt: List[int] = []
+
+        for row in game.state:
+            for cell in row:
+                if cell == REP.BLINKY:
+                    rt.append(6 + game.blinky.isFrightened * 4 + game.blinky.isDead * 1)
+                elif cell == REP.INKY:
+                    rt.append(6 + game.inky.isFrightened * 4 + game.blinky.isDead * 1)
+                elif cell == REP.CLYDE:
+                    rt.append(6 + game.clyde.isFrightened * 4 + game.blinky.isDead * 1)
+                elif cell == REP.PINKY:
+                    rt.append(6 + game.pinky.isFrightened * 4 + game.blinky.isDead * 1)
+                else:
+                    rt.append(cell)
+
+        return rt
+
     # softmax policy for probabilistic action selection
     def policy(self, state: List[int]):
         return self.rand.choice(
@@ -83,7 +191,7 @@ class DeepQLTraining:
 
         # reset training status
         self.rSum = 0
-        self.epSteps = 0
+        self.timesteps = 0
 
         return self.pAction
 
@@ -108,7 +216,7 @@ class DeepQLTraining:
 
         # update training status
         self.rSum += reward
-        self.epSteps += 1
+        self.timesteps += 1
 
         return action
 
@@ -125,7 +233,7 @@ class DeepQLTraining:
 
         # update training status
         self.rSum += reward
-        self.epSteps += 1
+        self.timesteps += 1
 
 
 if __name__ == "__main__":
@@ -135,14 +243,16 @@ if __name__ == "__main__":
                 "stepSize": 1e-3,
                 "bM": 0.9,
                 "bV": 0.999,
-                "epsilon": 0.001,
+                "epsilon": 0.1,
+                "decay": 0.9999,
+                "decayMax": 0.001,
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 37,
+                "inSize": 195,
                 "hidden": [
                     256,
-                    16,
+                    64,
                     16,
                 ],
                 "outSize": 4,
@@ -152,13 +262,10 @@ if __name__ == "__main__":
                 "batchSize": 8,
                 "updatePerStep": 4,
             },
-            "simluationCap": 100,
-            "simulationConfig": {
-                "ghost": True,
-                "pwrplt": True,
-            },
+            "saveOpt": 500,
+            "simulationCap": 100000,
             "tau": 0.001,
         },
-        True,
+        False,
     )
     training.start()

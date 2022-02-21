@@ -135,16 +135,16 @@ class GenomeUtils:
         return filename
 
     # save innovation map data
-    def saveInnov(innov: dict[str, int], runPref: str, generation: int, baseFile: str = "out") -> str:
-        filename: str = "./{}/{}/ne-innov-gen{}.json".format(baseFile, runPref, generation)
+    def saveInnov(innov: dict[str, int], runPref: str, generation: int, parentFolder: str = "out") -> str:
+        filename: str = "./{}/{}/ne-innov-gen{}.json".format(parentFolder, runPref, generation)
         with open(filename, "w+") as outfile:
             json.dump(innov, outfile)
 
         return filename
 
     # load genome
-    def load(filename: str, baseFile: str = "out", plain: bool = False) -> Genome:
-        with open("./{}/{}".format(baseFile, filename), "r") as infile:
+    def load(filename: str, parentFolder: str = "out", plain: bool = False) -> Genome:
+        with open("./{}/{}".format(parentFolder, filename), "r") as infile:
             data: dict[str, object] = json.load(infile)
             if plain:
                 return data
@@ -185,6 +185,6 @@ class GenomeUtils:
                 return genome
 
     # load innovation map
-    def loadInnov(filename: str, baseFile: str = "out") -> dict[str, int]:
-        with open("./{}/{}".format(baseFile, filename), "r") as infile:
+    def loadInnov(filename: str, parentFolder: str = "out") -> dict[str, int]:
+        with open("./{}/{}".format(parentFolder, filename), "r") as infile:
             return json.load(infile)
