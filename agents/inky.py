@@ -27,12 +27,12 @@ class InkyClassicAgent(ClassicGhostAgent):
         # chase mode
         # get reflection tile
         pivot: CPair = game.pacman.pos
-        for _ in range(4):
+        for _ in range(2):
             pivot = pivot.move(game.pacman.direction)
 
         # replicate target tile bug in classic pacman
         if game.pacman.direction == DIR.UP:
-            for _ in range(4):
+            for _ in range(2):
                 pivot = pivot.move(DIR.LF)
 
         # reflect blinky's position wrt to reflection tile to get target tile
@@ -53,12 +53,12 @@ class InkyClassicAggrAgent(ClassicGhostAgent):
         # chase mode
         # get reflection tile
         pivot: CPair = game.pacman.pos
-        for _ in range(4):
+        for _ in range(2):
             pivot = pivot.move(game.pacman.direction)
 
         # replicate target tile bug in classic pacman
         if game.pacman.direction == DIR.UP:
-            for _ in range(4):
+            for _ in range(2):
                 pivot = pivot.move(DIR.LF)
 
         # reflect blinky's position wrt to reflection tile to get target tile

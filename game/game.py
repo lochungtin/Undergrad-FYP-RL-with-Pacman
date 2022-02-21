@@ -119,7 +119,7 @@ class Game:
 
                 return pellet.destroy()
 
-        return 0
+        return -1
 
     def eatPwrPlt(self, pos: CPair) -> int:
         posStr: str = pos.__str__()
@@ -132,7 +132,7 @@ class Game:
 
                 return pellet.destroy()
 
-        return 0
+        return -1
 
     def movePacman(self, pos: CPair, pPos: CPair) -> None:
         cell: Cell = self.getCell(pos)
@@ -156,6 +156,9 @@ class Game:
         else:
             pCell.setVal(REP.EMPTY)
 
+    def detectCollision(self, pPos: CPair, pPrevPos: CPair, gPos: CPair, gPrevPos: CPair) -> bool:
+        return pPos == gPos or pPrevPos == gPrevPos
+
     # proceed to next time step
     def nextStep(self):
         # timestep management
@@ -163,6 +166,10 @@ class Game:
 
         if self.pwrpltEffectCounter > -1:
             self.pwrpltEffectCounter -= 1
+
+            if self.pwrpltEffectCounter == 0:
+                for ghost in self.ghostList:
+                    ghost.isFrightened = False
 
         newGhostMode: bool = False
         if self.ghostModeCounter > -1:
@@ -190,6 +197,11 @@ class Game:
 
             if self.enablePwrPlt:
                 self.lastPwrPltId: int = self.eatPwrPlt(pPos)
+
+                if self.lastPwrPltId != -1:
+                    for ghost in self.ghostList:
+                        ghost.isFrightened = True
+
                 if self.canvas != None:
                     self.canvas.delete(self.lastPwrPltId)
 
@@ -203,5 +215,13 @@ class Game:
             if gMoved:
                 self.moveGhost(gPos, gPrevPos)
 
-        return False, self.pelletProgress == 0
+            # handle collision
+            if self.detectCollision(pPos, pPrevPos, gPos, gPrevPos):
+                if not ghost.isDead:
+                    if ghost.isFrightened:
+                        ghost.isDead = True
+                        ghost.isFrightened = False
+                    else:
+                        return True, self.pelletProgress == 0
 
+        return False, self.pelletProgress == 0

@@ -11,7 +11,7 @@ from utils.direction import DIR
 
 class PFDataCell:
     def __init__(self) -> None:
-        self.f: float = -1
+        self.f: float = math.inf
         self.g: float = -1
         self.h: float = -1
         self.parent: CPair = CPair(-1, -1)
@@ -74,24 +74,25 @@ class PathFinder:
                     if dir == DIR.UP and succ.coords in POS.GHOST_NO_UP_CELLS:
                         continue
 
+                sCPair: CPair = succ.coords
+                sR: int = sCPair.row
+                sC: int = sCPair.col
+
                 # rebuild path if goal is reached
                 if succ.coords == goal:
-                    dataList[succ.coords.row][succ.coords.col].parent = searchPos
+                    dataList[sR][sC].parent = searchPos
                     return self.makePath(goal, dataList)
 
                 # update cell data
                 else:
                     g: int = dataList[searchPos.row][searchPos.col].g + 1
-                    h: float = self.h(succ.coords, goal)
+                    h: float = self.h(sCPair, goal)
                     f: float = g + h
 
                     # put successor into openlist if the f score is better
-                    if (
-                        dataList[succ.coords.row][succ.coords.col].f == -1
-                        or dataList[succ.coords.row][succ.coords.col].f > f
-                    ):
-                        openList.put((f, succ.coords))
-                        dataList[succ.coords.row][succ.coords.col].update(f, g, h, searchPos)
+                    if dataList[sR][sC].f > f:
+                        openList.put((f, sCPair))
+                        dataList[sR][sC].update(f, g, h, searchPos)
 
                     # update nearest pos:
                     if h < lowestScore:

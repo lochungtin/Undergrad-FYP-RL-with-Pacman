@@ -46,6 +46,7 @@ class App:
         return Game(
             PlayableAgent(),
             blinky=BlinkyClassicAgent(),
+            pinky=PinkyClassicAgent(),
         )
 
     # trigger Game.nextStep() and update dislay, reset if gameover
