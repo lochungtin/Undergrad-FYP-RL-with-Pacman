@@ -2,7 +2,7 @@ import enum
 from typing import List
 
 from game.components.pellet import Pellet
-from game.cell import Cell
+from game.utils.state.cell import Cell
 
 
 class State:

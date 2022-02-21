@@ -58,17 +58,15 @@ class Game:
 
         # create pellets and update state
         self.pellets: List[List[PelletType]] = []
-        for rowIndex, gridRow in enumerate(CONFIG.PELLET_BOARD):
+        for rowIndex, gridRow in enumerate(CONFIG.BOARD):
             row: List[PelletType] = []
             for colIndex, cell in enumerate(gridRow):
                 if cell == REP.EMPTY:
                     row.append(None)
                 elif cell == REP.PELLET:
                     row.append(Pellet(CPair(rowIndex, colIndex)))
-                    self.state[rowIndex][colIndex] = REP.PELLET
                 elif enablePwrPlt:
                     row.append(PowerPellet(CPair(rowIndex, colIndex)))
-                    self.state[rowIndex][colIndex] = REP.PWRPLT
                 else:
                     row.append(None)
 
