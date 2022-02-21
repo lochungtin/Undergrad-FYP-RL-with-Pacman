@@ -5,8 +5,8 @@ if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import ClassicGhostAgent
-from data.config import POS
-from data.data import DATA, GHOST_MODE, REP
+from data.config import BOARD, POS
+from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 
 
@@ -30,7 +30,7 @@ class BlinkyClassicAgent(ClassicGhostAgent):
 
     # get next postition of blinky (overrided for cruise elroy mode)
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletProgress < DATA.CRUISE_ELROY_TRIGGER and not self.isDead:
+        if game.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER and not self.isDead:
             # generate path
             self.prevPath = self.path
             if self.pos != game.pacman.pos:
@@ -64,7 +64,7 @@ class BlinkyClassicAggrAgent(ClassicGhostAgent):
 
     # get next postition of blinky (overrided for cruise elroy mode)
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletProgress < DATA.CRUISE_ELROY_TRIGGER and not self.isDead:
+        if game.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER and not self.isDead:
             # generate path
             self.prevPath = self.path
             if self.pos != game.pacman.pos:

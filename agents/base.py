@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
 from data.config import POS
-from data.data import DATA, GHOST_MODE, REP
+from data.data import GHOST_MODE, REP
 from game.components.component import Component
 from game.utils.cell import Cell
 from game.utils.pathfinder import PathFinder
@@ -105,15 +105,15 @@ class ClassicGhostAgent(GhostAgent):
 
             # reverse direction for first step
             # hold position if reverse is invalid
-            if self.speedReducer == DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE:
+            if self.speedReducer == GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE:
                 newPos = self.pos.move(DIR.getOpposite(self.direction))
                 if newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
                     self.pos = newPos
 
-                self.speedReducer = DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
+                self.speedReducer = GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
 
             # slow down ghost speed
-            self.speedReducer = (self.speedReducer + 1) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
+            self.speedReducer = (self.speedReducer + 1) % GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
                 neighbours: dict[int, Cell] = game.state[self.pos.row][self.pos.col].getNeighbours()
 
@@ -143,6 +143,8 @@ class ClassicGhostAgent(GhostAgent):
             self.prevPath = self.path
             if self.pos != targetTile:
                 self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
+            
+            print(len(self.path))
 
             # update positions
             self.prevPos = self.pos

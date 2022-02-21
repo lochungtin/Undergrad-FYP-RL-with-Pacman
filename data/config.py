@@ -25,6 +25,11 @@ class BOARD:
     ROW = len(DATA)
     COL = len(DATA[0])
 
+    TOTAL_PELLET_COUNT: int = 68
+    TOTAL_PWRPLT_COUNT: int = 2
+
+    CRUISE_ELROY_TRIGGER: int = 12
+
     def isValidPos(pos: CPair):
         return pos.row > -1 and pos.col > -1 and pos.row < BOARD.ROW and pos.col < BOARD.COL
 

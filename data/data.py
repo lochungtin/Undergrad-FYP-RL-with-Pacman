@@ -12,30 +12,21 @@ class GHOST_MODE:
     # blinky
     CRUISE_ELROY: int = 4
 
-
-# game related data constants
-class DATA:
-    # number of pellets
-    TOTAL_PELLET_COUNT: int = 68
-    TOTAL_PWRPLT_COUNT: int = 2
-
-    CRUISE_ELROY_TRIGGER: int = 12
-
-    # ghost mode and step counter
-
+    # triggers and mode schedules
     GHOST_EXIT_INTERVAL: int = 3
 
     GHOST_FRIGHTENED_SPEED_REDUCTION_RATE: int = 3
     GHOST_FRIGHTENED_STEP_COUNT: int = 7
+
     GHOST_MODE_SCHEDULE: List[Tuple[int, int]] = [
-        (GHOST_MODE.SCATTER, 9),
-        (GHOST_MODE.CHASE, 15),
-        (GHOST_MODE.SCATTER, 7),
-        (GHOST_MODE.CHASE, 17),
-        (GHOST_MODE.SCATTER, 5),
-        (GHOST_MODE.CHASE, 19),
-        (GHOST_MODE.SCATTER, 1),
-        (GHOST_MODE.CHASE, -1),
+        (SCATTER, 10),
+        (CHASE, 15),
+        (SCATTER, 7),
+        (CHASE, 17),
+        (SCATTER, 5),
+        (CHASE, 19),
+        (SCATTER, 1),
+        (CHASE, -1),
     ]
 
 

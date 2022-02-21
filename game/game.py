@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from agents.base import DirectionAgent, GhostAgent
 from data.config import BOARD, POS
-from data.data import DATA, GHOST_MODE, REP
+from data.data import GHOST_MODE, REP
 from game.components.pellet import Pellet, PowerPellet
 from game.utils.pathfinder import PathFinder
 from game.utils.cell import Cell
@@ -29,7 +29,7 @@ class Game:
 
         # pellets
         self.pellets: dict[str, Pellet] = {}
-        self.pelletProgress: int = DATA.TOTAL_PELLET_COUNT
+        self.pelletProgress: int = BOARD.TOTAL_PELLET_COUNT
 
         self.pwrplts: dict[str, PowerPellet] = {}
         self.pwrpltEffectCounter: int = 0
@@ -62,8 +62,8 @@ class Game:
                 self.getCell(ghost.pos).setVal(ghost.repId)
 
         self.ghostModeIndex: int = 0
-        self.ghostMode: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
-        self.ghostModeCounter: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
+        self.ghostMode: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
+        self.ghostModeCounter: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
 
         # state cell connections
         # loop connection
@@ -123,7 +123,7 @@ class Game:
 
             if pellet.valid:
                 self.getCell(pos).setVal(REP.EMPTY)
-                self.pwrpltEffectCounter = DATA.GHOST_FRIGHTENED_STEP_COUNT
+                self.pwrpltEffectCounter = GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
 
                 return pellet.destroy()
 
@@ -154,7 +154,6 @@ class Game:
 
     # detect pacman and ghost collision
     def detectCollision(self, pPos: CPair, pPrevPos: CPair, gPos: CPair, gPrevPos: CPair) -> bool:
-        print(pPos, pPrevPos, gPos, gPrevPos)
         return pPos == gPos or (pPrevPos == gPos and pPos == gPrevPos)
 
     # proceed to next time step
@@ -176,11 +175,12 @@ class Game:
             if self.ghostModeCounter == 0:
                 self.ghostModeIndex += 1
 
-                self.ghostMode: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
-                self.ghostModeCounter: int = DATA.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
+                self.ghostMode: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
+                self.ghostModeCounter: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
 
                 newGhostMode = True
 
+        # reset pellet id
         self.lastPelletId = -1
         self.lastPwrPltId = -1
 

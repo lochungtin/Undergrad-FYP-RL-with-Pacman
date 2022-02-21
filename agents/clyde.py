@@ -5,14 +5,14 @@ if TYPE_CHECKING:
 
 from agents.base import ClassicGhostAgent
 from data.config import POS
-from data.data import DATA, GHOST_MODE, REP
+from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 
 
 # classic ai agent for clyde
 class ClydeClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2)
+        super().__init__(POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -35,7 +35,7 @@ class ClydeClassicAgent(ClassicGhostAgent):
 # classic aggressive ai for clyde
 class ClydeClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2)
+        super().__init__(POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:

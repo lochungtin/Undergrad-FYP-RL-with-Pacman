@@ -14,7 +14,7 @@ from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
 from agents.pinky import PinkyClassicAgent
-from data.config import POS
+from data.config import BOARD, POS
 from data.data import DATA, REP
 from game.game import Game
 from gui.display import Display
@@ -90,7 +90,7 @@ class DeepQLTraining:
         action: int = self.agentInit(self.processState(game))
         game.pacman.setDir(action)
 
-        tPellets: int = DATA.TOTAL_PELLET_COUNT + game.enablePwrPlt * DATA.TOTAL_PWRPLT_COUNT
+        tPellets: int = CONFIG.TOTAL_PELLET_COUNT + game.enablePwrPlt * CONFIG.TOTAL_PWRPLT_COUNT
 
         avgRScore: float = 0
         avgSteps: float = 0
@@ -102,12 +102,12 @@ class DeepQLTraining:
 
             # enable display
             if self.hasDisplay:
-                self.display.rerender()
+                self.display.rerender(atePellet)
                 time.sleep(0.01)
 
             if gameover or game.timesteps > 200:
 
-                pCount: int = tPellets - game.pelletProgress
+                pCount: int = tPellets - game.pelletCount
 
                 if won:
                     self.agentEnd(1000)
