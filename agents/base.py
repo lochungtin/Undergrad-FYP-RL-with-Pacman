@@ -12,9 +12,8 @@ from ai.neat.genome import Genome
 from data.config import POS
 from data.data import DATA, GHOST_MODE, REP
 from game.components.component import Component
-from game.utils.state.cell import Cell
-from game.utils.pathfinder.path import Path
-from game.utils.pathfinder.pathfinder import PathFinder
+from game.utils.cell import Cell
+from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 from utils.direction import DIR
 

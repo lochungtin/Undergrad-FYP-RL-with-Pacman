@@ -1,4 +1,5 @@
 from copy import deepcopy
+from pathlib import Path
 from tkinter import Canvas
 from typing import List, Tuple
 
@@ -6,9 +7,8 @@ from agents.base import DirectionAgent, GhostAgent
 from data.config import BOARD, POS
 from data.data import DATA, REP
 from game.components.pellet import Pellet, PowerPellet
-from game.utils.pathfinder.pathfinder import PathFinder
-from game.utils.state.cell import Cell
-from game.utils.state.state import State
+from game.utils.pathfinder import PathFinder
+from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.direction import DIR
 
@@ -85,6 +85,9 @@ class Game:
                     ):
                         cell.setAdj(dirVal, self.state[newLoc.row][newLoc.col])
 
+        # pathfinder
+        self.pf: PathFinder = PathFinder(self.state)
+
         # canvas object
         self.canvas: Canvas = None
 
@@ -147,7 +150,12 @@ class Game:
 
     # proceed to next time step
     def nextStep(self):
+        # timestep management
         self.timesteps += 1
+
+        if self.pwrpltEffectCounter > 0:
+            self.pwrpltEffectCounter -= 1
+
 
         self.lastPelletId = -1
         self.lastPwrPltId = -1
