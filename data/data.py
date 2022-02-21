@@ -1,13 +1,6 @@
 from typing import List, Tuple
 
-from data.config import CONFIG
-
-
-# dimension values of the board
-class BOARD:
-    row: int = len(CONFIG.BOARD)
-    col: int = len(CONFIG.BOARD[0])
-
+from data.config import BOARD
 
 # ghost ai modes
 class GHOST_MODE:
@@ -55,51 +48,13 @@ class DIM:
     GAP: int = 5
 
     # canvas pixel count
-    GBL_H: int = BOARD.row * JUMP - GAP
-    GBL_W: int = BOARD.col * JUMP - GAP
+    GBL_H: int = BOARD.ROW * JUMP - GAP
+    GBL_W: int = BOARD.COL * JUMP - GAP
 
     # padding for objects
     PAD_PELLET: int = 9
     PAD_PWRPLT: int = 5
     PAD_DOOR: int = 8
-
-
-# initial position of displayables
-from utils.coordinate import CPair
-
-
-class POS:
-    # initial pacman location
-    PACMAN: CPair = CPair(9, 6)
-
-    # initial ghost locations
-    BLINKY: CPair = CPair(5, 6)
-    INKY: CPair = CPair(6, 5)
-    CLYDE: CPair = CPair(6, 6)
-    PINKY: CPair = CPair(6, 7)
-
-    # special locations
-    # ghost house reset location
-    GHOST_HOUSE_CENTER: CPair = CPair(6, 6)
-
-    # scatter mode target corners
-    BLINKY_CORNER: CPair = CPair(1, 1)
-    INKY_CORNER: CPair = CPair(13, 1)
-    CLYDE_CORNER: CPair = CPair(13, 11)
-    PINKY_CORNER: CPair = CPair(1, 11)
-
-    # loop triggers
-    LEFT_LOOP_TRIGGER: CPair = CPair(7, -1)
-    LEFT_LOOP: CPair = CPair(7, 0)
-
-    RIGHT_LOOP_TRIGGER: CPair = CPair(7, 13)
-    RIGHT_LOOP: CPair = CPair(7, 12)
-
-    # "no go up" zones
-    GHOST_NO_UP_1: CPair = CPair(3, 5)
-    GHOST_NO_UP_2: CPair = CPair(3, 7)
-    GHOST_NO_UP_3: CPair = CPair(10, 5)
-    GHOST_NO_UP_4: CPair = CPair(10, 7)
 
 
 # state representations

@@ -3,8 +3,8 @@ from tkinter import Canvas
 from typing import List, Tuple
 
 from agents.base import DirectionAgent, GhostAgent
-from data.config import CONFIG
-from data.data import BOARD, DATA, POS, REP
+from data.config import BOARD, CONFIG, POS
+from data.data import DATA, REP
 from game.components.pellet import Pellet, PowerPellet, PelletType
 from game.utils.pathfinder.pathfinder import PathFinder
 from game.utils.state.cell import Cell
@@ -65,8 +65,8 @@ class Game:
 
         # state cell connections
         # loop connection
-        self.getCell(CONFIG.LOOP_POS[0]).setAdj(DIR.LF, self.getCell(CONFIG.LOOP_POS[1]))
-        self.getCell(CONFIG.LOOP_POS[1]).setAdj(DIR.RT, self.getCell(CONFIG.LOOP_POS[0]))
+        self.getCell(POS.LOOP_POS[0]).setAdj(DIR.LF, self.getCell(POS.LOOP_POS[1]))
+        self.getCell(POS.LOOP_POS[1]).setAdj(DIR.RT, self.getCell(POS.LOOP_POS[0]))
 
         # normal cell connection
         for row in self.state:
@@ -79,8 +79,8 @@ class Game:
                     if (
                         newLoc.row > -1
                         and newLoc.col > -1
-                        and newLoc.row < BOARD.row
-                        and newLoc.col < BOARD.col
+                        and newLoc.row < BOARD.ROW
+                        and newLoc.col < BOARD.COL
                         and CONFIG.BOARD[newLoc.row][newLoc.col] != REP.WALL
                     ):
                         cell.setAdj(dirVal, self.state[newLoc.row][newLoc.col])

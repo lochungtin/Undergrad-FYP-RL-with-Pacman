@@ -6,7 +6,8 @@ if TYPE_CHECKING:
 
 from ai.deepq.neuralnet import NeuralNet
 from agents.base import DQLAgent, DirectionAgent
-from data.data import POS, REP
+from data.config import POS
+from data.data import REP
 
 
 def pacmanFeatureExtraction(game: "Game") -> List[int]:

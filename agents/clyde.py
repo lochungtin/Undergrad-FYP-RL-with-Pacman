@@ -4,7 +4,8 @@ if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import ClassicGhostAgent
-from data.data import DATA, GHOST_MODE, POS, REP
+from data.config import POS
+from data.data import DATA, GHOST_MODE, REP
 from utils.coordinate import CPair
 
 

@@ -8,7 +8,8 @@ if TYPE_CHECKING:
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
-from data.data import DATA, GHOST_MODE, POS, REP
+from data.config import POS
+from data.data import DATA, GHOST_MODE, REP
 from game.components.component import Component
 from game.utils.pathfinder.path import Path
 from game.utils.pathfinder.pathfinder import PathFinder

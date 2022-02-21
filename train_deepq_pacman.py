@@ -14,7 +14,8 @@ from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
 from agents.pinky import PinkyClassicAgent
-from data.data import DATA, POS, REP
+from data.config import POS
+from data.data import DATA, REP
 from game.game import Game
 from gui.display import Display
 

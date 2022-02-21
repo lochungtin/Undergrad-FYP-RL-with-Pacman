@@ -2,8 +2,8 @@ from typing import List
 from queue import PriorityQueue
 import math
 
-from data.config import CONFIG
-from data.data import BOARD, POS, REP
+from data.config import CONFIG, POS
+from data.data import BOARD, REP
 from game.utils.pathfinder.path import Path
 from game.utils.pathfinder.pathcell import PathCell
 from game.utils.pathfinder.pathcoordinate import PathCPair
@@ -21,11 +21,11 @@ class PathFinder:
         # create closed list and weighted list
         closedList: List[List[bool]] = []
         weightedList: List[List[PathCell]] = []
-        for _ in range(BOARD.row):
+        for _ in range(BOARD.ROW):
             cRow: List[bool] = []
             wRow: List[PathCell] = []
 
-            for _ in range(BOARD.col):
+            for _ in range(BOARD.COL):
                 cRow.append(False)
                 wRow.append(PathCell())
 
