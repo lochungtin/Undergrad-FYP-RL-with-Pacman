@@ -20,7 +20,7 @@ class App:
         self.game: Game = self.newGame()
 
         # create time controller object
-        self.timeController: TimeController = TimeController(0.075, self.nextStep)
+        self.timeController: TimeController = TimeController(0.1, self.nextStep)
 
         # create application
         self.main: Tk = Tk()

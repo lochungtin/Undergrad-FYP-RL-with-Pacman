@@ -154,7 +154,8 @@ class Game:
 
     # detect pacman and ghost collision
     def detectCollision(self, pPos: CPair, pPrevPos: CPair, gPos: CPair, gPrevPos: CPair) -> bool:
-        return pPos == gPos or pPrevPos == gPrevPos
+        print(pPos, pPrevPos, gPos, gPrevPos)
+        return pPos == gPos or (pPrevPos == gPos and pPos == gPrevPos)
 
     # proceed to next time step
     def nextStep(self) -> Tuple[bool, bool]:
