@@ -45,7 +45,10 @@ class App:
     def newGame(self):
         return Game(
             PlayableAgent(),
-            BlinkyClassicAgent()
+            BlinkyClassicAgent(),
+            InkyClassicAgent(),
+            ClydeClassicAgent(),
+            PinkyClassicAgent(),
         )
 
     # trigger Game.nextStep() and update dislay, reset if gameover

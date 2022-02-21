@@ -73,3 +73,7 @@ class CPair:
     # custom equal function
     def __eq__(self, o: CPair) -> bool:
         return self.row == o.row and self.col == o.col
+
+    # custom comparator - only used in pathfinding
+    def __lt__(self, o: CPair) -> bool:
+        return False

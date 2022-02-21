@@ -1,5 +1,6 @@
+from queue import PriorityQueue
+from typing import List, Tuple
 import math
-from typing import List
 
 from data.config import BOARD, POS
 from data.data import BOARD
@@ -37,8 +38,8 @@ class PathFinder:
     # start pathfinding
     def start(self, start: CPair, goal: CPair, initialDir: int = -1) -> List[CPair]:
         # initialise open list
-        openList: List[CPair] = []
-
+        openList: PriorityQueue(Tuple[float, CPair]) = PriorityQueue()
+        
         # initialise close list
         closedList: List[List[bool]] = [[False for j in range(BOARD.COL)] for i in range(BOARD.ROW)]
 
@@ -46,7 +47,7 @@ class PathFinder:
         dataList: List[List[PFDataCell]] = [[PFDataCell() for j in range(BOARD.COL)] for i in range(BOARD.ROW)]
 
         # update lists with starting position
-        openList.append(start)
+        openList.put((0, start))
         dataList[start.row][start.col].update(0, 0, 0, start)
 
         # maintain lowest score for out of bounds pathfinding
@@ -54,8 +55,8 @@ class PathFinder:
         lowestScore: float = math.inf
 
         # start A* algorithm
-        while len(openList) > 0:
-            searchPos: CPair = openList.pop(0)
+        while not openList.empty():
+            searchPos: CPair = openList.get(0)[1]
 
             # maintain closed list
             closedList[searchPos.row][searchPos.col] = True
@@ -89,7 +90,7 @@ class PathFinder:
                         dataList[succ.coords.row][succ.coords.col].f == -1
                         or dataList[succ.coords.row][succ.coords.col].f > f
                     ):
-                        openList.append(succ.coords)
+                        openList.put((f, succ.coords))
                         dataList[succ.coords.row][succ.coords.col].update(f, g, h, searchPos)
 
                     # update nearest pos:
