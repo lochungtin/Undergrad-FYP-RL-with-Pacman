@@ -10,8 +10,8 @@ from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
 from data.data import DATA, DIR, GHOST_MODE, POS, REP
 from game.components.component import Component
-from game.utils.path import Path
-from game.utils.pathfinder import PathFinder
+from game.utils.pathfinder.path import Path
+from game.utils.pathfinder.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 

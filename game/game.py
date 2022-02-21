@@ -6,7 +6,7 @@ from agents.base import DirectionAgent, GhostAgent
 from data.config import CONFIG
 from data.data import DATA, POS, REP
 from game.components.pellet import Pellet, PowerPellet, PelletType
-from game.utils.pathfinder import PathFinder
+from game.utils.pathfinder.pathfinder import PathFinder
 from utils.coordinate import CPair
 
 

@@ -4,9 +4,9 @@ import math
 
 from data.config import CONFIG
 from data.data import BOARD, DIR, POS, REP
-from game.utils.path import Path
-from game.utils.pathcell import PathCell
-from game.utils.pathcoordinate import PathCPair
+from game.utils.pathfinder.path import Path
+from game.utils.pathfinder.pathcell import PathCell
+from game.utils.pathfinder.pathcoordinate import PathCPair
 from utils.coordinate import CPair
 
 
