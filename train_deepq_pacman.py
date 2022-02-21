@@ -107,7 +107,7 @@ class DeepQLTraining:
 
             if gameover or game.timesteps > 200:
 
-                pCount: int = tPellets - game.pelletCount
+                pCount: int = tPellets - game.pelletProgress
 
                 if won:
                     self.agentEnd(1000)

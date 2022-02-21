@@ -73,34 +73,30 @@ class Display:
             self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
 
         # ghost updates
-        for ghost in self.game.ghosts:
-            # delete old paths
-            if hasattr(ghost.prevPath, "canvasItemId"):
-                self.canvas.delete(ghost.prevPath.canvasItemId)
-
-            if hasattr(ghost.path, "canvasItemId"):
-                self.canvas.delete(ghost.path.canvasItemId)
-
+        for ghost in self.game.ghostList:
             # update path display
-            if not ghost.isFrightened:
-                displayPath: List[int] = []
-                for cpair in ghost.path.path:
-                    x, y = GUIUtil.calculateMidPt(cpair)
-                    displayPath.append(x)
-                    displayPath.append(y)
+            if hasattr(ghost, "pathId"):
+                if ghost.pathId != -1:
+                    self.canvas.delete(ghost.pathId)
 
-                if len(displayPath) > 2:
-                    ghost.path.setCanvasItemId(
-                        self.canvas.create_line(displayPath, width=3, fill=self.color[ghost.repId])
-                    )
+                # update path display
+                if not ghost.isFrightened:
+                    displayPath: List[int] = []
+                    for cpair in ghost.path:
+                        x, y = GUIUtil.calculateMidPt(cpair)
+                        displayPath.append(x)
+                        displayPath.append(y)
 
-                # update color
-                if ghost.isDead:
-                    self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.DEAD])
-                else:
-                    self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[ghost.repId])
-            else:
+                    if len(displayPath) > 2:
+                        ghost.pathId = self.canvas.create_line(displayPath, width=3, fill=self.color[ghost.repId])
+
+            # update color
+            if ghost.isDead:
+                self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.DEAD])
+            elif ghost.isFrightened:
                 self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.FRIGHTENED])
+            else:
+                self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[ghost.repId])
 
             # update location
             if ghost.moved:

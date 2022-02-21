@@ -57,7 +57,7 @@ class App:
         if gameover or won:
             print("P: {}/{} K: {} S: {}/{}".format(
                 self.pellets,
-                self.pellets + self.game.pelletCount,
+                self.pellets + self.game.pelletProgress,
                 self.kills,
                 self.stationary,
                 self.game.timesteps,

@@ -45,7 +45,7 @@ class DirectionAgent(Agent):
     # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         curPos: Cell = game.getCell(self.pos)
-        nextPos: Cell = curPos.adj[self.direction]
+        nextPos: Cell = curPos.getNeighbours()[self.direction]
         self.moved = False
 
         if nextPos is None:
@@ -77,8 +77,8 @@ class ClassicGhostAgent(GhostAgent):
 
         self.mode: int = GHOST_MODE.SCATTER
 
-        self.path: Path = Path()
-        self.prevPath: Path = Path()
+        self.path: List[CPair] = []
+        self.pathId: int = -1
 
         self.initWait: int = initWait
 
@@ -86,27 +86,6 @@ class ClassicGhostAgent(GhostAgent):
     def bindPathFinder(self, pathFinder: PathFinder) -> None:
         self.pathfinder: PathFinder = pathFinder
 
-    # modified version of getNeighbours to accomodate for "no go up" zones
-    def getNeighbours(self, state: List[List[int]]) -> List[CPair]:
-        rt: List[CPair] = []
-
-        for index, pos in enumerate(self.pos.getNeighbours()):
-            if (
-                (
-                    pos == POS.GHOST_NO_UP_1
-                    or pos == POS.GHOST_NO_UP_2
-                    or pos == POS.GHOST_NO_UP_3
-                    or pos == POS.GHOST_NO_UP_4
-                )
-                and index == 0
-                or REP.isWall(state[pos.row][pos.col])
-                or DIR.getOpposite(self.direction) == index
-            ):
-                continue
-
-            rt.append(pos)
-
-        return rt
 
     # get next position of ghost
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
@@ -136,11 +115,41 @@ class ClassicGhostAgent(GhostAgent):
             # slow down ghost speed
             self.speedReducer = (self.speedReducer + 1) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
-                self.pos = choice(self.getNeighbours(game.state))
+                neighbours: dict[int, Cell] = game.state[self.pos.row][self.pos.col].getNeighbours()
 
-        # normal behaviour
+                # apply ghost pathfinding restrictions
+                if self.pos in POS.GHOST_NO_UP_CELLS:
+                    neighbours[DIR.UP] = None
+                
+                # filter out valid locations
+                valid: List[Cell] = []
+                for dir, neighbour in neighbours.items():
+                    if not neighbour is None:
+                        valid.append(neighbour)
+                
+                # random choice
+                self.pos = choice(valid).coords
+
+        # regular behaviour
         else:
-            self.updatePositions(game)
+            # get target tile
+            targetTile: CPair = self.getTargetTile(game)
+
+            print(targetTile)
+
+            # looping mechanic
+            if self.pos == targetTile:
+                targetTile = self.prevPos
+
+            # generate path
+            self.prevPath = self.path
+            if self.pos != targetTile:
+                self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
+
+            # update positions
+            self.prevPos = self.pos
+            if len(self.path) > 0:
+                self.pos = self.path[0]
 
         # update direction of travel
         if self.pos != self.prevPos:
@@ -148,21 +157,6 @@ class ClassicGhostAgent(GhostAgent):
 
         return self.pos, self.prevPos, True
 
-    # perform normal behaviour for next step
-    def updatePositions(self, game: "Game") -> None:
-        # get target tile
-        targetTile: CPair = self.getTargetTile(game)
-        if self.pos == targetTile:
-            targetTile = self.prevPos
-
-        # generate path
-        self.prevPath = self.path
-        if self.pos != targetTile:
-            self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
-
-        self.prevPos = self.pos
-        if len(self.path.path) > 0:
-            self.pos = self.path.path[0]
 
     # ===== REQUIRED TO OVERRIDE =====
     # get target tile of ghost

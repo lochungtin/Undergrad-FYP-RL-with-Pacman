@@ -30,14 +30,14 @@ class BlinkyClassicAgent(ClassicGhostAgent):
 
     # get next postition of blinky (overrided for cruise elroy mode)
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletCount < DATA.CRUISE_ELROY_TRIGGER:
+        if game.pelletProgress < DATA.CRUISE_ELROY_TRIGGER and not self.isDead:
             # generate path
             self.prevPath = self.path
             if self.pos != game.pacman.pos:
                 self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
 
                 self.prevPos = self.pos
-                self.pos = self.path.path[0]
+                self.pos = self.path[0]
 
             # update direction of travel
             if self.pos != self.prevPos:
@@ -64,14 +64,14 @@ class BlinkyClassicAggrAgent(ClassicGhostAgent):
 
     # get next postition of blinky (overrided for cruise elroy mode)
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletCount < DATA.CRUISE_ELROY_TRIGGER:
+        if game.pelletProgress < DATA.CRUISE_ELROY_TRIGGER and not self.isDead:
             # generate path
             self.prevPath = self.path
             if self.pos != game.pacman.pos:
                 self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
 
                 self.prevPos = self.pos
-                self.pos = self.path.path[0]
+                self.pos = self.path[0]
 
             # update direction of travel
             if self.pos != self.prevPos:

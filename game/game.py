@@ -71,7 +71,7 @@ class Game:
         # normal cell connection
         for row in self.state:
             for cell in row:
-                if REP.isWall(cell.val):
+                if cell.val == REP.WALL:
                     continue
 
                 for dirVal in DIR.getList():
@@ -87,6 +87,11 @@ class Game:
 
         # pathfinder
         self.pf: PathFinder = PathFinder(self.state)
+
+
+        for ghost in self.ghostList:
+            if ghost.isClassic:
+                ghost.bindPathFinder(self.pf)
 
         # canvas object
         self.canvas: Canvas = None
@@ -161,8 +166,8 @@ class Game:
         self.lastPwrPltId = -1
 
         # update pacman location
-        pPos, pPrevPos, pacmanMoved = self.pacman.getNextPos(self)
-        if pacmanMoved:
+        pPos, pPrevPos, pMoved = self.pacman.getNextPos(self)
+        if pMoved:
             self.movePacman(pPos, pPrevPos)
 
             self.lastPelletId: int = self.eatPellet(pPos)
@@ -173,5 +178,12 @@ class Game:
                 self.lastPwrPltId: int = self.eatPwrPlt(pPos)
                 if self.canvas != None:
                     self.canvas.delete(self.lastPwrPltId)
+
+        # update ghost location
+        for ghost in self.ghostList:
+            gPos, gPrevPos, gMoved = ghost.getNextPos(self)
+            print(ghost.path)
+            if gMoved:
+                self.moveGhost(gPos, gPrevPos)
 
         return False, self.pelletProgress == 0
