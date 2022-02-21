@@ -62,23 +62,6 @@ class DIM:
     PAD_DOOR: int = 8
 
 
-# directions of movement
-class DIR:
-    UP: int = 0
-    DW: int = 1
-    LF: int = 2
-    RT: int = 3
-
-    def getOpposite(dir: int) -> int:
-        if dir == DIR.UP:
-            return DIR.DW
-        elif dir == DIR.DW:
-            return DIR.UP
-        elif dir == DIR.LF:
-            return DIR.RT
-        return DIR.LF
-
-
 # initial position of displayables
 from utils.coordinate import CPair
 

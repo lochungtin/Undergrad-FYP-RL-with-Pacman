@@ -10,7 +10,7 @@ class DIR:
     def getList() -> List[int]:
         return [DIR.UP, DIR.DW, DIR.LF, DIR.RT]
 
-    def opposite(dir) -> int:
+    def getOpposite(dir) -> int:
         if dir == DIR.UP:
             return DIR.DW
         if dir == DIR.DW:

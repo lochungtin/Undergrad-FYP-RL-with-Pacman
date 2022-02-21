@@ -4,8 +4,9 @@ if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import ClassicGhostAgent
-from data.data import DATA, DIR, GHOST_MODE, POS, REP
+from data.data import DATA, GHOST_MODE, POS, REP
 from utils.coordinate import CPair
+from utils.direction import DIR
 
 # classic ai agent for inky
 class InkyClassicAgent(ClassicGhostAgent):

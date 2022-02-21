@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import List
 
-from data.data import BOARD, DIR
+from data.data import BOARD
+from utils.direction import DIR
 
 
 class CPair:

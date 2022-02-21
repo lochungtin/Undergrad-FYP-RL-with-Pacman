@@ -8,11 +8,12 @@ if TYPE_CHECKING:
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
-from data.data import DATA, DIR, GHOST_MODE, POS, REP
+from data.data import DATA, GHOST_MODE, POS, REP
 from game.components.component import Component
 from game.utils.pathfinder.path import Path
 from game.utils.pathfinder.pathfinder import PathFinder
 from utils.coordinate import CPair
+from utils.direction import DIR
 
 
 # base class for game agents

@@ -3,11 +3,12 @@ from queue import PriorityQueue
 import math
 
 from data.config import CONFIG
-from data.data import BOARD, DIR, POS, REP
+from data.data import BOARD, POS, REP
 from game.utils.pathfinder.path import Path
 from game.utils.pathfinder.pathcell import PathCell
 from game.utils.pathfinder.pathcoordinate import PathCPair
 from utils.coordinate import CPair
+from utils.direction import DIR
 
 
 class PathFinder:

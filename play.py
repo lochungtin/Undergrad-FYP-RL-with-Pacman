@@ -7,7 +7,7 @@ from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
 from agents.pacman import PlayableAgent
-from data.data import DIR
+from utils.direction import DIR
 from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display
