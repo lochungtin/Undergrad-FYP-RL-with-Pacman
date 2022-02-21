@@ -98,11 +98,11 @@ class DeepQLTraining:
 
         eps: int = 0
         while eps < self.simCap:
-            gameover, won, atePellet, ateGhost, pacmanMoved = game.nextStep()
+            gameover, won = game.nextStep()
 
             # enable display
             if self.hasDisplay:
-                self.display.rerender(atePellet)
+                self.display.rerender()
                 time.sleep(0.01)
 
             if gameover or game.timesteps > 200:

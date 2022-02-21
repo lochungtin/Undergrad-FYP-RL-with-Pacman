@@ -50,9 +50,7 @@ class App:
     # trigger Game.nextStep() and update dislay, reset if gameover
     def nextStep(self):
         # update game, proceed to next step
-        gameover, won, atePellet, ateGhost, pacmanMoved = self.game.nextStep()
-
-        print(gameover, won, self.game.pelletCount)
+        gameover, won = self.game.nextStep()
 
         # handle gameover
         if gameover or won:
@@ -63,7 +61,7 @@ class App:
             self.display.newGame(self.game)
 
         # update display
-        self.display.rerender(atePellet)
+        self.display.rerender()
 
     # run main loop of application
     def run(self) -> None:

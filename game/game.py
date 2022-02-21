@@ -59,7 +59,7 @@ class Game:
         self.ghosts: dict[str, GhostAgent] = {REP.BLINKY: blinky, REP.INKY: inky, REP.CLYDE: clyde, REP.PINKY: pinky}
         self.ghostList: List[GhostAgent] = []
         for key, ghost in self.ghosts.items():
-            if hasattr(ghost, "pos"):
+            if not ghost is None:
                 self.ghostList.append(ghost)
                 self.getCell(ghost.pos).setVal(ghost.repId)
 
@@ -85,26 +85,85 @@ class Game:
                     ):
                         cell.setAdj(dirVal, self.state[newLoc.row][newLoc.col])
 
+        # canvas object
+        self.canvas: Canvas = None
+
+        self.lastPelletId: int = -1
+        self.lastPwrPltId: int = -1
+
     def setCanvas(self, canvas: Canvas) -> None:
         self.canvas = canvas
 
     def getCell(self, pos: CPair) -> Cell:
         return self.state[pos.row][pos.col]
 
+    def eatPellet(self, pos: CPair) -> int:
+        posStr: str = pos.__str__()
+        if posStr in self.pellets:
+            pellet: Pellet = self.pellets[posStr]
+
+            if pellet.valid:
+                self.getCell(pos).setVal(REP.EMPTY)
+                self.pelletProgress -= 1
+
+                return pellet.destroy()
+
+        return 0
+
+    def eatPwrPlt(self, pos: CPair) -> int:
+        posStr: str = pos.__str__()
+        if posStr in self.pwrplts:
+            pellet: Pellet = self.pwrplts[posStr]
+
+            if pellet.valid:
+                self.getCell(pos).setVal(REP.EMPTY)
+                self.pwrpltEffectCounter = DATA.GHOST_FRIGHTENED_STEP_COUNT
+
+                return pellet.destroy()
+
+        return 0
+
+    def movePacman(self, pos: CPair, pPos: CPair) -> None:
+        cell: Cell = self.getCell(pos)
+        pCell: Cell = self.getCell(pPos)
+
+        cell.setVal(pCell.val)
+        pCell.setVal(REP.EMPTY)
+
+    def moveGhost(self, pos: CPair, pPos: CPair) -> None:
+        cell: Cell = self.getCell(pos)
+        pCell: Cell = self.getCell(pPos)
+
+        cell.setVal(pCell.val)
+
+        # replenish pellet value to old cell
+        pPosStr: str = pCell.__str__()
+        if pPosStr in self.pellets and self.pellets[pPosStr].valid:
+            pCell.setVal(REP.PELLET)
+        elif pPosStr in self.pwrplts and self.pwrplts[pPosStr].valid:
+            pCell.setVal(REP.PWRPLT)
+        else:
+            pCell.setVal(REP.EMPTY)
+
     # proceed to next time step
-    def nextStep(self) -> Tuple[bool, bool, bool, bool]:
+    def nextStep(self):
         self.timesteps += 1
+
+        self.lastPelletId = -1
+        self.lastPwrPltId = -1
 
         # update pacman location
         pPos, pPrevPos, pacmanMoved = self.pacman.getNextPos(self)
         if pacmanMoved:
-            self.state.movePacman(pPos, pPrevPos)
+            self.movePacman(pPos, pPrevPos)
 
-            displayId: int = self.state.eatPellet(pPos)
+            self.lastPelletId: int = self.eatPellet(pPos)
             if self.canvas != None:
-                self.canvas.delete(displayId)
+                self.canvas.delete(self.lastPelletId)
 
             if self.enablePwrPlt:
-                displayId = self.state.eatPwrPlt(pPos)
+                self.lastPwrPltId: int = self.eatPwrPlt(pPos)
                 if self.canvas != None:
-                    self.canvas.delete(displayId)
+                    self.canvas.delete(self.lastPwrPltId)
+
+        return False, False

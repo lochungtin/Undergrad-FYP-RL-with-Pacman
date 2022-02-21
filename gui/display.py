@@ -58,12 +58,15 @@ class Display:
                     elif REP.isGhost(cell):
                         self.game.ghosts[cell].setCanvasItemId(canvasItemId)
 
-    def rerender(self, atePellet: bool) -> None:
+    def rerender(self) -> None:
         # remove pellet
-        pPos = self.game.pacman.pos
-        if atePellet:
-            self.canvas.delete(self.game.pellets[pPos.row][pPos.col].canvasItemId)
+        if self.game.lastPelletId != -1:
+            self.canvas.delete(self.game.lastPelletId)
 
+        if self.game.lastPwrPltId != -1:
+            self.canvas.delete(self.game.lastPwrPltId)
+
+        pPos = self.game.pacman.pos
         # update pacman location
         if self.game.pacman.moved:
             pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)

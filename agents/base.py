@@ -3,6 +3,7 @@ from random import choice
 from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
 
+
 if TYPE_CHECKING:
     from game.game import Game
 
@@ -11,6 +12,7 @@ from ai.neat.genome import Genome
 from data.config import POS
 from data.data import DATA, GHOST_MODE, REP
 from game.components.component import Component
+from game.utils.state.cell import Cell
 from game.utils.pathfinder.path import Path
 from game.utils.pathfinder.pathfinder import PathFinder
 from utils.coordinate import CPair
@@ -43,25 +45,16 @@ class DirectionAgent(Agent):
 
     # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        newPos: CPair = self.pos.move(self.direction)
+        curPos: Cell = game.getCell(self.pos)
+        nextPos: Cell = curPos.adj[self.direction]
         self.moved = False
 
-        # special cases (looping)
-        if newPos == POS.LEFT_LOOP_TRIGGER:
-            self.prevPos = self.pos
-            self.pos = POS.RIGHT_LOOP
-            self.moved = True
-
-        elif newPos == POS.RIGHT_LOOP_TRIGGER:
-            self.prevPos = self.pos
-            self.pos = POS.LEFT_LOOP
-            self.moved = True
-
-        # natural movement
-        elif newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
-            self.prevPos = self.pos
-            self.pos = newPos
-            self.moved = True
+        if nextPos is None:
+            return self.pos, self.prevPos, self.moved
+        
+        self.pos = nextPos.coords
+        self.prevPos = curPos.coords
+        self.moved = True
 
         return self.pos, self.prevPos, self.moved
 
