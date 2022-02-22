@@ -53,14 +53,17 @@ class Game:
 
         # game agents
         self.pacman: DirectionAgent = pacman
-        self.getCell(self.pacman.pos).setVal(self.pacman.repId)
+        self.getCell(self.pacman.pos).hasPacman = True
 
         self.ghosts: dict[str, GhostAgent] = {REP.BLINKY: blinky, REP.INKY: inky, REP.CLYDE: clyde, REP.PINKY: pinky}
         self.ghostList: List[GhostAgent] = []
         for key, ghost in self.ghosts.items():
             if not ghost is None:
                 self.ghostList.append(ghost)
-                self.getCell(ghost.pos).setVal(ghost.repId)
+
+                gCell: Cell = self.getCell(ghost.pos)
+                gCell.hasGhost = True
+                gCell.ghosts[ghost.repId] = True
 
         self.ghostModeIndex: int = 0
         self.ghostMode: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
@@ -74,7 +77,7 @@ class Game:
         # normal cell connection
         for row in self.state:
             for cell in row:
-                if cell.val == REP.WALL:
+                if cell.isWall:
                     continue
 
                 for dirVal in DIR.getList():
@@ -110,7 +113,7 @@ class Game:
             pellet: Pellet = self.pellets[posStr]
 
             if pellet.valid:
-                self.getCell(pos).setVal(REP.EMPTY)
+                self.getCell(pos).hasPellet = False
                 self.pelletProgress -= 1
 
                 return pellet.destroy()
@@ -123,7 +126,7 @@ class Game:
             pellet: Pellet = self.pwrplts[posStr]
 
             if pellet.valid:
-                self.getCell(pos).setVal(REP.EMPTY)
+                self.getCell(pos).hasPwrplt = False
                 self.pwrpltEffectCounter = GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
 
                 return pellet.destroy()
@@ -132,21 +135,17 @@ class Game:
 
     # handle agent movement
     def movePacman(self, pos: CPair, pPos: CPair) -> None:
-        self.getCell(pos).setVal(REP.PACMAN)
-        self.getCell(pPos).setVal(REP.EMPTY)
+        self.getCell(pos).hasPacman = True
+        self.getCell(pPos).hasPacman = False
 
     def moveGhost(self, ghostId: int, pos: CPair, pPos: CPair) -> None:
-        self.getCell(pos).setVal(ghostId)
+        cell: Cell = self.getCell(pos)
+        cell.hasGhost = True
+        cell.ghosts[ghostId] = True
 
-        # replenish pellet value to old cell
         pCell: Cell = self.getCell(pPos)
-        pPosStr: str = pCell.__str__()
-        if pPosStr in self.pellets and self.pellets[pPosStr].valid:
-            pCell.setVal(REP.PELLET)
-        elif pPosStr in self.pwrplts and self.pwrplts[pPosStr].valid:
-            pCell.setVal(REP.PWRPLT)
-        else:
-            pCell.setVal(REP.EMPTY)
+        pCell.hasGhost = False
+        pCell.ghosts[ghostId] = False
 
     # detect pacman and ghost collision
     def detectCollision(self, pPos: CPair, pPrevPos: CPair, gPos: CPair, gPrevPos: CPair) -> bool:

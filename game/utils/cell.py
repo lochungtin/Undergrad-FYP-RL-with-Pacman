@@ -1,6 +1,7 @@
 from __future__ import annotations
 from copy import deepcopy
 from typing import List
+from data.data import REP
 
 from utils.coordinate import CPair
 from utils.direction import DIR
@@ -11,15 +12,25 @@ class Cell:
         self.coords: CPair = CPair(row, col)
         self.id: str = self.coords.__str__()
 
-        self.val: int = val
-
         self.adj: dict[int, Cell] = {DIR.UP: None, DIR.DW: None, DIR.LF: None, DIR.RT: None}
 
-    def setVal(self, val: int) -> int:
-        old: int = self.val
-        self.val = val
+        # fixtures
+        self.isWall: bool = val == REP.WALL
+        self.iSDoor: bool = val == REP.DOOR
 
-        return old
+        # pellets
+        self.hasPellet: bool = val == REP.PELLET
+        self.hasPwrplt: bool = val == REP.PWRPLT
+
+        # agents
+        self.hasPacman: bool = val == REP.PACMAN
+        self.hasGhost: bool = REP.isGhost(val)
+        self.ghosts: dict[str, bool] = {
+            REP.BLINKY: val == REP.BLINKY,
+            REP.INKY: val == REP.INKY,
+            REP.CLYDE: val == REP.CLYDE,
+            REP.PINKY: val == REP.PINKY,
+        }
 
     def setAdj(self, dir: int, neighbour: Cell) -> None:
         self.adj[dir] = neighbour
@@ -31,6 +42,9 @@ class Cell:
             count += (neighbour is None) * 1
 
         return count < 2
+
+    def occupied(self) -> bool:
+        return (self.hasPacman + self.hasPellet + self.hasPwrplt + self.hasGhost) > 0
 
     def getValidNeighbours(self) -> List[Cell]:
         valids: List[Cell] = []
@@ -46,4 +60,14 @@ class Cell:
         return self.__repr__()
 
     def __repr__(self) -> str:
-        return "[{} = {}]".format(self.id, self.val)
+        ghostString: str = ""
+        for id, ghost in self.ghosts.items():
+            ghostString += str(ghost * 1)
+
+        return "{}: [{}, {}, {}, {}]".format(
+            self.id,
+            self.isWall * 2 + self.isWall,
+            self.hasPwrplt * 2 + self.hasPellet,
+            self.hasPacman,
+            ghostString,
+        )

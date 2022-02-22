@@ -77,21 +77,22 @@ def bfs(starting: Cell, origin: Cell, game: "Game") -> List[float]:
             loc[4] = curCell
 
         # check values
-        if curCell.val != REP.EMPTY:
-            if not completed[0] and curCell.val == REP.PELLET:
+        if curCell.occupied():
+            if not completed[0] and curCell.hasPellet:
                 completed[0] = 1
                 loc[0] = curCell
-            elif not completed[1] and curCell.val == REP.PWRPLT:
+            elif not completed[1] and curCell.hasPwrplt:
                 completed[1] = 1
                 loc[1] = curCell
-            elif REP.isGhost(curCell.val):
-                ghost: GhostAgent = game.ghosts[curCell.val]
-                if not completed[2] and not ghost.isDead:
-                    completed[2] = 1
-                    loc[2] = curCell
-                elif not completed[3] and ghost.isFrightened:
-                    completed[3] = 1
-                    loc[3] = curCell
+            elif curCell.hasGhost:
+                for id, presence in curCell.ghosts.items():
+                    if presence:
+                        if not completed[2] and not game.ghosts[id].isDead:
+                            completed[2] = 1
+                            loc[2] = curCell
+                        elif not completed[3] and game.ghosts[id].isFrightened:
+                            completed[3] = 1
+                            loc[3] = curCell
 
         # check if all targets are found
         allDone: int = 1
@@ -160,7 +161,7 @@ class PlayableAgent(DirectionAgent):
         for val in pacmanFeatureExtraction(game):                
             print(val)
 
-        print(np.array([[cell.val for cell in row] for row in game.state]))
+        print(np.array([[cell for cell in row] for row in game.state]))
         return super().getNextPos(game)
 
 # deep q learning agent for pacman

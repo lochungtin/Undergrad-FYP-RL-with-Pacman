@@ -39,21 +39,21 @@ class PathFinder:
     # start pathfinding
     def start(self, start: CPair, goal: CPair, initialDir: int = -1) -> List[CPair]:
         # fix goal location until valid        
-        if not BOARD.isValidPos(goal) or self.board[goal.row][goal.col] == REP.WALL:
+        if not BOARD.isValidPos(goal) or self.board[goal.row][goal.col].isWall:
             nGoal: CPair = deepcopy(goal)
 
             nGoal.row = max(nGoal.row, 1)
             nGoal.row = min(nGoal.row, BOARD.ROW - 2)
 
             nGoal.col = max(nGoal.col, 1)
-            nGoal.col = min(nGoal.col, BOARD.COL - 2)            
+            nGoal.col = min(nGoal.col, BOARD.COL - 2)
 
             goal = nGoal
 
-            if self.board[nGoal.row][nGoal.col].val == REP.WALL:
+            if self.board[nGoal.row][nGoal.col].isWall:
                 for dir in DIR.getList():
                     newGoal: CPair = nGoal.move(dir)
-                    if self.board[newGoal.row][newGoal.col].val != REP.WALL:
+                    if self.board[newGoal.row][newGoal.col].isWall:
                         goal = newGoal
                         break               
 

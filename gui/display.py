@@ -1,11 +1,9 @@
-from calendar import c
 from tkinter import Canvas, Tk
 from typing import List
 from data.color import COLOR
 from data.data import DIM, REP
 from game.game import Game
 from gui.utils import GUIUtil
-from utils.coordinate import CPair
 
 
 class Display:
@@ -31,32 +29,36 @@ class Display:
         )
 
     def bindObjects(self) -> None:
-        for rowIndex, stateRow in enumerate(self.game.state):
-            for colIndex, cellObj in enumerate(stateRow):
-                cellId: str = cellObj.id
-                cell: int = cellObj.val
+        # create pacman
+        x0, y0, x1, y1 = GUIUtil.calculatePos(self.game.pacman.pos)
+        self.game.pacman.canvasItemId = self.createCanvasObject(x0, y0, x1, y1, 0, 0, REP.PACMAN)
 
-                x0, y0, x1, y1 = GUIUtil.calculatePos(rowIndex, colIndex)
+        # create ghosts
+        for ghost in self.game.ghostList:
+            x0, y0, x1, y1 = GUIUtil.calculatePos(ghost.pos)
+            ghost.canvasItemId = self.createCanvasObject(x0, y0, x1, y1, 0, 0, ghost.repId)
 
-                if cell == REP.PELLET:
-                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PELLET, DIM.PAD_PELLET, cell)
-                    self.game.pellets[cellId].setCanvasItemId(canvasItemId)
 
-                elif cell == REP.PWRPLT:
-                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, cell)
-                    self.game.pwrplts[cellId].setCanvasItemId(canvasItemId)
+        # create fixtures and pellets
+        for row in self.game.state:
+            for cell in row:
+                x0, y0, x1, y1 = GUIUtil.calculatePos(cell.coords)
 
-                elif cell == REP.DOOR:
-                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, DIM.PAD_DOOR, cell)
+                if cell.hasPellet:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PELLET, DIM.PAD_PELLET, REP.PELLET)
+                    self.game.pellets[cell.id].setCanvasItemId(canvasItemId)
 
-                elif cell != REP.EMPTY:
-                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, 0, cell)
+                elif cell.hasPwrplt:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, REP.PELLET)
+                    self.game.pwrplts[cell.id].setCanvasItemId(canvasItemId)
 
-                    # add canvas item id to movable
-                    if cell == REP.PACMAN:
-                        self.game.pacman.setCanvasItemId(canvasItemId)
-                    elif REP.isGhost(cell):
-                        self.game.ghosts[cell].setCanvasItemId(canvasItemId)
+                elif cell.iSDoor:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, DIM.PAD_DOOR, REP.DOOR)
+
+                elif cell.isWall:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, 0, REP.WALL)
+
+        
 
     def rerender(self) -> None:
         # remove pellet
