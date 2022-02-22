@@ -29,15 +29,14 @@ class Display:
         )
 
     def bindObjects(self) -> None:
-        # create pacman
-        x0, y0, x1, y1 = GUIUtil.calculatePos(self.game.pacman.pos)
-        self.game.pacman.canvasItemId = self.createCanvasObject(x0, y0, x1, y1, 0, 0, REP.PACMAN)
-
         # create ghosts
         for ghost in self.game.ghostList:
             x0, y0, x1, y1 = GUIUtil.calculatePos(ghost.pos)
             ghost.canvasItemId = self.createCanvasObject(x0, y0, x1, y1, 0, 0, ghost.repId)
 
+        # create pacman
+        x0, y0, x1, y1 = GUIUtil.calculatePos(self.game.pacman.pos)
+        self.game.pacman.canvasItemId = self.createCanvasObject(x0, y0, x1, y1, 0, 0, REP.PACMAN)
 
         # create fixtures and pellets
         for row in self.game.state:
@@ -67,12 +66,6 @@ class Display:
 
         if self.game.lastPwrPltId != -1:
             self.canvas.delete(self.game.lastPwrPltId)
-
-        pPos = self.game.pacman.pos
-        # update pacman location
-        if self.game.pacman.moved:
-            pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
-            self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
 
         # ghost updates
         for ghost in self.game.ghostList:
@@ -104,3 +97,9 @@ class Display:
             if ghost.moved:
                 dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
                 self.canvas.move(ghost.canvasItemId, dX, dY)
+        
+        pPos = self.game.pacman.pos
+        # update pacman location
+        if self.game.pacman.moved:
+            pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
+            self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
