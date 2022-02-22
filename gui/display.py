@@ -82,7 +82,7 @@ class Display:
                     self.canvas.delete(ghost.pathId)
 
                 # update path display
-                if not ghost.isFrightened:
+                if not ghost.isFrightened and not ghost.isDead:
                     displayPath: List[int] = []
                     for cpair in ghost.path:
                         x, y = GUIUtil.calculateMidPt(cpair)
