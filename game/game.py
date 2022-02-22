@@ -1,3 +1,4 @@
+from time import time
 from tkinter import Canvas
 from typing import List, Tuple
 
@@ -185,7 +186,9 @@ class Game:
         self.lastPwrPltId = -1
 
         # update pacman location
+        s = time()
         pPos, pPrevPos, pMoved = self.pacman.getNextPos(self)
+        print("p", time() - s)
         if pMoved:
             self.movePacman(pPos, pPrevPos)
 
@@ -209,7 +212,9 @@ class Game:
                 if ghost.isClassic:
                     ghost.mode = self.ghostMode
 
+            s = time()
             gPos, gPrevPos, gMoved = ghost.getNextPos(self)
+            print("g{}".format(ghost.repId), time() - s)
             if gMoved:
                 self.moveGhost(gPos, gPrevPos)
 

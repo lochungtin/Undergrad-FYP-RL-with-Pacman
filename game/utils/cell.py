@@ -1,5 +1,6 @@
 from __future__ import annotations
 from copy import deepcopy
+from typing import List
 
 from utils.coordinate import CPair
 from utils.direction import DIR
@@ -23,8 +24,25 @@ class Cell:
     def setAdj(self, dir: int, neighbour: Cell) -> None:
         self.adj[dir] = neighbour
 
+    def isIntersection(self) -> bool:
+        count: int = 0
+
+        for dir, neighbour in self.adj.items():
+            count += (neighbour is None) * 1
+
+        return count < 2
+
     def getNeighbours(self) -> dict[int, Cell]:
         return deepcopy(self.adj)
+
+    def getValidNeighbours(self) -> List[Cell]:
+        valids: List[Cell] = []
+
+        for dir, neighbour in self.adj.items():
+            if not neighbour is None:
+                valids.append(neighbour)
+
+        return valids
 
     # custom string representation
     def __str__(self) -> str:

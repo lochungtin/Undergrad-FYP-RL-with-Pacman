@@ -82,7 +82,7 @@ class PathFinder:
             closedList[searchPos.row][searchPos.col] = True
 
             # search successors
-            for dir, succ in self.board[searchPos.row][searchPos.col].getNeighbours().items():
+            for dir, succ in self.board[searchPos.row][searchPos.col].adj.items():
                 if succ is None:
                     continue
 

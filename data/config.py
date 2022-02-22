@@ -25,6 +25,8 @@ class BOARD:
     ROW = len(DATA)
     COL = len(DATA[0])
 
+    MAX_DIST = 23
+
     TOTAL_PELLET_COUNT: int = 68
     TOTAL_PWRPLT_COUNT: int = 2
 

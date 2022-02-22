@@ -142,9 +142,7 @@ class ClassicGhostAgent(GhostAgent):
             # generate path
             self.prevPath = self.path
             if self.pos != targetTile:
-                self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
-            
-            print(len(self.path))
+                self.path = self.pathfinder.start(self.pos, targetTile, self.direction)            
 
             # update positions
             self.prevPos = self.pos
