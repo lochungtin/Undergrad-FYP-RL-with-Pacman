@@ -154,7 +154,7 @@ class Game:
         return pPos == gPos or (pPrevPos == gPos and pPos == gPrevPos)
 
     # proceed to next time step
-    def nextStep(self) -> Tuple[bool, bool]:
+    def nextStep(self) -> Tuple[bool, bool, bool, bool, bool]:
         # timestep management
         self.timesteps += 1
 
@@ -204,6 +204,7 @@ class Game:
                     self.canvas.delete(self.lastPwrPltId)
 
         # update ghost location
+        ateGhost: bool = False
         for ghost in self.ghostList:
             if newGhostMode:
                 if ghost.isClassic:
@@ -219,9 +220,14 @@ class Game:
                     if ghost.isFrightened:
                         ghost.isDead = True
                         ghost.isFrightened = False
+                        ateGhost = True
                     else:
-                        return True, self.pelletProgress == 0
+                        return (
+                            True,
+                            self.pelletProgress == 0,
+                            self.lastPelletId == -1,
+                            self.lastPwrPltId == -1,
+                            ateGhost,
+                        )
 
-        print(pacmanFeatureExtraction(self))
-
-        return False, self.pelletProgress == 0
+        return False, self.pelletProgress == 0, self.lastPelletId == -1, self.lastPwrPltId == -1, ateGhost
