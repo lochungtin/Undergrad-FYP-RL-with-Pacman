@@ -102,6 +102,5 @@ class Display:
 
             # update location
             if ghost.moved:
-                print('g', ghost.repId)
                 dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
                 self.canvas.move(ghost.canvasItemId, dX, dY)

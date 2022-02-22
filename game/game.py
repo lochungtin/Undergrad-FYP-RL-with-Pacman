@@ -222,4 +222,6 @@ class Game:
                     else:
                         return True, self.pelletProgress == 0
 
+        print(pacmanFeatureExtraction(self))
+
         return False, self.pelletProgress == 0

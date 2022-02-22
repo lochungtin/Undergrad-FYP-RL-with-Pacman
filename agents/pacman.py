@@ -15,7 +15,7 @@ from utils.coordinate import CPair
 def bfs(starting: Cell, origin: Cell, game: "Game") -> List[int]:
     # targets: [pellet, power pellet, ghost, scared ghost, intersection]
     distances: List[int] = [0, 0, 0, 0, 0]
-    completed: List[int] = [True, True, True, True, True]
+    completed: List[int] = [False, False, False, False, False]
 
     openList: Queue[Tuple[int, Cell]] = Queue()
     openList.put((0, starting))
@@ -132,7 +132,7 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
                 val = max(val - bfsRes[dir][4], 0)
 
             # normalise and append value
-            features.append(max(BOARD.MAX_DIST - val, 0) / BOARD.MAX_DIST)
+            features.append(BOARD.MAX_DIST - val / BOARD.MAX_DIST)
 
     return features
 
