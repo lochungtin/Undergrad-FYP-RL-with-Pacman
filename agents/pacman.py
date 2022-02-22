@@ -133,7 +133,7 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
 
             # normalise and append value
             features.append(BOARD.MAX_DIST - val / BOARD.MAX_DIST)
-
+            
     return features
 
 

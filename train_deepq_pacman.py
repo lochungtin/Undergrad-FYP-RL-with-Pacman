@@ -212,11 +212,10 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 195,
+                "inSize": 18,
                 "hidden": [
                     256,
-                    64,
-                    16,
+                    4,
                 ],
                 "outSize": 4,
             },
