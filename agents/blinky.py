@@ -15,6 +15,8 @@ class BlinkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.BLINKY, REP.BLINKY, 0)
 
+        self.cruiseElroy: bool = False
+
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
         # dead
@@ -28,30 +30,13 @@ class BlinkyClassicAgent(ClassicGhostAgent):
         # chase mode
         return game.pacman.pos
 
-    # get next postition of blinky (overrided for cruise elroy mode)
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER and not self.isDead:
-            # generate path
-            self.prevPath = self.path
-            if self.pos != game.pacman.pos:
-                self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
-
-                self.prevPos = self.pos
-                self.pos = self.path[0]
-
-            # update direction of travel
-            if self.pos != self.prevPos:
-                self.direction = self.pos.relate(self.prevPos)
-
-            return self.pos, self.prevPos, True
-
-        return super().getNextPos(game)
-
 
 # classic aggressive ai agent for blinky
 class BlinkyClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.BLINKY, REP.BLINKY, 0)
+
+        self.cruiseElroy: bool = False
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -61,22 +46,3 @@ class BlinkyClassicAggrAgent(ClassicGhostAgent):
 
         # chase mode
         return game.pacman.pos
-
-    # get next postition of blinky (overrided for cruise elroy mode)
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER and not self.isDead:
-            # generate path
-            self.prevPath = self.path
-            if self.pos != game.pacman.pos:
-                self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
-
-                self.prevPos = self.pos
-                self.pos = self.path[0]
-
-            # update direction of travel
-            if self.pos != self.prevPos:
-                self.direction = self.pos.relate(self.prevPos)
-
-            return self.pos, self.prevPos, True
-
-        return super().getNextPos(game)

@@ -99,7 +99,7 @@ class ClassicGhostAgent(GhostAgent):
             self.isDead = False
 
         # start random walk if frightened
-        if self.isFrightened:
+        if self.isFrightened and (not hasattr(self, "cruiseElroy") or not self.cruiseElroy):
             # update prev pos
             self.prevPos = self.pos
 

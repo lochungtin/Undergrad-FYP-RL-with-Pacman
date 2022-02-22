@@ -186,13 +186,15 @@ class Game:
         self.lastPwrPltId = -1
 
         # update pacman location
-        s = time()
         pPos, pPrevPos, pMoved = self.pacman.getNextPos(self)
-        print("p", time() - s)
         if pMoved:
             self.movePacman(pPos, pPrevPos)
 
             self.lastPelletId: int = self.eatPellet(pPos)
+            if BOARD.TOTAL_PELLET_COUNT - self.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER:
+                if not self.ghosts[REP.BLINKY] is None:
+                    self.ghosts[REP.BLINKY].cruiseElroy = True
+
             if self.canvas != None:
                 self.canvas.delete(self.lastPelletId)
 
@@ -212,9 +214,7 @@ class Game:
                 if ghost.isClassic:
                     ghost.mode = self.ghostMode
 
-            s = time()
             gPos, gPrevPos, gMoved = ghost.getNextPos(self)
-            print("g{}".format(ghost.repId), time() - s)
             if gMoved:
                 self.moveGhost(gPos, gPrevPos)
 

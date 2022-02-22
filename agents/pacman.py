@@ -24,6 +24,18 @@ def bfs(starting: Cell, origin: Cell, game: "Game") -> List[int]:
     closedList: List[List[bool]] = [[False for j in range(BOARD.COL)] for i in range(BOARD.ROW)]
     closedList[origin.coords.row][origin.coords.col] = True
 
+    # check if all ghosts are dead
+    allDead: bool = True
+    for ghost in game.ghostList:
+        allDead = allDead and ghost.isDead
+
+    if allDead:
+        completed[2] = True
+        completed[3] = True
+
+        distances[2] = BOARD.MAX_DIST
+        distances[3] = BOARD.MAX_DIST
+
     while not openList.empty():
         data: Tuple[int, Cell] = openList.get()
         layer: int = data[0]
@@ -109,7 +121,9 @@ class PlayableAgent(DirectionAgent):
 
 
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        pacmanFeatureExtraction(game)
+        for val in pacmanFeatureExtraction(game):
+            print(val)
+        print()
         return super().getNextPos(game)
 
 # deep q learning agent for pacman
