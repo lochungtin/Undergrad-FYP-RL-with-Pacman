@@ -38,28 +38,28 @@ class PathFinder:
 
     # start pathfinding
     def start(self, start: CPair, goal: CPair, initialDir: int = -1) -> List[CPair]:
-        # return goal if start is goal
-        if start == goal:
-            return [goal]
-
         # fix goal location until valid
         if not BOARD.isValidPos(goal) or self.board[goal.row][goal.col].isWall:
-            nGoal: CPair = deepcopy(goal)
+            adjGoal: CPair = deepcopy(goal)
 
-            nGoal.row = max(nGoal.row, 1)
-            nGoal.row = min(nGoal.row, BOARD.ROW - 2)
+            adjGoal.row = max(adjGoal.row, 1)
+            adjGoal.row = min(adjGoal.row, BOARD.ROW - 2)
 
-            nGoal.col = max(nGoal.col, 1)
-            nGoal.col = min(nGoal.col, BOARD.COL - 2)
+            adjGoal.col = max(adjGoal.col, 1)
+            adjGoal.col = min(adjGoal.col, BOARD.COL - 2)
 
-            goal = nGoal
+            goal = adjGoal
 
-            if self.board[nGoal.row][nGoal.col].isWall:
+            if self.board[adjGoal.row][adjGoal.col].isWall:
                 for dir in DIR.getList():
-                    newGoal: CPair = nGoal.move(dir)
+                    newGoal: CPair = adjGoal.move(dir)
                     if self.board[newGoal.row][newGoal.col].isWall:
                         goal = newGoal
-                        break               
+                        break
+
+        # return minimal path if adjusted goal is the starting position
+        if start == goal:
+            return [goal]            
 
         # initialise open list
         openList: PriorityQueue(Tuple[float, CPair]) = PriorityQueue()
