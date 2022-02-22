@@ -3,6 +3,7 @@ from tkinter import Canvas
 from typing import List, Tuple
 
 from agents.base import DirectionAgent, GhostAgent
+from agents.pacman import pacmanFeatureExtraction
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
 from game.components.pellet import Pellet, PowerPellet
@@ -143,9 +144,10 @@ class Game:
         cell.hasGhost = True
         cell.ghosts[ghostId] = True
 
-        pCell: Cell = self.getCell(pPos)
-        pCell.hasGhost = False
-        pCell.ghosts[ghostId] = False
+        if pos != pPos:
+            pCell: Cell = self.getCell(pPos)
+            pCell.hasGhost = False
+            pCell.ghosts[ghostId] = False
 
     # detect pacman and ghost collision
     def detectCollision(self, pPos: CPair, pPrevPos: CPair, gPos: CPair, gPrevPos: CPair) -> bool:
@@ -185,9 +187,8 @@ class Game:
             self.movePacman(pPos, pPrevPos)
 
             self.lastPelletId: int = self.eatPellet(pPos)
-            if BOARD.TOTAL_PELLET_COUNT - self.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER:
-                if not self.ghosts[REP.BLINKY] is None:
-                    self.ghosts[REP.BLINKY].cruiseElroy = True
+            if self.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER and not self.ghosts[REP.BLINKY] is None:
+                self.ghosts[REP.BLINKY].cruiseElroy = True
 
             if self.canvas != None:
                 self.canvas.delete(self.lastPelletId)

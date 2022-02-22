@@ -38,7 +38,11 @@ class PathFinder:
 
     # start pathfinding
     def start(self, start: CPair, goal: CPair, initialDir: int = -1) -> List[CPair]:
-        # fix goal location until valid        
+        # return goal if start is goal
+        if start == goal:
+            return [goal]
+
+        # fix goal location until valid
         if not BOARD.isValidPos(goal) or self.board[goal.row][goal.col].isWall:
             nGoal: CPair = deepcopy(goal)
 

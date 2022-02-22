@@ -1,9 +1,6 @@
 from queue import Queue
 from typing import List, TYPE_CHECKING, Tuple
 
-import numpy as np
-
-
 if TYPE_CHECKING:
     from game.game import Game
 
@@ -30,36 +27,25 @@ def bfs(starting: Cell, origin: Cell, game: "Game") -> List[float]:
     # premetively check power pellets and ghosts states to minimise computation
     # check if all power pellets are used
     allUsed: bool = True
-    for id,  pwrplts in game.pwrplts.items():
+    for id, pwrplts in game.pwrplts.items():
         allUsed = allUsed and not pwrplts.valid
 
     if allUsed:
         completed[1] = True
         distances[1] = BOARD.MAX_DIST
 
-    # check if all ghosts are dead or frightened
-    allDead: bool = True
-    allFrightened: bool = True
-    allHostile: bool = True
+    # check if any ghosts are dead or frightened
+    noHostiles: bool = True
+    noFrightened: bool = True
     for ghost in game.ghostList:
-        print(ghost.repId, ghost.isDead, ghost.isFrightened)
-        allDead = allDead and ghost.isDead
-        allHostile = allHostile and not ghost.isFrightened
-        allFrightened = allFrightened and ghost.isFrightened
-    print()
+        noHostiles *= ghost.isDead or ghost.isFrightened
+        noFrightened *= not ghost.isFrightened
 
-    if allDead:
-        completed[2] = True
-        completed[3] = True
-
-        distances[2] = BOARD.MAX_DIST
-        distances[3] = BOARD.MAX_DIST
-
-    if allFrightened:
+    if noHostiles:
         completed[2] = True
         distances[2] = BOARD.MAX_DIST
-    
-    if allHostile:
+
+    if noFrightened:
         completed[3] = True
         distances[3] = BOARD.MAX_DIST
 
@@ -138,15 +124,14 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
 
     # feature 3: shortest distance to a pellet
     # feature 4: shortest distance to a power pellet
-    # feature 5: shortest distance to a hostile ghost 
-    # feature 6: shortest distance to a frightened ghost 
+    # feature 5: shortest distance to a hostile ghost
+    # feature 6: shortest distance to a frightened ghost
     # feature 7: shortest distance to intersection
     for i in range(5):
         for j in range(4):
             # features.append((BOARD.MAX_DIST - bfsRes[j][i]) / BOARD.MAX_DIST)
             t1, t2 = bfsRes[j][i]
-            features.append(t1)
-            features.append(t2)
+            features.append((t1, t2))
 
     return features
 
@@ -156,13 +141,9 @@ class PlayableAgent(DirectionAgent):
     def __init__(self) -> None:
         super().__init__(POS.PACMAN, REP.PACMAN)
 
-
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        for val in pacmanFeatureExtraction(game):                
-            print(val)
-
-        print(np.array([[cell for cell in row] for row in game.state]))
         return super().getNextPos(game)
+
 
 # deep q learning agent for pacman
 class PacmanDQLAgent(DQLAgent):
