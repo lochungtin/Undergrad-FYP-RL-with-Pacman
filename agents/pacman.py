@@ -12,11 +12,10 @@ from game.utils.cell import Cell
 from utils.coordinate import CPair
 
 
-def bfs(starting: Cell, origin: Cell, game: "Game") -> List[float]:
+def bfs(starting: Cell, origin: Cell, game: "Game") -> List[int]:
     # targets: [pellet, power pellet, ghost, scared ghost, intersection]
     distances: List[int] = [0, 0, 0, 0, 0]
-    completed: List[int] = [0, 0, 0, 0, 0]
-    loc: List[Cell] = [None, None, None, None, None]
+    completed: List[int] = [True, True, True, True, True]
 
     openList: Queue[Tuple[int, Cell]] = Queue()
     openList.put((0, starting))
@@ -59,29 +58,27 @@ def bfs(starting: Cell, origin: Cell, game: "Game") -> List[float]:
 
         # check for intersections
         if curCell.isIntersection():
-            completed[4] = 1
-            loc[4] = curCell
+            completed[4] = True
 
         # check values
         if curCell.occupied():
             if not completed[0] and curCell.hasPellet:
-                completed[0] = 1
-                loc[0] = curCell
+                completed[0] = True
+
             elif not completed[1] and curCell.hasPwrplt:
-                completed[1] = 1
-                loc[1] = curCell
+                completed[1] = True
+
             elif curCell.hasGhost:
                 for id, presence in curCell.ghosts.items():
                     if presence:
                         if not completed[2] and not game.ghosts[id].isDead:
-                            completed[2] = 1
-                            loc[2] = curCell
+                            completed[2] = True
+
                         elif not completed[3] and game.ghosts[id].isFrightened:
-                            completed[3] = 1
-                            loc[3] = curCell
+                            completed[3] = True
 
         # check if all targets are found
-        allDone: int = 1
+        allDone: bool = True
         for i in range(5):
             allDone *= completed[i]
 
@@ -96,7 +93,7 @@ def bfs(starting: Cell, origin: Cell, game: "Game") -> List[float]:
             if not closedList[neighbour.coords.row][neighbour.coords.col]:
                 openList.put((layer + 1, neighbour))
 
-    return list(zip(distances, loc))
+    return distances
 
 
 def pacmanFeatureExtraction(game: "Game") -> List[float]:
@@ -127,11 +124,15 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
     # feature 5: shortest distance to a hostile ghost
     # feature 6: shortest distance to a frightened ghost
     # feature 7: shortest distance to intersection
-    for i in range(5):
-        for j in range(4):
-            # features.append((BOARD.MAX_DIST - bfsRes[j][i]) / BOARD.MAX_DIST)
-            t1, t2 = bfsRes[j][i]
-            features.append((t1, t2))
+    for data in range(4):
+        for dir in range(4):
+            val: float = bfsRes[dir][data]
+
+            if data == 2:
+                val = max(val - bfsRes[dir][4], 0)
+
+            # normalise and append value
+            features.append(max(BOARD.MAX_DIST - val, 0) / BOARD.MAX_DIST)
 
     return features
 
