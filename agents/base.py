@@ -45,12 +45,12 @@ class DirectionAgent(Agent):
     # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         curPos: Cell = game.getCell(self.pos)
-        nextPos: Cell = curPos.getNeighbours()[self.direction]
+        nextPos: Cell = curPos.adj[self.direction]
         self.moved = False
 
         if nextPos is None:
             return self.pos, self.prevPos, self.moved
-        
+
         self.pos = nextPos.coords
         self.prevPos = curPos.coords
         self.moved = True
@@ -65,7 +65,7 @@ class GhostAgent(Agent):
 
         self.isDead: bool = False
         self.isFrightened: bool = False
-        self.speedReducer: int = 2
+        self.speedReducer: int = GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
 
         self.isClassic: bool = isClassic
 
@@ -86,11 +86,10 @@ class ClassicGhostAgent(GhostAgent):
     def bindPathFinder(self, pathFinder: PathFinder) -> None:
         self.pathfinder: PathFinder = pathFinder
 
-
     # get next position of ghost
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         # wait at ghost house
-        if self.initWait > -1:
+        if self.initWait > 0:
             self.initWait -= 1
             return self.pos, self.pos, False
 
@@ -115,18 +114,12 @@ class ClassicGhostAgent(GhostAgent):
             # slow down ghost speed
             self.speedReducer = (self.speedReducer + 1) % GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
-                neighbours: dict[int, Cell] = game.state[self.pos.row][self.pos.col].getNeighbours()
-
-                # apply ghost pathfinding restrictions
-                if self.pos in POS.GHOST_NO_UP_CELLS:
-                    neighbours[DIR.UP] = None
-                
                 # filter out valid locations
                 valid: List[Cell] = []
-                for dir, neighbour in neighbours.items():
-                    if not neighbour is None:
+                for dir, neighbour in game.state[self.pos.row][self.pos.col].items():
+                    if not neighbour is None and dir != DIR.UP or not self.pos in POS.GHOST_NO_UP_CELLS:
                         valid.append(neighbour)
-                
+
                 # random choice
                 self.pos = choice(valid).coords
 
@@ -142,7 +135,7 @@ class ClassicGhostAgent(GhostAgent):
             # generate path
             self.prevPath = self.path
             if self.pos != targetTile:
-                self.path = self.pathfinder.start(self.pos, targetTile, self.direction)            
+                self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
 
             # update positions
             self.prevPos = self.pos
@@ -154,7 +147,6 @@ class ClassicGhostAgent(GhostAgent):
             self.direction = self.pos.relate(self.prevPos)
 
         return self.pos, self.prevPos, True
-
 
     # ===== REQUIRED TO OVERRIDE =====
     # get target tile of ghost

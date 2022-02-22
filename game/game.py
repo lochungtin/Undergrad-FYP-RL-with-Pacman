@@ -132,19 +132,14 @@ class Game:
 
     # handle agent movement
     def movePacman(self, pos: CPair, pPos: CPair) -> None:
-        cell: Cell = self.getCell(pos)
-        pCell: Cell = self.getCell(pPos)
+        self.getCell(pos).setVal(REP.PACMAN)
+        self.getCell(pPos).setVal(REP.EMPTY)
 
-        cell.setVal(pCell.val)
-        pCell.setVal(REP.EMPTY)
-
-    def moveGhost(self, pos: CPair, pPos: CPair) -> None:
-        cell: Cell = self.getCell(pos)
-        pCell: Cell = self.getCell(pPos)
-
-        cell.setVal(pCell.val)
+    def moveGhost(self, ghostId: int, pos: CPair, pPos: CPair) -> None:
+        self.getCell(pos).setVal(ghostId)
 
         # replenish pellet value to old cell
+        pCell: Cell = self.getCell(pPos)
         pPosStr: str = pCell.__str__()
         if pPosStr in self.pellets and self.pellets[pPosStr].valid:
             pCell.setVal(REP.PELLET)
@@ -216,7 +211,7 @@ class Game:
 
             gPos, gPrevPos, gMoved = ghost.getNextPos(self)
             if gMoved:
-                self.moveGhost(gPos, gPrevPos)
+                self.moveGhost(ghost.repId, gPos, gPrevPos)
 
             # handle collision
             if self.detectCollision(pPos, pPrevPos, gPos, gPrevPos):

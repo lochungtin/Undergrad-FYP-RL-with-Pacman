@@ -32,9 +32,6 @@ class Cell:
 
         return count < 2
 
-    def getNeighbours(self) -> dict[int, Cell]:
-        return deepcopy(self.adj)
-
     def getValidNeighbours(self) -> List[Cell]:
         valids: List[Cell] = []
 
