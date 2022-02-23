@@ -44,10 +44,7 @@ class App:
         _thread.start_new_thread(self.tc.start, ())
 
     def nextStep(self):
-        gameover, won, atePellet, atePellet, ateGhost = self.game.nextStep()
-
-        if atePellet:
-            self.pellets += 1
+        gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
 
         if ateGhost: 
             self.kills += 1
@@ -55,9 +52,25 @@ class App:
         if not self.game.pacman.moved:
             self.stationary += 1
 
+        # calculate reward
+        reward: int = -1
+        # punish stationary action
+        if not self.game.pacman.moved:
+            reward = -10
+        # reward eating pellet
+        elif atePellet:
+            reward = 10
+        # reward eating power pellet
+        elif atePwrPlt:
+            reward = 3
+        # reward a kill
+        elif ateGhost:
+            reward = 25
+        print(reward)
+
         if gameover or won:
             print("P: {}/{} K: {} S: {}/{}".format(
-                self.pellets,
+                self.game.pelletProgress,
                 BOARD.TOTAL_PELLET_COUNT,
                 self.kills,
                 self.stationary,
@@ -86,7 +99,7 @@ def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
 if __name__ == "__main__":
     gameConfig: dict[str, object] = {
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL2302_0211", 3000)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL2302_0225", 5000)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,

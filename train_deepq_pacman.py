@@ -91,18 +91,12 @@ class DeepQLTraining:
         action: int = self.agentInit(pacmanFeatureExtraction(game))
         game.pacman.setDir(action)
 
-        pPos: List[CPair] = []
-
         avgP: float = 0
         avgR: float = 0
 
         eps: int = 0
         while eps < self.simCap:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
-
-            pPos.append(game.pacman.pos)
-            if len(pPos) > 3:
-                del pPos[0]
 
             # enable display
             if self.hasDisplay:
@@ -113,7 +107,7 @@ class DeepQLTraining:
                 if won:
                     self.agentEnd(200)
                 else:
-                    self.agentEnd(-400)
+                    self.agentEnd(-1000)
 
                 avgP = (avgP * eps + game.pelletProgress) / (eps + 1)
                 avgR = (avgR * eps + self.rSum) / (eps + 1)
