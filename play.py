@@ -54,7 +54,25 @@ class App:
     def nextStep(self):
         # update game, proceed to next step
         gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
-        print(pacmanFeatureExtraction(self.game))
+        
+
+        # timestep based
+        reward: int = -1
+
+        # punish stationary action
+        if not self.game.pacman.moved:
+            reward = -10
+        # reward eating pellet
+        elif atePellet:
+            reward = 10
+        # reward eating power pellet
+        elif atePwrPlt:
+            reward = 3
+        # reward a kill
+        elif ateGhost:
+            reward = 25
+
+        print(reward)
 
         # handle gameover
         if gameover or won:

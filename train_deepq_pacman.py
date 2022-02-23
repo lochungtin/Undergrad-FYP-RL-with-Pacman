@@ -138,11 +138,11 @@ class DeepQLTraining:
 
             else:
                 # timestep based
-                reward: int = -10
+                reward: int = -1
 
                 # punish stationary action
-                if game.pacman.moved:
-                    reward = -1
+                if not game.pacman.moved:
+                    reward = -10
                 # reward eating pellet
                 elif atePellet:
                     reward = 10
