@@ -105,12 +105,15 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
     # feature 2: vulnerability effect
     features.append(max(game.pwrpltEffectCounter, 0) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
 
-    # breadth first analysis
+    # breadth first search state analysis
     pCell: Cell = game.getCell(game.pacman.pos)
-
     bfsRes: List[List[int]] = [None, None, None, None]
     curRes: List[int] = None
     for dir, neighbour in pCell.adj.items():
+        # feature 3: valid directions
+        features.append((not neighbour is None) * 1)
+
+        # start bfs
         if neighbour is None:
             if curRes is None:
                 bfsRes[dir] = bfs(pCell, pCell, game)
@@ -119,11 +122,10 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
         else:
             bfsRes[dir] = bfs(neighbour, pCell, game)
 
-    # feature 3: shortest distance to a pellet
-    # feature 4: shortest distance to a power pellet
-    # feature 5: shortest distance to a hostile ghost
-    # feature 6: shortest distance to a frightened ghost
-    # feature 7: shortest distance to intersection
+    # feature 4: shortest distance to a pellet
+    # feature 5: shortest distance to a power pellet
+    # feature 6: shortest distance to a hostile ghost
+    # feature 7: shortest distance to a frightened ghost
     for data in range(4):
         for dir in range(4):
             val: float = bfsRes[dir][data]
@@ -132,9 +134,13 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
                 val = max(val - bfsRes[dir][4], 0)
 
             # normalise and append value
-            features.append(BOARD.MAX_DIST - val / BOARD.MAX_DIST)
-            
-    return features
+            features.append((BOARD.MAX_DIST - val) / BOARD.MAX_DIST)
+
+    # feature 8: current direction
+    dirs: List[int] = [0, 0, 0, 0]
+    dirs[game.pacman.direction] = 1
+
+    return features + dirs
 
 
 # playable keyboard agent for pacman

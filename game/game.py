@@ -230,4 +230,4 @@ class Game:
                             ateGhost,
                         )
 
-        return False, self.pelletProgress == 0, self.lastPelletId == -1, self.lastPwrPltId == -1, ateGhost
+        return False, self.pelletProgress == 0, self.lastPelletId != -1, self.lastPwrPltId != -1, ateGhost

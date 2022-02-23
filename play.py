@@ -1,12 +1,13 @@
 import _thread
 from tkinter import Tk
+from typing import List
 
 
 from agents.blinky import BlinkyClassicAgent
 from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
-from agents.pacman import PlayableAgent
+from agents.pacman import PlayableAgent, pacmanFeatureExtraction
 from utils.direction import DIR
 from game.game import Game
 from gui.controller import TimeController
@@ -52,7 +53,8 @@ class App:
     # trigger Game.nextStep() and update dislay, reset if gameover
     def nextStep(self):
         # update game, proceed to next step
-        gameover, won = self.game.nextStep()
+        gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
+        print(pacmanFeatureExtraction(self.game))
 
         # handle gameover
         if gameover or won:

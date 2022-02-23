@@ -19,6 +19,7 @@ from data.config import POS
 from data.data import REP
 from game.game import Game
 from gui.display import Display
+from utils.coordinate import CPair
 
 
 class DeepQLTraining:
@@ -90,11 +91,18 @@ class DeepQLTraining:
         action: int = self.agentInit(pacmanFeatureExtraction(game))
         game.pacman.setDir(action)
 
-        avgPCount: float = 0
+        pPos: List[CPair] = []
+
+        avgP: float = 0
+        avgR: float = 0
 
         eps: int = 0
         while eps < self.simCap:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
+
+            pPos.append(game.pacman.pos)
+            if len(pPos) > 3:
+                del pPos[0]
 
             # enable display
             if self.hasDisplay:
@@ -103,15 +111,20 @@ class DeepQLTraining:
 
             if gameover or won or game.timesteps > 1000:
                 if won:
-                    self.agentEnd(100)
+                    self.agentEnd(200)
                 else:
-                    self.agentEnd(-500)
+                    self.agentEnd(-400)
 
-                avgPCount = (avgPCount * eps + game.pelletProgress) / (eps + 1)
+                avgP = (avgP * eps + game.pelletProgress) / (eps + 1)
+                avgR = (avgR * eps + self.rSum) / (eps + 1)
 
                 eps += 1
 
-                print("ep{}\tp[{}/68 | {}/68]".format(eps, game.pelletProgress, round(avgPCount, 2)))
+                print(
+                    "ep{}\tr[{} | {}]\tp[{}/68 | {}/68]".format(
+                        eps, round(self.rSum, 2), avgR, game.pelletProgress, round(avgP, 2)
+                    )
+                )
 
                 if eps % self.saveOpt == 0:
                     self.network.save(eps, runPref)
@@ -124,14 +137,21 @@ class DeepQLTraining:
                 game.pacman.setDir(action)
 
             else:
-                reward: int = -5
+                # timestep based
+                reward: int = -10
 
-                if atePellet:
+                # punish stationary action
+                if game.pacman.moved:
+                    reward = -1
+                # reward eating pellet
+                elif atePellet:
                     reward = 10
+                # reward eating power pellet
                 elif atePwrPlt:
-                    reward = 5
+                    reward = 3
+                # reward a kill
                 elif ateGhost:
-                    reward = 20
+                    reward = 25
 
                 action = self.agentStep(pacmanFeatureExtraction(game), reward)
                 game.pacman.setDir(action)
@@ -212,9 +232,10 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 18,
+                "inSize": 26,
                 "hidden": [
                     256,
+                    16,
                     4,
                 ],
                 "outSize": 4,

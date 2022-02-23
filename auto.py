@@ -12,6 +12,7 @@ from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
 from game.game import Game
+from data.config import BOARD
 from gui.controller import TimeController
 from gui.display import Display
 
@@ -43,7 +44,7 @@ class App:
         _thread.start_new_thread(self.tc.start, ())
 
     def nextStep(self):
-        gameover, won, atePellet, ateGhost, pacmanMoved = self.game.nextStep()
+        gameover, won, atePellet, atePellet, ateGhost = self.game.nextStep()
 
         if atePellet:
             self.pellets += 1
@@ -51,13 +52,13 @@ class App:
         if ateGhost: 
             self.kills += 1
 
-        if not pacmanMoved:
+        if not self.game.pacman.moved:
             self.stationary += 1
 
         if gameover or won:
             print("P: {}/{} K: {} S: {}/{}".format(
                 self.pellets,
-                self.pellets + self.game.pelletProgress,
+                BOARD.TOTAL_PELLET_COUNT,
                 self.kills,
                 self.stationary,
                 self.game.timesteps,
@@ -66,7 +67,7 @@ class App:
             self.tc.end()
             self.main.destroy()
 
-        self.display.rerender(atePellet)
+        self.display.rerender()
 
     def run(self) -> None:
         self.main.mainloop()
@@ -85,7 +86,7 @@ def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
 if __name__ == "__main__":
     gameConfig: dict[str, object] = {
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL2002_1435", 10500)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL2302_0211", 3000)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,
