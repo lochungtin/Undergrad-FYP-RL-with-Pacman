@@ -12,6 +12,12 @@ class Pellet(Component, Destroyable):
 
         self.valid: bool = True
 
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        return "[id: {}, p: {}, v: {}]".format(self.repId, self.pos, self.valid)
+
 
 # power pellet class
 class PowerPellet(Component, Destroyable):
@@ -20,3 +26,9 @@ class PowerPellet(Component, Destroyable):
         self.repId: int = REP.PWRPLT
 
         self.valid: bool = True
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        return "[id: {}, p: {}, v: {}]".format(self.repId, self.pos, self.valid)
