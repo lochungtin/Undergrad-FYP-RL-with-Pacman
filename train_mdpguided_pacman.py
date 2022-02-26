@@ -2,6 +2,7 @@ from math import log10, log2
 from copy import deepcopy
 from ctypes import util
 from datetime import datetime
+from random import shuffle
 from tkinter import Tk
 from typing import List, Tuple
 import _thread
@@ -36,8 +37,8 @@ class MDPGuidedTraining:
             self.display: Display = Display(self.main)
 
         # mdp config
-        self.gamma: int = trainingConfig["mdpConfig"]["gamma"]
-        self.epsilon: int = trainingConfig["mdpConfig"]["epsilon"]
+        self.gamma: float = trainingConfig["mdpConfig"]["gamma"]
+        self.epsilon: float = trainingConfig["mdpConfig"]["epsilon"]
 
         self.maxIter: int = trainingConfig["mdpConfig"]["maxIterations"]
 
@@ -59,11 +60,12 @@ class MDPGuidedTraining:
             DirectionAgent(POS.PACMAN, REP.PACMAN),
             blinky=BlinkyClassicAgent(),
             pinky=PinkyClassicAgent(),
+            enablePwrPlt=True
         )
 
     # ===== main training function =====
     def training(self) -> None:
-        game: Game = self.newGame()
+        game: Game = deepcopy(self.newGame())
 
         if self.hasDisplay:
             self.display.newGame(game)
@@ -71,13 +73,13 @@ class MDPGuidedTraining:
         game.pacman.setDir(self.mdpGetAction(game))
 
         ep = 0
-        while ep < 1:
+        while ep < 10:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # enable display
-            # if self.hasDisplay:
-            #     self.display.rerender()
-            #     time.sleep(0.01)
+            if self.hasDisplay:
+                self.display.rerender()
+                time.sleep(0.01)
 
             # reset when gameover
             if gameover or won:
@@ -87,6 +89,7 @@ class MDPGuidedTraining:
                 print("l: {}\tc: {}/68 = {}%".format(game.pelletProgress, consumption, round(consumption / 68 * 100, 2)))
 
                 game = self.newGame()
+
                 if self.hasDisplay:
                     self.display.newGame(game)
 
@@ -183,18 +186,18 @@ if __name__ == "__main__":
     training: MDPGuidedTraining = MDPGuidedTraining(
         {
             "mdpConfig": {
-                "maxIterations": 300,
+                "maxIterations": 10000,
                 "gamma": 0.90,
-                "epsilon": 0.005,
+                "epsilon": 0.00005,
             },
             "rewards": {
                 "timestep": -0.05,
-                "pellet": 5,
-                "pwrplt": 50,
+                "pellet": 1,
+                "pwrplt": 10,
                 "ghost": -1000,
                 "kill": 30,
             },
         },
-        True,
+        False,
     )
     training.start()

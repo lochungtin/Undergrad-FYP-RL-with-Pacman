@@ -44,13 +44,16 @@ class Game:
             r: List[Cell] = []
             for j, val in enumerate(row):
                 cell = Cell(i, j, val)
-                
+
                 self.state[i][j] = cell
 
                 if val == REP.PELLET:
                     self.pellets[cell.id] = Pellet(cell.coords)
-                elif val == REP.PWRPLT and enablePwrPlt:
-                    self.pwrplts[cell.id] = PowerPellet(cell.coords)
+                elif val == REP.PWRPLT:
+                    if enablePwrPlt:
+                        self.pwrplts[cell.id] = PowerPellet(cell.coords)
+                    else:
+                        cell.hasPwrplt = False
 
         # game agents
         self.pacman: DirectionAgent = pacman

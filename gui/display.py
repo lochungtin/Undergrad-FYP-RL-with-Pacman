@@ -20,16 +20,8 @@ class Display:
     def newGame(self, game: Game) -> None:
         self.game = game
 
-        for key, pellet in self.game.pellets.items():
-            print(key, pellet)
-
         self.canvas.delete("all")
         self.bindObjects()
-
-        print()
-
-        for key, pellet in self.game.pellets.items():
-            print(key, pellet)
 
 
     # create canvas object and return canvas id
@@ -60,11 +52,11 @@ class Display:
                     )
                     self.game.pellets[cell.id].setCanvasItemId(canvasItemId)
 
-                # elif cell.hasPwrplt:
-                #     canvasItemId: int = self.createCanvasObject(
-                #         x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, REP.PELLET
-                #     )
-                #     self.game.pwrplts[cell.id].setCanvasItemId(canvasItemId)
+                elif cell.hasPwrplt:
+                    canvasItemId: int = self.createCanvasObject(
+                        x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, REP.PELLET
+                    )
+                    self.game.pwrplts[cell.id].setCanvasItemId(canvasItemId)
 
                 elif cell.iSDoor:
                     canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, DIM.PAD_DOOR, REP.DOOR)

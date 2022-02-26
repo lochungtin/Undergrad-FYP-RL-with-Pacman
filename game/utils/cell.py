@@ -66,7 +66,7 @@ class Cell:
 
         return "{}: [{}, {}, {}, {}]".format(
             self.id,
-            self.isWall * 2 + self.isWall,
+            self.iSDoor * 2 + self.isWall,
             self.hasPwrplt * 2 + self.hasPellet,
             self.hasPacman,
             ghostString,
