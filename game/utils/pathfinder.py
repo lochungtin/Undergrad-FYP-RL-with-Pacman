@@ -12,7 +12,7 @@ from utils.direction import DIR
 
 class PFDataCell:
     def __init__(self) -> None:
-        self.f: float = math.inf
+        self.f: float = float("inf")
         self.g: float = -1
         self.h: float = -1
         self.parent: CPair = CPair(-1, -1)
@@ -76,7 +76,7 @@ class PathFinder:
 
         # maintain lowest score for out of bounds pathfinding
         nearestPos: CPair = start
-        lowestScore: float = math.inf
+        lowestScore: float = float("inf")
 
         # start A* algorithm
         while not openList.empty():

@@ -11,6 +11,7 @@ from game.utils.pathfinder import PathFinder
 from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.direction import DIR
+from utils.grid import createGameSizeGrid
 
 
 class Game:
@@ -37,20 +38,19 @@ class Game:
         self.pwrpltEffectCounter: int = 0
 
         # create pellets and fill game state
-        self.state: List[List[Cell]] = []
+        self.state: List[List[Cell]] = createGameSizeGrid(None)
 
         for i, row in enumerate(BOARD.DATA):
             r: List[Cell] = []
             for j, val in enumerate(row):
                 cell = Cell(i, j, val)
-                r.append(cell)
+                
+                self.state[i][j] = cell
 
                 if val == REP.PELLET:
                     self.pellets[cell.id] = Pellet(cell.coords)
                 elif val == REP.PWRPLT and enablePwrPlt:
                     self.pwrplts[cell.id] = PowerPellet(cell.coords)
-
-            self.state.append(r)
 
         # game agents
         self.pacman: DirectionAgent = pacman

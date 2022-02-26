@@ -28,7 +28,7 @@ class DeepQLTraining:
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
             self.main: Tk = Tk()
-            self.main.title("NEAT Training")
+            self.main.title("DEEP Q Training")
 
             self.display: Display = Display(self.main)
 

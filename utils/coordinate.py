@@ -42,6 +42,10 @@ class CPair:
         # not a valid comparison
         return -1
 
+    # get manhattan distance
+    def manDist(self, cpair: CPair) -> int:
+        return abs(self.row - cpair.row) + abs(self.col - cpair.col)
+
     # custom string representation
     def __str__(self) -> str:
         return self.__repr__()

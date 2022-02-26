@@ -10,137 +10,82 @@ from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
 from game.utils.cell import Cell
 from utils.coordinate import CPair
+from utils.grid import createGameSizeGrid
 
 
-def bfs(starting: Cell, origin: Cell, game: "Game") -> List[int]:
-    # targets: [pellet, power pellet, ghost, scared ghost, intersection]
-    distances: List[int] = [0, 0, 0, 0, 0]
-    completed: List[int] = [False, False, False, False, False]
+def distanceComparison(ref: CPair, comp: CPair) -> List[float]:
+    return [
+        max(0, ref.row - comp.row) / BOARD.ROW,
+        max(0, comp.row - ref.row) / BOARD.ROW,
+        max(0, ref.col - comp.col) / BOARD.COL,
+        max(0, comp.col - ref.col) / BOARD.COL,
+    ]
 
-    openList: Queue[Tuple[int, Cell]] = Queue()
-    openList.put((0, starting))
 
-    closedList: List[List[bool]] = [[False for j in range(BOARD.COL)] for i in range(BOARD.ROW)]
-    closedList[origin.coords.row][origin.coords.col] = True
+def pacmanFeatureExtraction(game: "Game") -> List[float]:
+    features: List[float] = [0, 0, 0, 0, game.pwrpltEffectCounter / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT]
 
-    # premetively check power pellets and ghosts states to minimise computation
-    # check if all power pellets are used
-    allUsed: bool = True
-    for id, pwrplts in game.pwrplts.items():
-        allUsed = allUsed and not pwrplts.valid
+    pPos: CPair = game.pacman.pos
+    pCell: Cell = game.getCell(pPos)
 
-    if allUsed:
-        completed[1] = True
-        distances[1] = BOARD.MAX_DIST
+    # feature 1: valid directions
+    for action, neighbour in pCell.adj.items():
+        if not neighbour is None:
+            features[action] = 1
 
-    # check if any ghosts are dead or frightened
-    noHostiles: bool = True
-    noFrightened: bool = True
-    for ghost in game.ghostList:
-        noHostiles *= ghost.isDead or ghost.isFrightened
-        noFrightened *= not ghost.isFrightened
+    # feature 2: relative position to closest pellet
+    closestPellet: CPair = 0
 
-    if noHostiles:
-        completed[2] = True
-        distances[2] = BOARD.MAX_DIST
+    openlist: Queue[Cell] = Queue()
+    openlist.put(pCell)
+    closedList: List[List[bool]] = createGameSizeGrid(False)
 
-    if noFrightened:
-        completed[3] = True
-        distances[3] = BOARD.MAX_DIST
-
-    while not openList.empty():
-        data: Tuple[int, Cell] = openList.get()
-        layer: int = data[0]
-        curCell: Cell = data[1]
+    while not openlist.empty():
+        # get current visiting cell
+        curCell = openlist.get()
 
         # update closed list
         closedList[curCell.coords.row][curCell.coords.col] = True
 
-        # check for intersections
-        if curCell.isIntersection():
-            completed[4] = True
-
-        # check values
-        if curCell.occupied():
-            if not completed[0] and curCell.hasPellet:
-                completed[0] = True
-
-            elif not completed[1] and curCell.hasPwrplt:
-                completed[1] = True
-
-            elif curCell.hasGhost:
-                for id, presence in curCell.ghosts.items():
-                    if presence:
-                        if not completed[2] and not game.ghosts[id].isDead:
-                            completed[2] = True
-
-                        elif not completed[3] and game.ghosts[id].isFrightened:
-                            completed[3] = True
-
-        # check if all targets are found
-        allDone: bool = True
-        for i in range(5):
-            allDone *= completed[i]
-
-            if not completed[i]:
-                distances[i] = layer + 1
-
-        if allDone:
+        if curCell.hasPellet:
+            closestPellet = curCell.coords
             break
 
-        # add unvisited neighbours
         for neighbour in curCell.getValidNeighbours():
             if not closedList[neighbour.coords.row][neighbour.coords.col]:
-                openList.put((layer + 1, neighbour))
+                openlist.put(neighbour)
 
-    return distances
+    features += distanceComparison(pPos, closestPellet)
 
+    # feature 3: relative position to closest power pellet
+    closestPwrplt: CPair = pPos
+    closestPwrpltD: int = BOARD.MAX_DIST
+    for key, pwrplt in game.pwrplts.items():
+        if pwrplt.valid:
+            d: int = pPos.manDist(pwrplt.pos)
+            if d < closestPwrpltD:
+                closestPwrplt = pwrplt.pos
+                closestPwrpltD = d
 
-def pacmanFeatureExtraction(game: "Game") -> List[float]:
-    features: List[float] = []
+    features += distanceComparison(pPos, closestPwrplt)
 
-    # feature 1: pellet progress
-    features.append(game.pelletProgress / BOARD.TOTAL_PELLET_COUNT)
+    # feature 4: relative position to #1 closest ghost + ghost state
+    g0: GhostAgent = game.ghostList[0]
+    if g0.isDead:
+        features += [0, 0, 0, 0, 0]
+    else:
+        features += distanceComparison(pPos, g0.pos)
+        features.append(g0.isFrightened)
 
-    # feature 2: vulnerability effect
-    features.append(max(game.pwrpltEffectCounter, 0) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
+    # feature 5: relative position to #2 closest ghost + ghost state
+    g1: GhostAgent = game.ghostList[1]
+    if g1.isDead:
+        features += [0, 0, 0, 0, 0]
+    else:
+        features += distanceComparison(pPos, g1.pos)
+        features.append(g1.isFrightened)
 
-    # breadth first search state analysis
-    pCell: Cell = game.getCell(game.pacman.pos)
-    bfsRes: List[List[int]] = [None, None, None, None]
-    curRes: List[int] = None
-    for dir, neighbour in pCell.adj.items():
-        # feature 3: valid directions
-        features.append((not neighbour is None) * 1)
-
-        # start bfs
-        if neighbour is None:
-            if curRes is None:
-                bfsRes[dir] = bfs(pCell, pCell, game)
-            else:
-                bfsRes[dir] = curRes
-        else:
-            bfsRes[dir] = bfs(neighbour, pCell, game)
-
-    # feature 4: shortest distance to a pellet
-    # feature 5: shortest distance to a power pellet
-    # feature 6: shortest distance to a hostile ghost
-    # feature 7: shortest distance to a frightened ghost
-    for data in range(4):
-        for dir in range(4):
-            val: float = bfsRes[dir][data]
-
-            if data == 2:
-                val = max(val - bfsRes[dir][4], 0)
-
-            # normalise and append value
-            features.append((BOARD.MAX_DIST - val) / BOARD.MAX_DIST)
-
-    # feature 8: current direction
-    dirs: List[int] = [0, 0, 0, 0]
-    dirs[game.pacman.direction] = 1
-
-    return features + dirs
+    return features
 
 
 # playable keyboard agent for pacman
