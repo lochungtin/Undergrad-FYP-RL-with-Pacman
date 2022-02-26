@@ -1,3 +1,4 @@
+from math import log10, log2
 from copy import deepcopy
 from ctypes import util
 from datetime import datetime
@@ -63,28 +64,35 @@ class MDPGuidedTraining:
     # ===== main training function =====
     def training(self) -> None:
         game: Game = self.newGame()
+
+        if self.hasDisplay:
+            self.display.newGame(game)
+
         game.pacman.setDir(self.mdpGetAction(game))
 
         ep = 0
-        while ep < 10:
+        while ep < 1:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # enable display
-            if self.hasDisplay:
-                self.display.rerender()
-                time.sleep(0.01)
+            # if self.hasDisplay:
+            #     self.display.rerender()
+            #     time.sleep(0.01)
 
             # reset when gameover
             if gameover or won:
                 ep += 1
 
+                consumption: int = 68 - game.pelletProgress
+                print("l: {}\tc: {}/68 = {}%".format(game.pelletProgress, consumption, round(consumption / 68 * 100, 2)))
+
                 game = self.newGame()
-                self.display.newGame(game)
+                if self.hasDisplay:
+                    self.display.newGame(game)
 
             game.pacman.setDir(self.mdpGetAction(game))
 
-        
-
+    # get optimal action
     def mdpGetAction(self, game: Game) -> int:
         # get reward grid
         rewardGrid: List[List[float]] = self.makeRewardGrid(game)
@@ -103,7 +111,7 @@ class MDPGuidedTraining:
     # create reward grid from state space
     def makeRewardGrid(self, game: Game) -> List[List[float]]:
         # iniialise reward grid
-        rewardGrid: List[List[float]] = createGameSizeGrid()
+        rewardGrid: List[List[float]] = createGameSizeGrid(self.rewards["timestep"])
 
         # set power pellet reward
         for key, pwrplt in game.pwrplts.items():
@@ -120,8 +128,8 @@ class MDPGuidedTraining:
         # set pellet reward
         for key, pellet in game.pellets.items():
             if pellet.valid:
-                rewardGrid[pellet.pos.row][pellet.pos.col] = self.rewards["pellet"] * (
-                    BOARD.TOTAL_PELLET_COUNT - game.pelletProgress
+                rewardGrid[pellet.pos.row][pellet.pos.col] = self.rewards["pellet"] * log2(
+                    BOARD.TOTAL_PELLET_COUNT - game.pelletProgress + 1
                 )
 
         # set ghost reward
@@ -132,7 +140,7 @@ class MDPGuidedTraining:
                         self.rewards["kill"] * game.pwrpltEffectCounter / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
                     )
                 else:
-                    rewardGrid[ghost.pos.row][ghost.pos.col] = self.rewards["death"]
+                    rewardGrid[ghost.pos.row][ghost.pos.col] = self.rewards["ghost"]
 
         return rewardGrid
 
@@ -144,7 +152,7 @@ class MDPGuidedTraining:
         game: Game,
     ) -> Tuple[List[List[float]], bool]:
         # initialise new utility value grid
-        newUtils: List[List[float]] = createGameSizeGrid[0]
+        newUtils: List[List[float]] = createGameSizeGrid(0)
 
         # stable indicator
         stable = True
@@ -175,18 +183,18 @@ if __name__ == "__main__":
     training: MDPGuidedTraining = MDPGuidedTraining(
         {
             "mdpConfig": {
-                "maxIterations": 200,
-                "gamma": 0.75,
+                "maxIterations": 300,
+                "gamma": 0.90,
                 "epsilon": 0.005,
             },
             "rewards": {
-                "timestep": -1,
+                "timestep": -0.05,
                 "pellet": 5,
-                "pwrplt": 200,
-                "ghost": -50,
-                "kill": 20,
+                "pwrplt": 50,
+                "ghost": -1000,
+                "kill": 30,
             },
         },
-        False,
+        True,
     )
     training.start()

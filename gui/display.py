@@ -20,14 +20,27 @@ class Display:
     def newGame(self, game: Game) -> None:
         self.game = game
 
+        for row in self.game.state:
+            for cell in row:
+                print(cell)
+
         self.canvas.delete("all")
         self.bindObjects()
 
+        print()
+
+        for row in self.game.state:
+            for cell in row:
+                print(cell)
+
+
+    # create canvas object and return canvas id
     def createCanvasObject(self, x0: int, y0: int, x1: int, y1: int, xPad: int, yPad: int, rep: int) -> int:
         return self.canvas.create_rectangle(
             x0 + xPad, y0 + yPad, x1 - xPad, y1 - yPad, fill=self.color[rep], outline=""
         )
 
+    # bind game objects to display canvas
     def bindObjects(self) -> None:
         # create ghosts
         for ghost in self.game.ghostList:
@@ -44,12 +57,16 @@ class Display:
                 x0, y0, x1, y1 = GUIUtil.calculatePos(cell.coords)
 
                 if cell.hasPellet:
-                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PELLET, DIM.PAD_PELLET, REP.PELLET)
+                    canvasItemId: int = self.createCanvasObject(
+                        x0, y0, x1, y1, DIM.PAD_PELLET, DIM.PAD_PELLET, REP.PELLET
+                    )
                     self.game.pellets[cell.id].setCanvasItemId(canvasItemId)
 
-                elif cell.hasPwrplt:
-                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, REP.PELLET)
-                    self.game.pwrplts[cell.id].setCanvasItemId(canvasItemId)
+                # elif cell.hasPwrplt:
+                #     canvasItemId: int = self.createCanvasObject(
+                #         x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, REP.PELLET
+                #     )
+                #     self.game.pwrplts[cell.id].setCanvasItemId(canvasItemId)
 
                 elif cell.iSDoor:
                     canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, DIM.PAD_DOOR, REP.DOOR)
@@ -57,8 +74,7 @@ class Display:
                 elif cell.isWall:
                     canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, 0, REP.WALL)
 
-        
-
+    # rerender movable and destroyable objects
     def rerender(self) -> None:
         # remove pellet
         if self.game.lastPelletId != -1:
@@ -97,7 +113,7 @@ class Display:
             if ghost.moved:
                 dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
                 self.canvas.move(ghost.canvasItemId, dX, dY)
-        
+
         pPos = self.game.pacman.pos
         # update pacman location
         if self.game.pacman.moved:
