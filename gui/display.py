@@ -20,18 +20,16 @@ class Display:
     def newGame(self, game: Game) -> None:
         self.game = game
 
-        for row in self.game.state:
-            for cell in row:
-                print(cell)
+        for key, pellet in self.game.pellets.items():
+            print(key, pellet)
 
         self.canvas.delete("all")
         self.bindObjects()
 
         print()
 
-        for row in self.game.state:
-            for cell in row:
-                print(cell)
+        for key, pellet in self.game.pellets.items():
+            print(key, pellet)
 
 
     # create canvas object and return canvas id
