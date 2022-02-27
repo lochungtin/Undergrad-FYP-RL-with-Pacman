@@ -1,5 +1,8 @@
+from math import log2
 from queue import Queue
 from typing import List, TYPE_CHECKING, Tuple
+
+import numpy as np
 
 if TYPE_CHECKING:
     from game.game import Game
@@ -93,8 +96,108 @@ class PlayableAgent(DirectionAgent):
     def __init__(self) -> None:
         super().__init__(POS.PACMAN, REP.PACMAN)
 
+
+# mdp agent for pacman
+class PacmanMDPAgent(DirectionAgent):
+    def __init__(self, rewards: dict[str, float], gamma: float, epsilon: float, maxIter: int) -> None:
+        super().__init__(POS.PACMAN, REP.PACMAN)
+
+        self.rewards: dict[str, float] = rewards
+
+        self.gamma: float = gamma
+        self.epsilon: float = epsilon
+
+        self.maxIter: int = maxIter
+
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        self.setDir(self.mdpGetAction(game))
         return super().getNextPos(game)
+
+    # ===== mdp solving functions =====
+    def mdpGetAction(self, game: "Game") -> int:
+        # get reward grid
+        rewardGrid: List[List[float]] = self.makeRewardGrid(game)
+
+        # perform value iteration
+        utilities: List[List[float]] = createGameSizeGrid(0)
+        for i in range(self.maxIter):
+            utilities, stable = self.bellmanUpdate(utilities, rewardGrid, game)
+
+            if stable:
+                break
+
+        # get optimal action
+        return np.argmax(self.getUtilValues(utilities, game, game.pacman.pos))
+
+    # create reward grid from state space
+    def makeRewardGrid(self, game: "Game",) -> List[List[float]]:
+        # iniialise reward grid
+        rewardGrid: List[List[float]] = createGameSizeGrid(self.rewards["timestep"])
+
+        # set power pellet reward
+        for key, pwrplt in game.pwrplts.items():
+            if pwrplt.valid:
+                avgGhostDist: float = 1
+                for ghost in game.ghostList:
+                    if not ghost.isDead:
+                        avgGhostDist += pwrplt.pos.manDist(ghost.pos)
+
+                avgGhostDist /= len(game.ghostList)
+
+                rewardGrid[pwrplt.pos.row][pwrplt.pos.col] = self.rewards["pwrplt"] * (1 / avgGhostDist**2)
+
+        # set pellet reward
+        for key, pellet in game.pellets.items():
+            if pellet.valid:
+                rewardGrid[pellet.pos.row][pellet.pos.col] = self.rewards["pellet"] * log2(
+                    BOARD.TOTAL_PELLET_COUNT - game.pelletProgress + 1
+                )
+
+        # set ghost reward
+        for ghost in game.ghostList:
+            if not ghost.isDead:
+                if ghost.isFrightened:
+                    rewardGrid[ghost.pos.row][ghost.pos.col] = (
+                        self.rewards["kill"] * game.pwrpltEffectCounter / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
+                    )
+                else:
+                    rewardGrid[ghost.pos.row][ghost.pos.col] = self.rewards["ghost"]
+
+        return rewardGrid
+
+    # bellman update for value iterations
+    def bellmanUpdate(
+        self,
+        utilities: List[List[float]],
+        rewards: List[List[float]],
+        game: "Game",
+    ) -> Tuple[List[List[float]], bool]:
+        # initialise new utility value grid
+        newUtils: List[List[float]] = createGameSizeGrid(0)
+
+        # stable indicator
+        stable = True
+
+        # get new utility values
+        for i, row in enumerate(game.state):
+            for j, cell in enumerate(row):
+                if not cell.isWall:
+                    newUtils[i][j] = rewards[i][j] + self.gamma * max(self.getUtilValues(utilities, game, cell.coords))
+
+                    if abs(newUtils[i][j] - utilities[i][j]) > self.epsilon:
+                        stable = False
+
+        return newUtils, stable
+
+    # get utility value of neighbours
+    def getUtilValues(self, utilities: List[List[float]], game: "Game", pos: CPair):
+        adjVals: List[float] = [float("-inf"), float("-inf"), float("-inf"), float("-inf")]
+
+        for action, neighbour in game.getCell(pos).adj.items():
+            if not neighbour is None:
+                adjVals[action] = utilities[neighbour.coords.row][neighbour.coords.col]
+
+        return adjVals
 
 
 # deep q learning agent for pacman
