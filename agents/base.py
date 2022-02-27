@@ -82,7 +82,7 @@ class ClassicGhostAgent(GhostAgent):
 
         self.initWait: int = initWait
 
-        self.rand = Random(1)
+        self.rand: Random = Random()
 
     # bind pathfinder
     def bindPathFinder(self, pathFinder: PathFinder) -> None:
@@ -112,7 +112,6 @@ class ClassicGhostAgent(GhostAgent):
                         valid.append(neighbour)
 
                 # random choice
-                self.rand.seed(1)
                 self.prevPos = self.pos
                 self.pos = self.rand.choice(valid).coords
                 self.moved = True

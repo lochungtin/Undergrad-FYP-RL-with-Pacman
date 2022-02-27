@@ -23,7 +23,7 @@ def distanceComparison(ref: CPair, comp: CPair) -> List[float]:
 
 
 def pacmanFeatureExtraction(game: "Game") -> List[float]:
-    features: List[float] = [0, 0, 0, 0, game.pwrpltEffectCounter / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT]
+    features: List[float] = [0, 0, 0, 0, (game.pwrpltEffectCounter + 1) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT]
 
     pPos: CPair = game.pacman.pos
     pCell: Cell = game.getCell(pPos)
@@ -75,7 +75,7 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
         features += [0, 0, 0, 0, 0]
     else:
         features += distanceComparison(pPos, g0.pos)
-        features.append(g0.isFrightened)
+        features.append(g0.isFrightened * 1)
 
     # feature 5: relative position to #2 closest ghost + ghost state
     g1: GhostAgent = game.ghostList[1]
@@ -83,7 +83,7 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
         features += [0, 0, 0, 0, 0]
     else:
         features += distanceComparison(pPos, g1.pos)
-        features.append(g1.isFrightened)
+        features.append(g1.isFrightened * 1)
 
     return features
 

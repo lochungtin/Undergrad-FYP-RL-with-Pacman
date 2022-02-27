@@ -36,9 +36,6 @@ class MDPGuidedTraining:
         # reward constants
         self.rewards: dict[str, float] = trainingConfig["rewards"]
 
-        # game object
-        self.newGame()
-
     # start training (main function)
     def start(self) -> None:
         # start display
@@ -49,23 +46,27 @@ class MDPGuidedTraining:
         else:
             self.training()
 
-    def newGame(self):
-        self.game = Game(
+    def newGame(self) -> Game:
+        return Game(
             DirectionAgent(POS.PACMAN, REP.PACMAN),
             blinky=BlinkyClassicAgent(),
             pinky=PinkyClassicAgent(),
-            enablePwrPlt=True,
         )
 
     # ===== main training function =====
     def training(self) -> None:
+        game: Game = self.newGame()
         if self.hasDisplay:
-            self.display.newGame(self.game)
+            self.display.newGame(game)
 
         ep = 0
-        while ep < 1:
-            self.game.pacman.setDir(self.mdpGetAction(self.game))
-            gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
+        while ep < 20:
+            action: int = self.mdpGetAction(game)
+
+            print(pacmanFeatureExtraction(game))
+
+            game.pacman.setDir(action)
+            gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # enable display
             if self.hasDisplay:
@@ -75,15 +76,16 @@ class MDPGuidedTraining:
             if gameover or won:
                 ep += 1
 
-                consumption: int = 68 - self.game.pelletProgress
+                consumption: int = 68 - game.pelletProgress
                 print(
                     "l: {}\tc: {}/68 = {}%".format(
-                        self.game.pelletProgress, consumption, round(consumption / 68 * 100, 2)
+                        game.pelletProgress, consumption, round(consumption / 68 * 100, 2)
                     )
                 )
 
+                game = self.newGame()
                 if self.hasDisplay:
-                    self.display.newGame(self.game)
+                    self.display.newGame(game)
 
     # get optimal action
     def mdpGetAction(self, game: Game) -> int:
