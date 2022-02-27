@@ -1,5 +1,5 @@
 from copy import deepcopy
-from random import choice
+from random import Random
 from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
 
@@ -82,6 +82,8 @@ class ClassicGhostAgent(GhostAgent):
 
         self.initWait: int = initWait
 
+        self.rand = Random(1)
+
     # bind pathfinder
     def bindPathFinder(self, pathFinder: PathFinder) -> None:
         self.pathfinder: PathFinder = pathFinder
@@ -110,8 +112,9 @@ class ClassicGhostAgent(GhostAgent):
                         valid.append(neighbour)
 
                 # random choice
+                self.rand.seed(1)
                 self.prevPos = self.pos
-                self.pos = choice(valid).coords
+                self.pos = self.rand.choice(valid).coords
                 self.moved = True
 
         # regular behaviour

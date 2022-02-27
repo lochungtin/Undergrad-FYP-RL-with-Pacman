@@ -1,4 +1,3 @@
-from time import time
 from tkinter import Canvas
 from typing import List, Tuple
 
@@ -111,7 +110,7 @@ class Game:
         return self.state[pos.row][pos.col]
 
     # handle eating of pellets
-    def eatPellet(self, pos: CPair) -> int:
+    def eatPellet(self, pos: CPair) -> Tuple[bool, int]:
         posStr: str = pos.__str__()
         if posStr in self.pellets:
             pellet: Pellet = self.pellets[posStr]
@@ -120,11 +119,11 @@ class Game:
                 self.getCell(pos).hasPellet = False
                 self.pelletProgress -= 1
 
-                return pellet.destroy()
+                return True, pellet.destroy()
 
-        return -1
+        return False, -1
 
-    def eatPwrPlt(self, pos: CPair) -> int:
+    def eatPwrPlt(self, pos: CPair) -> Tuple[bool, int]:
         posStr: str = pos.__str__()
         if posStr in self.pwrplts:
             pellet: Pellet = self.pwrplts[posStr]
@@ -133,9 +132,9 @@ class Game:
                 self.getCell(pos).hasPwrplt = False
                 self.pwrpltEffectCounter = GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
 
-                return pellet.destroy()
+                return True, pellet.destroy()
 
-        return -1
+        return False, -1
 
     # handle agent movement
     def movePacman(self, pos: CPair, pPos: CPair) -> None:
@@ -184,12 +183,15 @@ class Game:
         self.lastPelletId = -1
         self.lastPwrPltId = -1
 
+        atePellet: bool = False
+        atePwrplt: bool = False
+
         # update pacman location
         pPos, pPrevPos, pMoved = self.pacman.getNextPos(self)
         if pMoved:
             self.movePacman(pPos, pPrevPos)
 
-            self.lastPelletId: int = self.eatPellet(pPos)
+            atePellet, self.lastPelletId = self.eatPellet(pPos)
             if self.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER and not self.ghosts[REP.BLINKY] is None:
                 self.ghosts[REP.BLINKY].cruiseElroy = True
 
@@ -197,9 +199,9 @@ class Game:
                 self.canvas.delete(self.lastPelletId)
 
             if self.enablePwrPlt:
-                self.lastPwrPltId: int = self.eatPwrPlt(pPos)
+                atePwrplt, self.lastPwrPltId = self.eatPwrPlt(pPos)
 
-                if self.lastPwrPltId != -1:
+                if atePwrplt:
                     for ghost in self.ghostList:
                         ghost.isFrightened = True
 
@@ -225,12 +227,6 @@ class Game:
                         ghost.isFrightened = False
                         ateGhost = True
                     else:
-                        return (
-                            True,
-                            self.pelletProgress == 0,
-                            self.lastPelletId == -1,
-                            self.lastPwrPltId == -1,
-                            ateGhost,
-                        )
+                        return True, self.pelletProgress == 0, atePellet, atePwrplt, ateGhost
 
-        return False, self.pelletProgress == 0, self.lastPelletId != -1, self.lastPwrPltId != -1, ateGhost
+        return False, self.pelletProgress == 0, atePellet, atePwrplt, ateGhost

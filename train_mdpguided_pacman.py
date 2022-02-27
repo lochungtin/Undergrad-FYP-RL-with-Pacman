@@ -1,21 +1,12 @@
-from math import log10, log2
+from math import log2
 from copy import deepcopy
-from ctypes import util
-from datetime import datetime
-from random import shuffle
 from tkinter import Tk
 from typing import List, Tuple
 import _thread
 import numpy as np
-import os
-import time
 
 from agents.base import DirectionAgent
 from agents.pacman import pacmanFeatureExtraction
-from ai.deepq.adam import Adam
-from ai.deepq.neuralnet import NeuralNet
-from ai.deepq.replaybuf import ReplayBuffer
-from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
 from agents.pinky import PinkyClassicAgent
 from data.config import BOARD, POS
@@ -45,6 +36,9 @@ class MDPGuidedTraining:
         # reward constants
         self.rewards: dict[str, float] = trainingConfig["rewards"]
 
+        # game object
+        self.newGame()
+
     # start training (main function)
     def start(self) -> None:
         # start display
@@ -55,45 +49,41 @@ class MDPGuidedTraining:
         else:
             self.training()
 
-    def newGame(self) -> Game:
-        return Game(
+    def newGame(self):
+        self.game = Game(
             DirectionAgent(POS.PACMAN, REP.PACMAN),
             blinky=BlinkyClassicAgent(),
             pinky=PinkyClassicAgent(),
-            enablePwrPlt=True
+            enablePwrPlt=True,
         )
 
     # ===== main training function =====
     def training(self) -> None:
-        game: Game = deepcopy(self.newGame())
-
         if self.hasDisplay:
-            self.display.newGame(game)
-
-        game.pacman.setDir(self.mdpGetAction(game))
+            self.display.newGame(self.game)
 
         ep = 0
-        while ep < 10:
-            gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
+        while ep < 1:
+            self.game.pacman.setDir(self.mdpGetAction(self.game))
+            gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
 
             # enable display
             if self.hasDisplay:
                 self.display.rerender()
-                time.sleep(0.01)
 
             # reset when gameover
             if gameover or won:
                 ep += 1
 
-                consumption: int = 68 - game.pelletProgress
-                print("l: {}\tc: {}/68 = {}%".format(game.pelletProgress, consumption, round(consumption / 68 * 100, 2)))
-
-                game = self.newGame()
+                consumption: int = 68 - self.game.pelletProgress
+                print(
+                    "l: {}\tc: {}/68 = {}%".format(
+                        self.game.pelletProgress, consumption, round(consumption / 68 * 100, 2)
+                    )
+                )
 
                 if self.hasDisplay:
-                    self.display.newGame(game)
-
-            game.pacman.setDir(self.mdpGetAction(game))
+                    self.display.newGame(self.game)
 
     # get optimal action
     def mdpGetAction(self, game: Game) -> int:
@@ -192,8 +182,8 @@ if __name__ == "__main__":
             },
             "rewards": {
                 "timestep": -0.05,
-                "pellet": 1,
-                "pwrplt": 10,
+                "pellet": 5,
+                "pwrplt": 2,
                 "ghost": -1000,
                 "kill": 30,
             },
