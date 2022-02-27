@@ -1,5 +1,4 @@
 from math import log2
-from copy import deepcopy
 from tkinter import Tk
 from typing import List, Tuple
 import _thread
@@ -36,6 +35,9 @@ class MDPGuidedTraining:
         # reward constants
         self.rewards: dict[str, float] = trainingConfig["rewards"]
 
+        # training config
+        self.gameCap: int = trainingConfig["gameCap"]
+
     # start training (main function)
     def start(self) -> None:
         # start display
@@ -55,38 +57,67 @@ class MDPGuidedTraining:
 
     # ===== main training function =====
     def training(self) -> None:
+        ep: int = 0
+
+        # create new game
         game: Game = self.newGame()
         if self.hasDisplay:
             self.display.newGame(game)
 
-        ep = 0
-        while ep < 20:
+        # create new save file for new run
+        open("./out/DG_DQL_EX/run{}.txt".format(ep), "x")
+
+        while True:
+            # get action
             action: int = self.mdpGetAction(game)
 
-            print(pacmanFeatureExtraction(game))
+            # get features and append action
+            features: List[float] = pacmanFeatureExtraction(game)
+            features.append(action)
 
+            # save array
+            runFile = open("./out/DG_DQL_EX/run{}.txt".format(ep), "a")
+            runFile.write(str(features) + "\n")
+            runFile.close()
+
+            # set action and perform next step
             game.pacman.setDir(action)
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
-            # enable display
+            # rerender display if enabled
             if self.hasDisplay:
                 self.display.rerender()
 
-            # reset when gameover
+            # reset game when gameover
             if gameover or won:
+                self.printPerformance(ep, game)
+
+                # exit loop
                 ep += 1
+                if ep >= self.gameCap:
+                    break
 
-                consumption: int = 68 - game.pelletProgress
-                print(
-                    "l: {}\tc: {}/68 = {}%".format(
-                        game.pelletProgress, consumption, round(consumption / 68 * 100, 2)
-                    )
-                )
-
+                # create new game
                 game = self.newGame()
                 if self.hasDisplay:
                     self.display.newGame(game)
 
+                # create new save file for new run
+                open("./out/DG_DQL_EX/run{}.txt".format(ep), "x")
+
+    def printPerformance(self, ep: int, game: Game) -> None:
+        consumption: int = 68 - game.pelletProgress
+        print(
+            "ep: {}\tt: {}\tl: {}\tc: {}/68 = {}%".format(
+                ep,
+                game.timesteps,
+                game.pelletProgress,
+                consumption,
+                round(consumption / 68 * 100, 2),
+            )
+        )
+
+    # ===== MDP solver =====
     # get optimal action
     def mdpGetAction(self, game: Game) -> int:
         # get reward grid
@@ -103,6 +134,7 @@ class MDPGuidedTraining:
         # get optimal action
         return np.argmax(self.getUtilValues(utilities, game, game.pacman.pos))
 
+    # ===== auxiliary functions =====
     # create reward grid from state space
     def makeRewardGrid(self, game: Game) -> List[List[float]]:
         # iniialise reward grid
@@ -177,6 +209,7 @@ class MDPGuidedTraining:
 if __name__ == "__main__":
     training: MDPGuidedTraining = MDPGuidedTraining(
         {
+            "gameCap": 1000,
             "mdpConfig": {
                 "maxIterations": 10000,
                 "gamma": 0.90,
@@ -186,7 +219,7 @@ if __name__ == "__main__":
                 "timestep": -0.05,
                 "pellet": 5,
                 "pwrplt": 2,
-                "ghost": -1000,
+                "ghost": -100,
                 "kill": 30,
             },
         },
