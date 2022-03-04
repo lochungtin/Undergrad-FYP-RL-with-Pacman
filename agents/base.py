@@ -1,18 +1,21 @@
 from copy import deepcopy
-from random import choice
+from random import Random
 from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
+
 
 if TYPE_CHECKING:
     from game.game import Game
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
-from data.data import DATA, DIR, GHOST_MODE, POS, REP
+from data.config import POS
+from data.data import GHOST_MODE, REP
 from game.components.component import Component
-from game.utils.path import Path
+from game.utils.cell import Cell
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
+from utils.direction import DIR
 
 
 # base class for game agents
@@ -41,25 +44,16 @@ class DirectionAgent(Agent):
 
     # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        newPos: CPair = self.pos.move(self.direction)
+        curPos: Cell = game.getCell(self.pos)
+        nextPos: Cell = curPos.adj[self.direction]
         self.moved = False
 
-        # special cases (looping)
-        if newPos == POS.LEFT_LOOP_TRIGGER:
-            self.prevPos = self.pos
-            self.pos = POS.RIGHT_LOOP
-            self.moved = True
+        if nextPos is None:
+            return self.pos, self.prevPos, self.moved
 
-        elif newPos == POS.RIGHT_LOOP_TRIGGER:
-            self.prevPos = self.pos
-            self.pos = POS.LEFT_LOOP
-            self.moved = True
-
-        # natural movement
-        elif newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
-            self.prevPos = self.pos
-            self.pos = newPos
-            self.moved = True
+        self.pos = nextPos.coords
+        self.prevPos = curPos.coords
+        self.moved = True
 
         return self.pos, self.prevPos, self.moved
 
@@ -71,7 +65,7 @@ class GhostAgent(Agent):
 
         self.isDead: bool = False
         self.isFrightened: bool = False
-        self.speedReducer: int = 2
+        self.speedReducer: int = 0
 
         self.isClassic: bool = isClassic
 
@@ -83,92 +77,70 @@ class ClassicGhostAgent(GhostAgent):
 
         self.mode: int = GHOST_MODE.SCATTER
 
-        self.path: Path = Path()
-        self.prevPath: Path = Path()
+        self.path: List[CPair] = []
+        self.pathId: int = -1
 
         self.initWait: int = initWait
+
+        self.rand: Random = Random()
 
     # bind pathfinder
     def bindPathFinder(self, pathFinder: PathFinder) -> None:
         self.pathfinder: PathFinder = pathFinder
 
-    # modified version of getNeighbours to accomodate for "no go up" zones
-    def getNeighbours(self, state: List[List[int]]) -> List[CPair]:
-        rt: List[CPair] = []
-
-        for index, pos in enumerate(self.pos.getNeighbours()):
-            if (
-                (
-                    pos == POS.GHOST_NO_UP_1
-                    or pos == POS.GHOST_NO_UP_2
-                    or pos == POS.GHOST_NO_UP_3
-                    or pos == POS.GHOST_NO_UP_4
-                )
-                and index == 0
-                or REP.isWall(state[pos.row][pos.col])
-                or DIR.getOpposite(self.direction) == index
-            ):
-                continue
-
-            rt.append(pos)
-
-        return rt
-
     # get next position of ghost
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        self.moved = False
         # wait at ghost house
-        if self.initWait > -1:
+        if self.initWait > 0:
             self.initWait -= 1
-            return self.pos, self.pos, False
+            return self.pos, self.pos, self.moved
 
         # dead and returned to ghost house
         if self.isDead and self.pos == POS.GHOST_HOUSE_CENTER:
             self.isDead = False
 
         # start random walk if frightened
-        if self.isFrightened:
-            # update prev pos
-            self.prevPos = self.pos
-
-            # reverse direction for first step
-            # hold position if reverse is invalid
-            if self.speedReducer == DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE:
-                newPos = self.pos.move(DIR.getOpposite(self.direction))
-                if newPos.isValid() and not REP.isWall(game.state[newPos.row][newPos.col]):
-                    self.pos = newPos
-
-                self.speedReducer = DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE - 1
-
+        if self.isFrightened and (not hasattr(self, "cruiseElroy") or not self.cruiseElroy):
             # slow down ghost speed
-            self.speedReducer = (self.speedReducer + 1) % DATA.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
-            if self.speedReducer == 0:
-                self.pos = choice(self.getNeighbours(game.state))
+            self.speedReducer = (self.speedReducer + 1) % GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
+            if self.speedReducer == 0:             
+                # filter out valid locations
+                valid: List[Cell] = []
+                for dir, neighbour in game.state[self.pos.row][self.pos.col].adj.items():
+                    if not neighbour is None and not (dir != DIR.UP and self.pos in POS.GHOST_NO_UP_CELLS):
+                        valid.append(neighbour)
 
-        # normal behaviour
+                # random choice
+                self.prevPos = self.pos
+                self.pos = self.rand.choice(valid).coords
+                self.moved = True
+
+        # regular behaviour
         else:
-            self.updatePositions(game)
+            # get target tile
+            targetTile: CPair = self.getTargetTile(game)
+
+            # looping mechanic
+            if self.pos == targetTile:
+                targetTile = self.prevPos
+
+            # generate path
+            self.prevPath = self.path
+            if self.pos != targetTile:
+                self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
+
+            # update positions
+            self.prevPos = self.pos
+            if len(self.path) > 0:
+                self.pos = self.path[0]
+            self.moved = True
 
         # update direction of travel
-        if self.pos != self.prevPos:
+        if self.moved:
             self.direction = self.pos.relate(self.prevPos)
 
-        return self.pos, self.prevPos, True
-
-    # perform normal behaviour for next step
-    def updatePositions(self, game: "Game") -> None:
-        # get target tile
-        targetTile: CPair = self.getTargetTile(game)
-        if self.pos == targetTile:
-            targetTile = self.prevPos
-
-        # generate path
-        self.prevPath = self.path
-        if self.pos != targetTile:
-            self.path = self.pathfinder.start(self.pos, targetTile, self.direction)
-
-        self.prevPos = self.pos
-        if len(self.path.path) > 0:
-            self.pos = self.path.path[0]
+        return self.pos, self.prevPos, self.moved
 
     # ===== REQUIRED TO OVERRIDE =====
     # get target tile of ghost

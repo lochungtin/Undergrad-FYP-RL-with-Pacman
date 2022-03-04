@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List
 
-from data.data import BOARD, DIR
+from utils.direction import DIR
 
 
 class CPair:
@@ -9,9 +9,6 @@ class CPair:
         self.row: int = row
         self.col: int = col
 
-    # check if coordinate is valid
-    def isValid(self) -> bool:
-        return self.row >= 0 and self.col >= 0 and self.row < BOARD.row and self.col < BOARD.col
 
     # translate coordinate according to direction
     def move(self, dir: int) -> CPair:
@@ -45,30 +42,13 @@ class CPair:
         # not a valid comparison
         return -1
 
-    # get all valid neighbouring coordinates
-    def getNeighbours(self, appendEmpty: bool = False) -> List[CPair]:
-        rt: List[CPair] = []
-
-        for neighbour in [
-            CPair(self.row - 1, self.col),
-            CPair(self.row + 1, self.col),
-            CPair(self.row, self.col - 1),
-            CPair(self.row, self.col + 1),
-        ]:
-            if neighbour == CPair(7, -1):
-                rt.append(CPair(7, 12))
-            elif neighbour == CPair(7, 13):
-                rt.append(CPair(7, 0))
-            elif neighbour.isValid():
-                rt.append(neighbour)
-            elif appendEmpty:
-                rt.append(None)
-
-        return rt
+    # get manhattan distance
+    def manDist(self, cpair: CPair) -> int:
+        return abs(self.row - cpair.row) + abs(self.col - cpair.col)
 
     # custom string representation
     def __str__(self) -> str:
-        return "({}, {})".format(self.row, self.col)
+        return self.__repr__()
 
     def __repr__(self) -> str:
         return "({}, {})".format(self.row, self.col)
@@ -76,3 +56,7 @@ class CPair:
     # custom equal function
     def __eq__(self, o: CPair) -> bool:
         return self.row == o.row and self.col == o.col
+
+    # custom comparator - only used in pathfinding
+    def __lt__(self, o: CPair) -> bool:
+        return False

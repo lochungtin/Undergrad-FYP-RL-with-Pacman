@@ -1,113 +1,138 @@
-from typing import List
+from copy import deepcopy
 from queue import PriorityQueue
+from typing import List, Tuple
 import math
 
-from data.config import CONFIG
-from data.data import BOARD, DIR, POS, REP
-from game.utils.path import Path
-from game.utils.pathcell import PathCell
-from game.utils.pathcoordinate import PathCPair
+from data.config import BOARD, POS
+from data.data import BOARD, REP
+from game.utils.cell import Cell
 from utils.coordinate import CPair
+from utils.direction import DIR
+
+
+class PFDataCell:
+    def __init__(self) -> None:
+        self.f: float = float("inf")
+        self.g: float = -1
+        self.h: float = -1
+        self.parent: CPair = CPair(-1, -1)
+
+    # update data of cell
+    def update(self, f: float, g: float, h: float, parent: CPair) -> None:
+        self.f = f
+        self.g = g
+        self.h = h
+        self.parent = parent
+
+    def __repr__(self) -> str:
+        return "f: {} g: {} h: {} | p: {}".format(self.f, self.g, self.h, self.parent)
 
 
 class PathFinder:
+    def __init__(self, board: List[List[Cell]]) -> None:
+        self.board = board
+
     # heuristic function
     def h(self, pos: CPair, goal: CPair) -> float:
         return math.sqrt(pow(goal.row - pos.row, 2) + pow(goal.col - pos.col, 2))
 
-    # pathfind function (a* path finding with ordered direction exploration)
-    def start(self, start: CPair, goal: CPair, direction: int) -> Path:
-        # create closed list and weighted list
-        closedList: List[List[bool]] = []
-        weightedList: List[List[PathCell]] = []
-        for _ in range(BOARD.row):
-            cRow: List[bool] = []
-            wRow: List[PathCell] = []
+    # start pathfinding
+    def start(self, start: CPair, goal: CPair, initialDir: int = -1) -> List[CPair]:
+        # fix goal location until valid
+        if not BOARD.isValidPos(goal) or self.board[goal.row][goal.col].isWall:
+            adjGoal: CPair = deepcopy(goal)
 
-            for _ in range(BOARD.col):
-                cRow.append(False)
-                wRow.append(PathCell())
+            adjGoal.row = max(adjGoal.row, 1)
+            adjGoal.row = min(adjGoal.row, BOARD.ROW - 2)
 
-            closedList.append(cRow)
-            weightedList.append(wRow)
+            adjGoal.col = max(adjGoal.col, 1)
+            adjGoal.col = min(adjGoal.col, BOARD.COL - 2)
 
-        # initialise parameters
-        curPos: CPair = start
-        weightedList[curPos.row][curPos.col].update(0, 0, 0, start)
+            goal = adjGoal
 
-        # create open list
-        openList: PriorityQueue[PathCPair] = PriorityQueue()
-        openList.put(PathCPair(curPos, 0))
+            if self.board[adjGoal.row][adjGoal.col].isWall:
+                for dir in DIR.getList():
+                    newGoal: CPair = adjGoal.move(dir)
+                    if self.board[newGoal.row][newGoal.col].isWall:
+                        goal = newGoal
+                        break
+
+        # return minimal path if adjusted goal is the starting position
+        if start == goal:
+            return [goal]            
+
+        # initialise open list
+        openList: PriorityQueue(Tuple[float, CPair]) = PriorityQueue()
+
+        # initialise close list
+        closedList: List[List[bool]] = [[False for j in range(BOARD.COL)] for i in range(BOARD.ROW)]
+
+        # initialise data list
+        dataList: List[List[PFDataCell]] = [[PFDataCell() for j in range(BOARD.COL)] for i in range(BOARD.ROW)]
+
+        # update lists with starting position
+        openList.put((0, start))
+        dataList[start.row][start.col].update(0, 0, 0, start)
 
         # maintain lowest score for out of bounds pathfinding
         nearestPos: CPair = start
-        lowestScore: float = math.inf
+        lowestScore: float = float("inf")
 
-        # start a*
+        # start A* algorithm
         while not openList.empty():
-            top: PathCPair = openList.get()
-            searchPos: CPair = top.cpair
+            searchPos: CPair = openList.get(0)[1]
 
+            # maintain closed list
             closedList[searchPos.row][searchPos.col] = True
 
-            for index, neighbour in enumerate(searchPos.getNeighbours()):
-                # disallow expansion to opposite direction or current motion
-                if direction != -1 and searchPos == start and DIR.getOpposite(direction) == index:
+            # search successors
+            for dir, succ in self.board[searchPos.row][searchPos.col].adj.items():
+                if succ is None:
                     continue
 
-                # ignore areas that ghosts cant go up
-                if (
-                    direction != -1
-                    and (
-                        searchPos == POS.GHOST_NO_UP_1
-                        or searchPos == POS.GHOST_NO_UP_2
-                        or searchPos == POS.GHOST_NO_UP_3
-                        or searchPos == POS.GHOST_NO_UP_4
-                    )
-                    and index == 0
-                ):
-                    continue
+                # apply ghost pathfinding restrictions
+                if initialDir != -1:
+                    if initialDir == DIR.getOpposite(dir) and searchPos == start:
+                        continue
 
-                nX, nY = neighbour.row, neighbour.col
+                    if dir == DIR.UP and succ.coords in POS.GHOST_NO_UP_CELLS:
+                        continue
 
-                # pass if neighbour is a wall
-                if CONFIG.BOARD[nX][nY] == REP.WALL:
-                    continue
+                sCPair: CPair = succ.coords
+                sR: int = sCPair.row
+                sC: int = sCPair.col
 
-                # return path if goal is reached
-                if neighbour == goal:
-                    weightedList[nX][nY].parent = searchPos
+                # rebuild path if goal is reached
+                if succ.coords == goal:
+                    dataList[sR][sC].parent = searchPos
+                    return self.makePath(goal, dataList)
 
-                    return self.makePath(goal, weightedList)
-
-                # update cell weights
+                # update cell data
                 else:
-                    g: float = weightedList[searchPos.row][searchPos.col].g + 1
-                    h: float = self.h(neighbour, goal)
+                    g: int = dataList[searchPos.row][searchPos.col].g + 1
+                    h: float = self.h(sCPair, goal)
                     f: float = g + h
 
-                    # if neighbour is closer to finish
-                    if weightedList[nX][nY].f == -1 or weightedList[nX][nY].f > f:
-                        # put successor into open list
-                        openList.put(PathCPair(neighbour, f))
+                    # put successor into openlist if the f score is better
+                    if dataList[sR][sC].f > f:
+                        openList.put((f, sCPair))
+                        dataList[sR][sC].update(f, g, h, searchPos)
 
-                        # update details of neighbour
-                        weightedList[nX][nY].update(f, g, h, searchPos)
-
-                    # update nearest pos
+                    # update nearest pos:
                     if h < lowestScore:
                         lowestScore = h
-                        nearestPos = neighbour
+                        nearestPos = succ.coords
 
-        return self.makePath(nearestPos, weightedList)
+        # return path to closest position
+        return self.makePath(nearestPos, dataList)
 
     # reconstruct path from weighted state
-    def makePath(self, goal: CPair, weightedList: List[List[PathCell]]) -> Path:
-        path = Path()
+    def makePath(self, goal: CPair, dataList: List[List[PFDataCell]]) -> List[Cell]:
+        path: List[CPair] = []
 
         parent = goal
-        while parent != weightedList[parent.row][parent.col].parent:
-            path.insert(parent)
-            parent = weightedList[parent.row][parent.col].parent
+        while parent != dataList[parent.row][parent.col].parent:
+            path.insert(0, parent)
+            parent = dataList[parent.row][parent.col].parent
 
         return path

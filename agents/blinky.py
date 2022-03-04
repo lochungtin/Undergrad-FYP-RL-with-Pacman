@@ -5,7 +5,8 @@ if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import ClassicGhostAgent
-from data.data import DATA, GHOST_MODE, POS, REP
+from data.config import BOARD, POS
+from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 
 
@@ -13,6 +14,8 @@ from utils.coordinate import CPair
 class BlinkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.BLINKY, REP.BLINKY, 0)
+
+        self.cruiseElroy: bool = False
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -27,30 +30,13 @@ class BlinkyClassicAgent(ClassicGhostAgent):
         # chase mode
         return game.pacman.pos
 
-    # get next postition of blinky (overrided for cruise elroy mode)
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletCount < DATA.CRUISE_ELROY_TRIGGER:
-            # generate path
-            self.prevPath = self.path
-            if self.pos != game.pacman.pos:
-                self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
-
-                self.prevPos = self.pos
-                self.pos = self.path.path[0]
-
-            # update direction of travel
-            if self.pos != self.prevPos:
-                self.direction = self.pos.relate(self.prevPos)
-
-            return self.pos, self.prevPos, True
-
-        return super().getNextPos(game)
-
 
 # classic aggressive ai agent for blinky
 class BlinkyClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.BLINKY, REP.BLINKY, 0)
+
+        self.cruiseElroy: bool = False
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -60,22 +46,3 @@ class BlinkyClassicAggrAgent(ClassicGhostAgent):
 
         # chase mode
         return game.pacman.pos
-
-    # get next postition of blinky (overrided for cruise elroy mode)
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        if game.pelletCount < DATA.CRUISE_ELROY_TRIGGER:
-            # generate path
-            self.prevPath = self.path
-            if self.pos != game.pacman.pos:
-                self.path = self.pathfinder.start(self.pos, game.pacman.pos, self.direction)
-
-                self.prevPos = self.pos
-                self.pos = self.path.path[0]
-
-            # update direction of travel
-            if self.pos != self.prevPos:
-                self.direction = self.pos.relate(self.prevPos)
-
-            return self.pos, self.prevPos, True
-
-        return super().getNextPos(game)

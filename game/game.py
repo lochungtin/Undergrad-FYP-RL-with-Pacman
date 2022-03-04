@@ -1,13 +1,16 @@
-from copy import deepcopy
 from tkinter import Canvas
 from typing import List, Tuple
 
 from agents.base import DirectionAgent, GhostAgent
-from data.config import CONFIG
-from data.data import DATA, POS, REP
-from game.components.pellet import Pellet, PowerPellet, PelletType
+from agents.pacman import pacmanFeatureExtraction
+from data.config import BOARD, POS
+from data.data import GHOST_MODE, REP
+from game.components.pellet import Pellet, PowerPellet
 from game.utils.pathfinder import PathFinder
+from game.utils.cell import Cell
 from utils.coordinate import CPair
+from utils.direction import DIR
+from utils.grid import createGameSizeGrid
 
 
 class Game:
@@ -20,167 +23,210 @@ class Game:
         pinky: GhostAgent = None,
         enablePwrPlt: bool = True,
     ) -> None:
-        # save game config
-        self.enablePwrPlt: bool = enablePwrPlt
-
-        # set state from template
-        self.state: List[List[int]] = deepcopy(CONFIG.BOARD)
-
-        # initialise pathfinder
-        self.pathfinder: PathFinder = PathFinder()
-
-        # create agents
-        self.pacman: DirectionAgent = pacman
-        self.state[POS.PACMAN.row][POS.PACMAN.col] = REP.PACMAN
-
-        self.ghosts: List[GhostAgent] = []
-
-        self.blinky: GhostAgent = blinky
-        if hasattr(blinky, "pos"):
-            self.ghosts.append(blinky)
-
-        self.inky: GhostAgent = inky
-        if hasattr(inky, "pos"):
-            self.ghosts.append(inky)
-
-        self.clyde: GhostAgent = clyde
-        if hasattr(clyde, "pos"):
-            self.ghosts.append(clyde)
-
-        self.pinky: GhostAgent = pinky
-        if hasattr(pinky, "pos"):
-            self.ghosts.append(pinky)
-
-        for ghost in self.ghosts:
-            self.state[ghost.pos.row][ghost.pos.col] = ghost.repId
-            if ghost.isClassic:
-                ghost.bindPathFinder(self.pathfinder)
-
-        # create pellets and update state
-        self.pellets: List[List[PelletType]] = []
-        for rowIndex, gridRow in enumerate(CONFIG.PELLET_BOARD):
-            row: List[PelletType] = []
-            for colIndex, cell in enumerate(gridRow):
-                if cell == REP.EMPTY:
-                    row.append(None)
-                elif cell == REP.PELLET:
-                    row.append(Pellet(CPair(rowIndex, colIndex)))
-                    self.state[rowIndex][colIndex] = REP.PELLET
-                elif enablePwrPlt:
-                    row.append(PowerPellet(CPair(rowIndex, colIndex)))
-                    self.state[rowIndex][colIndex] = REP.PWRPLT
-                else:
-                    row.append(None)
-
-            self.pellets.append(row)
-
-        self.pelletCount: int = DATA.TOTAL_PELLET_COUNT + DATA.TOTAL_PWRPLT_COUNT * enablePwrPlt
-
-        # initialise countdown step count and set ghost schedule index
-        self.stepCount: int = DATA.TOTAL_STEP_COUNT
-        self.ghostSchedule: int = 0
-
-        self.ghostFrightenedCount: int = -1
-
-        # game status
+        # game timesteps
         self.timesteps: int = 0
 
-        # set canvas to None as default
+        # power pellet availablility
+        self.enablePwrPlt: bool = enablePwrPlt
+
+        # pellets
+        self.pellets: dict[str, Pellet] = {}
+        self.pelletProgress: int = BOARD.TOTAL_PELLET_COUNT
+
+        self.pwrplts: dict[str, PowerPellet] = {}
+        self.pwrpltEffectCounter: int = 0
+
+        # create pellets and fill game state
+        self.state: List[List[Cell]] = createGameSizeGrid(None)
+
+        for i, row in enumerate(BOARD.DATA):
+            r: List[Cell] = []
+            for j, val in enumerate(row):
+                cell = Cell(i, j, val)
+
+                self.state[i][j] = cell
+
+                if val == REP.PELLET:
+                    self.pellets[cell.id] = Pellet(cell.coords)
+                elif val == REP.PWRPLT:
+                    if enablePwrPlt:
+                        self.pwrplts[cell.id] = PowerPellet(cell.coords)
+                    else:
+                        cell.hasPwrplt = False
+
+        # game agents
+        self.pacman: DirectionAgent = pacman
+        self.getCell(self.pacman.pos).hasPacman = True
+
+        self.ghosts: dict[str, GhostAgent] = {REP.BLINKY: blinky, REP.INKY: inky, REP.CLYDE: clyde, REP.PINKY: pinky}
+        self.ghostList: List[GhostAgent] = []
+        for key, ghost in self.ghosts.items():
+            if not ghost is None:
+                self.ghostList.append(ghost)
+
+                gCell: Cell = self.getCell(ghost.pos)
+                gCell.hasGhost = True
+                gCell.ghosts[ghost.repId] = True
+
+        self.ghostModeIndex: int = 0
+        self.ghostMode: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
+        self.ghostModeCounter: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
+
+        # state cell connections
+        # loop connection
+        self.getCell(POS.LOOP_POS[0]).setAdj(DIR.LF, self.getCell(POS.LOOP_POS[1]))
+        self.getCell(POS.LOOP_POS[1]).setAdj(DIR.RT, self.getCell(POS.LOOP_POS[0]))
+
+        # normal cell connection
+        for row in self.state:
+            for cell in row:
+                if cell.isWall:
+                    continue
+
+                for dirVal in DIR.getList():
+                    newPos: CPair = cell.coords.move(dirVal)
+                    if BOARD.isValidPos(newPos) and BOARD.DATA[newPos.row][newPos.col] != REP.WALL:
+                        cell.setAdj(dirVal, self.state[newPos.row][newPos.col])
+
+        # pathfinder
+        self.pf: PathFinder = PathFinder(self.state)
+
+        for ghost in self.ghostList:
+            if ghost.isClassic:
+                ghost.bindPathFinder(self.pf)
+
+        # canvas object
         self.canvas: Canvas = None
 
-    # set canvas object
+        self.lastPelletId: int = -1
+        self.lastPwrPltId: int = -1
+
+    # bind cavnvas object to game
     def setCanvas(self, canvas: Canvas) -> None:
         self.canvas = canvas
 
+    # retrieve vertex from grid
+    def getCell(self, pos: CPair) -> Cell:
+        return self.state[pos.row][pos.col]
+
+    # handle eating of pellets
+    def eatPellet(self, pos: CPair) -> Tuple[bool, int]:
+        posStr: str = pos.__str__()
+        if posStr in self.pellets:
+            pellet: Pellet = self.pellets[posStr]
+
+            if pellet.valid:
+                self.getCell(pos).hasPellet = False
+                self.pelletProgress -= 1
+
+                return True, pellet.destroy()
+
+        return False, -1
+
+    def eatPwrPlt(self, pos: CPair) -> Tuple[bool, int]:
+        posStr: str = pos.__str__()
+        if posStr in self.pwrplts:
+            pellet: Pellet = self.pwrplts[posStr]
+
+            if pellet.valid:
+                self.getCell(pos).hasPwrplt = False
+                self.pwrpltEffectCounter = GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
+
+                return True, pellet.destroy()
+
+        return False, -1
+
+    # handle agent movement
+    def movePacman(self, pos: CPair, pPos: CPair) -> None:
+        self.getCell(pos).hasPacman = True
+        self.getCell(pPos).hasPacman = False
+
+    def moveGhost(self, ghostId: int, pos: CPair, pPos: CPair) -> None:
+        cell: Cell = self.getCell(pos)
+        cell.hasGhost = True
+        cell.ghosts[ghostId] = True
+
+        if pos != pPos:
+            pCell: Cell = self.getCell(pPos)
+            pCell.hasGhost = False
+            pCell.ghosts[ghostId] = False
+
+    # detect pacman and ghost collision
+    def detectCollision(self, pPos: CPair, pPrevPos: CPair, gPos: CPair, gPrevPos: CPair) -> bool:
+        return pPos == gPos or (pPrevPos == gPos and pPos == gPrevPos)
+
     # proceed to next time step
-    def nextStep(self) -> Tuple[bool, bool, bool, bool]:
+    def nextStep(self) -> Tuple[bool, bool, bool, bool, bool]:
+        # timestep management
         self.timesteps += 1
 
-        # update pacman location
-        pCurPos, pPrevPos, pacmanMoved = self.pacman.getNextPos(self)
-        prevState = self.state[pCurPos.row][pCurPos.col]
+        if self.pwrpltEffectCounter > -1:
+            self.pwrpltEffectCounter -= 1
 
-        self.state[pPrevPos.row][pPrevPos.col] = REP.EMPTY
-        self.state[pCurPos.row][pCurPos.col] = REP.PACMAN
-
-        ateGhost: bool = False
-        # handle ghost collision
-        for ghost in self.ghosts:
-            if pCurPos == ghost.pos:
-                if not ghost.isDead:
-                    if ghost.isFrightened:
-                        ghost.isFrightened = False
-                        ghost.isDead = True
-                        ateGhost = True
-                    else:
-                        return True, False, False, ateGhost, pacmanMoved
-
-        # perform actions if new position had pellets
-        atePellet: bool = prevState == REP.PELLET or prevState == REP.PWRPLT
-        if atePellet:
-            # set ghost mode to frightened
-            if prevState == REP.PWRPLT:
-                for ghost in self.ghosts:
-                    ghost.isFrightened = True
-
-                self.ghostFrightenedCount = DATA.GHOST_FRIGHTENED_STEP_COUNT
-
-            # update pellet and pellet count
-            pellet: PelletType = self.pellets[pCurPos.row][pCurPos.col]
-            if pellet != None and pellet.valid:
-                id = pellet.destroy()
-
-                # update canvas if present
-                if self.canvas != None:
-                    self.canvas.delete(id)
-
-                self.pelletCount -= 1
-
-            # end game if all pellets have been eaten
-            if self.pelletCount == 0:
-                return False, True, False, ateGhost, pacmanMoved
-
-        # update ghosts' locations
-        for ghost in self.ghosts:
-            gCurPos, gPrevPos, ghostMoved = ghost.getNextPos(self)
-
-            # handle ghost collision
-            if gCurPos == pCurPos:
-                if not ghost.isDead:
-                    if ghost.isFrightened:
-                        ghost.isFrightened = False
-                        ghost.isDead = True
-                        ateGhost = True
-                    else:
-                        return True, False, False, ateGhost, pacmanMoved
-
-            pellet: PelletType = self.pellets[gPrevPos.row][gPrevPos.col]
-            if pellet != None and pellet.valid:
-                self.state[gPrevPos.row][gPrevPos.col] = pellet.repId
-            else:
-                self.state[gPrevPos.row][gPrevPos.col] = REP.EMPTY
-
-            self.state[gCurPos.row][gCurPos.col] = ghost.repId
-
-        # update counter and ghost modes
-        if self.stepCount > -1:
-            self.stepCount -= 1
-
-        if self.stepCount < DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][1]:
-            self.ghostSchedule += 1
-
-            # set all ghost to new mode
-            for ghost in self.ghosts:
-                if ghost.isClassic:
-                    ghost.mode = DATA.GHOST_MODE_SCHEDULE[self.ghostSchedule][0]
-
-        # update frightened state
-        if self.ghostFrightenedCount > -1:
-            self.ghostFrightenedCount -= 1
-
-            # set all ghost to not frightened after some time steps
-            if self.ghostFrightenedCount == -1:
-                for ghost in self.ghosts:
+            if self.pwrpltEffectCounter == 0:
+                for ghost in self.ghostList:
                     ghost.isFrightened = False
 
-        return False, False, atePellet, ateGhost, pacmanMoved
+        newGhostMode: bool = False
+        if self.ghostModeCounter > -1:
+            self.ghostModeCounter -= 1
+
+            if self.ghostModeCounter == 0:
+                self.ghostModeIndex += 1
+
+                self.ghostMode: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][0]
+                self.ghostModeCounter: int = GHOST_MODE.GHOST_MODE_SCHEDULE[self.ghostModeIndex][1]
+
+                newGhostMode = True
+
+        # reset pellet id
+        self.lastPelletId = -1
+        self.lastPwrPltId = -1
+
+        atePellet: bool = False
+        atePwrplt: bool = False
+
+        # update pacman location
+        pPos, pPrevPos, pMoved = self.pacman.getNextPos(self)
+        if pMoved:
+            self.movePacman(pPos, pPrevPos)
+
+            atePellet, self.lastPelletId = self.eatPellet(pPos)
+            if self.pelletProgress < BOARD.CRUISE_ELROY_TRIGGER and not self.ghosts[REP.BLINKY] is None:
+                self.ghosts[REP.BLINKY].cruiseElroy = True
+
+            if self.canvas != None:
+                self.canvas.delete(self.lastPelletId)
+
+            if self.enablePwrPlt:
+                atePwrplt, self.lastPwrPltId = self.eatPwrPlt(pPos)
+
+                if atePwrplt:
+                    for ghost in self.ghostList:
+                        ghost.isFrightened = True
+
+                if self.canvas != None:
+                    self.canvas.delete(self.lastPwrPltId)
+
+        # update ghost location
+        ateGhost: bool = False
+        for ghost in self.ghostList:
+            if newGhostMode:
+                if ghost.isClassic:
+                    ghost.mode = self.ghostMode
+
+            gPos, gPrevPos, gMoved = ghost.getNextPos(self)
+            if gMoved:
+                self.moveGhost(ghost.repId, gPos, gPrevPos)
+
+            # handle collision
+            if self.detectCollision(pPos, pPrevPos, gPos, gPrevPos):
+                if not ghost.isDead:
+                    if ghost.isFrightened:
+                        ghost.isDead = True
+                        ghost.isFrightened = False
+                        ateGhost = True
+                    else:
+                        return True, self.pelletProgress == 0, atePellet, atePwrplt, ateGhost
+
+        return False, self.pelletProgress == 0, atePellet, atePwrplt, ateGhost

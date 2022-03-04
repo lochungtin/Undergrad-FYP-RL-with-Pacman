@@ -73,7 +73,7 @@ class NEATTraining:
         gameover: bool = False
         won: bool = False
         while game.pelletDrought < 50 and not gameover and not won:
-            gameover, won, atePellet = game.nextStep()
+            gameover, won = game.nextStep()
 
             if atePellet:
                 pellets += 1
@@ -82,7 +82,7 @@ class NEATTraining:
 
             # enable display
             if self.hasDisplay:
-                self.display.rerender(atePellet)
+                self.display.rerender()
                 time.sleep(0.01)
 
         fitness: float = (

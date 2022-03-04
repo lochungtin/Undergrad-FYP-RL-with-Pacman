@@ -13,11 +13,7 @@ class Display:
 
         # create canvas and add to window
         self.canvas: Canvas = Canvas(
-            main,
-            width=DIM.GBL_W,
-            height=DIM.GBL_H,
-            background=self.color[REP.BG],
-            highlightthickness=0,
+            main, width=DIM.GBL_W, height=DIM.GBL_H, background=self.color[REP.BG], highlightthickness=0
         )
         self.canvas.pack()
 
@@ -27,106 +23,89 @@ class Display:
         self.canvas.delete("all")
         self.bindObjects()
 
+
+    # create canvas object and return canvas id
+    def createCanvasObject(self, x0: int, y0: int, x1: int, y1: int, xPad: int, yPad: int, rep: int) -> int:
+        return self.canvas.create_rectangle(
+            x0 + xPad, y0 + yPad, x1 - xPad, y1 - yPad, fill=self.color[rep], outline=""
+        )
+
+    # bind game objects to display canvas
     def bindObjects(self) -> None:
-        # draw grid
-        for rowIndex, stateRow in enumerate(self.game.state):
-            for colIndex, cell in enumerate(stateRow):
-                x0, y0, x1, y1 = GUIUtil.calculatePos(rowIndex, colIndex)
+        # create ghosts
+        for ghost in self.game.ghostList:
+            x0, y0, x1, y1 = GUIUtil.calculatePos(ghost.pos)
+            ghost.canvasItemId = self.createCanvasObject(x0, y0, x1, y1, 0, 0, ghost.repId)
 
-                if REP.isPellet(cell):
-                    # draw pellets
-                    if cell == REP.PELLET:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0 + DIM.PAD_PELLET,
-                            y0 + DIM.PAD_PELLET,
-                            x1 - DIM.PAD_PELLET,
-                            y1 - DIM.PAD_PELLET,
-                            fill=self.color[cell],
-                            outline="",
-                        )
-                    # draw power pellet
-                    else:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0 + DIM.PAD_PWRPLT,
-                            y0 + DIM.PAD_PWRPLT,
-                            x1 - DIM.PAD_PWRPLT,
-                            y1 - DIM.PAD_PWRPLT,
-                            fill=self.color[cell],
-                            outline="",
-                        )
+        # create pacman
+        x0, y0, x1, y1 = GUIUtil.calculatePos(self.game.pacman.pos)
+        self.game.pacman.canvasItemId = self.createCanvasObject(x0, y0, x1, y1, 0, 0, REP.PACMAN)
 
-                    # add canvas item id to pellet object
-                    self.game.pellets[rowIndex][colIndex].setCanvasItemId(canvasItemId)
+        # create fixtures and pellets
+        for row in self.game.state:
+            for cell in row:
+                x0, y0, x1, y1 = GUIUtil.calculatePos(cell.coords)
 
-                elif cell != REP.EMPTY:
-                    if cell == REP.DOOR:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0,
-                            y0 + DIM.PAD_DOOR,
-                            x1,
-                            y1 - DIM.PAD_DOOR,
-                            fill=self.color[cell],
-                            outline="",
-                        )
-                    else:
-                        canvasItemId: int = self.canvas.create_rectangle(
-                            x0, y0, x1, y1, fill=self.color[cell], outline=""
-                        )
+                if cell.hasPellet:
+                    canvasItemId: int = self.createCanvasObject(
+                        x0, y0, x1, y1, DIM.PAD_PELLET, DIM.PAD_PELLET, REP.PELLET
+                    )
+                    self.game.pellets[cell.id].setCanvasItemId(canvasItemId)
 
-                    # add canvas item id to movable
-                    if cell == REP.PACMAN:
-                        self.game.pacman.setCanvasItemId(canvasItemId)
-                    elif cell == REP.BLINKY:
-                        self.game.blinky.setCanvasItemId(canvasItemId)
-                    elif cell == REP.INKY:
-                        self.game.inky.setCanvasItemId(canvasItemId)
-                    elif cell == REP.CLYDE:
-                        self.game.clyde.setCanvasItemId(canvasItemId)
-                    elif cell == REP.PINKY:
-                        self.game.pinky.setCanvasItemId(canvasItemId)
+                elif cell.hasPwrplt:
+                    canvasItemId: int = self.createCanvasObject(
+                        x0, y0, x1, y1, DIM.PAD_PWRPLT, DIM.PAD_PWRPLT, REP.PELLET
+                    )
+                    self.game.pwrplts[cell.id].setCanvasItemId(canvasItemId)
 
-    def rerender(self, atePellet: bool) -> None:
+                elif cell.iSDoor:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, DIM.PAD_DOOR, REP.DOOR)
+
+                elif cell.isWall:
+                    canvasItemId: int = self.createCanvasObject(x0, y0, x1, y1, 0, 0, REP.WALL)
+
+    # rerender movable and destroyable objects
+    def rerender(self) -> None:
         # remove pellet
-        pPos = self.game.pacman.pos
-        if atePellet:
-            self.canvas.delete(self.game.pellets[pPos.row][pPos.col].canvasItemId)
+        if self.game.lastPelletId != -1:
+            self.canvas.delete(self.game.lastPelletId)
 
-        # update pacman location
-        if self.game.pacman.moved:
-            pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
-            self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)
+        if self.game.lastPwrPltId != -1:
+            self.canvas.delete(self.game.lastPwrPltId)
 
         # ghost updates
-        for ghost in self.game.ghosts:
-            # delete old paths
-            if hasattr(ghost.prevPath, "canvasItemId"):
-                self.canvas.delete(ghost.prevPath.canvasItemId)
-
-            if hasattr(ghost.path, "canvasItemId"):
-                self.canvas.delete(ghost.path.canvasItemId)
-
+        for ghost in self.game.ghostList:
             # update path display
-            if not ghost.isFrightened:
-                displayPath: List[int] = []
-                for cpair in ghost.path.path:
-                    x, y = GUIUtil.calculateMidPt(cpair)
-                    displayPath.append(x)
-                    displayPath.append(y)
+            if hasattr(ghost, "pathId"):
+                if ghost.pathId != -1:
+                    self.canvas.delete(ghost.pathId)
 
-                if len(displayPath) > 2:
-                    ghost.path.setCanvasItemId(
-                        self.canvas.create_line(displayPath, width=3, fill=self.color[ghost.repId])
-                    )
+                # update path display
+                if not ghost.isFrightened and not ghost.isDead:
+                    displayPath: List[int] = []
+                    for cpair in ghost.path:
+                        x, y = GUIUtil.calculateMidPt(cpair)
+                        displayPath.append(x)
+                        displayPath.append(y)
 
-                # update color
-                if ghost.isDead:
-                    self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.DEAD])
-                else:
-                    self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[ghost.repId])
-            else:
+                    if len(displayPath) > 2:
+                        ghost.pathId = self.canvas.create_line(displayPath, width=3, fill=self.color[ghost.repId])
+
+            # update color
+            if ghost.isDead:
+                self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.DEAD])
+            elif ghost.isFrightened:
                 self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[REP.FRIGHTENED])
+            else:
+                self.canvas.itemconfig(ghost.canvasItemId, fill=self.color[ghost.repId])
 
             # update location
             if ghost.moved:
                 dX, dY = GUIUtil.calculateDxDy(ghost.pos, ghost.prevPos)
                 self.canvas.move(ghost.canvasItemId, dX, dY)
+
+        pPos = self.game.pacman.pos
+        # update pacman location
+        if self.game.pacman.moved:
+            pdX, pdY = GUIUtil.calculateDxDy(pPos, self.game.pacman.prevPos)
+            self.canvas.move(self.game.pacman.canvasItemId, pdX, pdY)

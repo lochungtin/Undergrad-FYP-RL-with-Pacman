@@ -4,14 +4,15 @@ if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import ClassicGhostAgent
-from data.data import DATA, GHOST_MODE, POS, REP
+from data.config import POS
+from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 
 
 # classic ai agent for clyde
 class ClydeClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2)
+        super().__init__(POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -25,7 +26,7 @@ class ClydeClassicAgent(ClassicGhostAgent):
 
         # chase mode
         if self.pos != game.pacman.pos:
-            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction).path) < 8:
+            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction)) < 4:
                 return POS.CLYDE_CORNER
 
         return game.pacman.pos
@@ -34,7 +35,7 @@ class ClydeClassicAgent(ClassicGhostAgent):
 # classic aggressive ai for clyde
 class ClydeClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.CLYDE, REP.CLYDE, DATA.GHOST_EXIT_INTERVAL * 2)
+        super().__init__(POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -44,7 +45,7 @@ class ClydeClassicAggrAgent(ClassicGhostAgent):
 
         # chase mode
         if self.pos != game.pacman.pos:
-            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction).path) < 8:
+            if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction)) < 4:
                 return POS.CLYDE_CORNER
 
         return game.pacman.pos

@@ -6,6 +6,7 @@ from ai.deepq.neuralnet import NeuralNet
 
 
 class NNUtils:
+    # ===== batched optimisation for training =====
     def optimiseNN(tN: NeuralNet, cN: NeuralNet, replays: List[object], gamma: float, tau: float, adam: Adam):
         # explode replays into separate lists
         s, a, r, t, nS = map(list, zip(*replays))
@@ -79,3 +80,10 @@ class NNUtils:
         sumEPref = np.sum(ePref, axis=1)
 
         return (ePref / sumEPref.reshape((-1, 1))).squeeze()
+
+    # ===== single backprop for pre-training =====
+    def getGradient(net: NeuralNet, output: List[float], expected: List[float]) -> List[dict[str, object]]:
+        return
+
+    def getLoss(output: List[float], expected: List[float]) -> float:
+        

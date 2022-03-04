@@ -6,13 +6,13 @@ from utils.coordinate import CPair
 
 class GUIUtil:
     # calculate the pixel position of grid cell
-    def calculatePos(row: int, col: int) -> Tuple[int, int, int, int]:
-        x0: int = col * DIM.JUMP
-        y0: int = row * DIM.JUMP
+    def calculatePos(pos: CPair) -> Tuple[int, int, int, int]:
+        x0: int = pos.col * DIM.JUMP
+        y0: int = pos.row * DIM.JUMP
         return x0, y0, x0 + DIM.CELL, y0 + DIM.CELL
 
     def calculateMidPt(pos: CPair) -> Tuple[int, int]:
-        x0, y0, x1, y1 = GUIUtil.calculatePos(pos.row, pos.col)
+        x0, y0, x1, y1 = GUIUtil.calculatePos(pos)
         return (x0 + x1) / 2, (y0 + y1) / 2
 
     # calculate the delta of display objects

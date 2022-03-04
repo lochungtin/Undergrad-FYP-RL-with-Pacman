@@ -4,8 +4,10 @@ if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import ClassicGhostAgent
-from data.data import DIR, GHOST_MODE, POS, REP
+from data.config import POS
+from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
+from utils.direction import DIR
 
 
 # classic ai agent for pinky
@@ -25,12 +27,12 @@ class PinkyClassicAgent(ClassicGhostAgent):
 
         # chase mode
         targetTile: CPair = game.pacman.pos
-        for _ in range(4):
+        for _ in range(2):
             targetTile = targetTile.move(game.pacman.direction)
 
         # replicate target tile bug in classic pacman
         if game.pacman.direction == DIR.UP:
-            for _ in range(4):
+            for _ in range(2):
                 targetTile = targetTile.move(DIR.LF)
 
         return targetTile
@@ -49,12 +51,12 @@ class PinkyClassicAggrAgent(ClassicGhostAgent):
 
         # chase mode
         targetTile: CPair = game.pacman.pos
-        for _ in range(4):
+        for _ in range(2):
             targetTile = targetTile.move(game.pacman.direction)
 
         # replicate target tile bug in classic pacman
         if game.pacman.direction == DIR.UP:
-            for _ in range(4):
+            for _ in range(2):
                 targetTile = targetTile.move(DIR.LF)
 
         return targetTile

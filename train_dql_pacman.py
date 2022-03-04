@@ -8,15 +8,18 @@ import os
 import time
 
 from agents.base import DirectionAgent
+from agents.pacman import pacmanFeatureExtraction
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
 from agents.pinky import PinkyClassicAgent
-from data.data import DATA, POS, REP
+from data.config import POS
+from data.data import REP
 from game.game import Game
 from gui.display import Display
+from utils.coordinate import CPair
 
 
 class DeepQLTraining:
@@ -25,7 +28,7 @@ class DeepQLTraining:
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
             self.main: Tk = Tk()
-            self.main.title("NEAT Training")
+            self.main.title("DEEP Q Training")
 
             self.display: Display = Display(self.main)
 
@@ -56,7 +59,6 @@ class DeepQLTraining:
 
         # training status
         self.rSum: float = 0
-        self.timesteps: int = 0
 
     # start training (main function)
     def start(self) -> None:
@@ -71,8 +73,8 @@ class DeepQLTraining:
     def newGame(self) -> Game:
         return Game(
             DirectionAgent(POS.PACMAN, REP.PACMAN),
-            # blinky=BlinkyClassicAgent(),
-            # pinky=PinkyClassicAgent(),
+            blinky=BlinkyClassicAgent(),
+            pinky=PinkyClassicAgent(),
         )
 
     # ===== main training function =====
@@ -86,49 +88,35 @@ class DeepQLTraining:
         if self.hasDisplay:
             self.display.newGame(game)
 
-        action: int = self.agentInit(self.processState(game))
+        action: int = self.agentInit(pacmanFeatureExtraction(game))
         game.pacman.setDir(action)
 
-        tPellets: int = DATA.TOTAL_PELLET_COUNT + game.enablePwrPlt * DATA.TOTAL_PWRPLT_COUNT
-
-        avgRScore: float = 0
-        avgSteps: float = 0
-        avgPCount: float = 0
+        avgP: float = 0
+        avgR: float = 0
 
         eps: int = 0
         while eps < self.simCap:
-            gameover, won, atePellet, ateGhost, pacmanMoved = game.nextStep()
+            gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # enable display
             if self.hasDisplay:
-                self.display.rerender(atePellet)
+                self.display.rerender()
                 time.sleep(0.01)
 
-            if gameover or game.timesteps > 200:
-
-                pCount: int = tPellets - game.pelletCount
-
+            if gameover or won or game.timesteps > 1000:
                 if won:
-                    self.agentEnd(1000)
+                    self.agentEnd(200)
                 else:
                     self.agentEnd(-1000)
 
-                avgRScore = (avgRScore * eps + self.rSum) / (eps + 1)
-                avgSteps = (avgSteps * eps + self.timesteps) / (eps + 1)
-                avgPCount = (avgPCount * eps + pCount) / (eps + 1)
+                avgP = (avgP * eps + game.pelletProgress) / (eps + 1)
+                avgR = (avgR * eps + self.rSum) / (eps + 1)
 
                 eps += 1
 
                 print(
-                    "ep{}\tr[{} | {}]\ts[{} | {}]\tp[{}/68 | {}/68]\tw[{}]".format(
-                        eps,
-                        round(self.rSum, 2),
-                        round(avgRScore, 2),
-                        self.timesteps,
-                        round(avgSteps, 2),
-                        pCount,
-                        round(avgPCount, 2),
-                        won,
+                    "ep{}\tr[{} | {}]\tp[{}/68 | {}/68]".format(
+                        eps, round(self.rSum, 2), avgR, game.pelletProgress, round(avgP, 2)
                     )
                 )
 
@@ -139,41 +127,30 @@ class DeepQLTraining:
                 if self.hasDisplay:
                     self.display.newGame(game)
 
-                action = self.agentInit(self.processState(game))
+                action = self.agentInit(pacmanFeatureExtraction(game))
                 game.pacman.setDir(action)
 
             else:
-                reward: int = -5
+                # timestep based
+                reward: int = -1
 
-                if pacmanMoved:
-                    reward = -1
-                if atePellet:
-                    reward = 5
-                if ateGhost:
+                # punish stationary action
+                if not game.pacman.moved:
+                    reward = -10
+                # reward eating pellet
+                elif atePellet:
                     reward = 10
+                # reward eating power pellet
+                elif atePwrPlt:
+                    reward = 3
+                # reward a kill
+                elif ateGhost:
+                    reward = 25
 
-                action = self.agentStep(self.processState(game), reward)
+                action = self.agentStep(pacmanFeatureExtraction(game), reward)
                 game.pacman.setDir(action)
 
     # ===== auxiliary training functions =====
-    def processState(self, game: Game) -> List[int]:
-        rt: List[int] = []
-
-        for row in game.state:
-            for cell in row:
-                if cell == REP.BLINKY:
-                    rt.append(6 + game.blinky.isFrightened * 4 + game.blinky.isDead * 1)
-                elif cell == REP.INKY:
-                    rt.append(6 + game.inky.isFrightened * 4 + game.blinky.isDead * 1)
-                elif cell == REP.CLYDE:
-                    rt.append(6 + game.clyde.isFrightened * 4 + game.blinky.isDead * 1)
-                elif cell == REP.PINKY:
-                    rt.append(6 + game.pinky.isFrightened * 4 + game.blinky.isDead * 1)
-                else:
-                    rt.append(cell)
-
-        return rt
-
     # softmax policy for probabilistic action selection
     def policy(self, state: List[int]):
         return self.rand.choice(
@@ -249,11 +226,11 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 195,
+                "inSize": 26,
                 "hidden": [
                     256,
-                    64,
                     16,
+                    4,
                 ],
                 "outSize": 4,
             },

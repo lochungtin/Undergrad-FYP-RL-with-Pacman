@@ -25,5 +25,19 @@
             "program": "train_deepq_pacman.py",
             "console": "integratedTerminal"
         },
+        {
+            "name": "Pacman MDP Training Script",
+            "type": "python",
+            "request": "launch",
+            "program": "train_mdpguided_pacman.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "DQ Net Pretrain Script",
+            "type": "python",
+            "request": "launch",
+            "program": "pretrain_dql_neuralnet.py",
+            "console": "integratedTerminal"
+        },
     ]
 }
