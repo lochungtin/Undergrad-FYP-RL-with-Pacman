@@ -226,7 +226,7 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 26,
+                "inSize": 23,
                 "hidden": [
                     256,
                     16,

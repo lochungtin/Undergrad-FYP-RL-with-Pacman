@@ -42,19 +42,11 @@ class NeuralNet:
 
     # predict values
     def predict(self, input: List[List[int]]) -> List[float]:
-        layers = len(self.vals) - 1
-        x = input
-        for i in range(layers):
-            w, b = self.vals[i]["W"], self.vals[i]["b"]
-            psi = np.dot(x, w) + b
+        layers: int = len(self.vals) - 1
+        for i in range(layers):            
+            input = np.maximum(np.dot(input, self.vals[i]["W"]) + self.vals[i]["b"], 0)        
 
-            # relu
-            x = np.maximum(psi, 0)
-
-        w, b = self.vals[layers]["W"], self.vals[layers]["b"]
-        q_vals = np.dot(x, w) + b
-
-        return q_vals
+        return np.dot(input, self.vals[layers]["W"]) + self.vals[layers]["b"]
 
     # getters and setters for updating
     def getVals(self):

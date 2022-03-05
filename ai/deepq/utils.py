@@ -6,7 +6,17 @@ from ai.deepq.neuralnet import NeuralNet
 
 
 class NNUtils:
-    # ===== batched optimisation for training =====
+    # softmax function for exploration / exploitation actions
+    def softmax(qVals: List[float], tau: float) -> List[float]:
+        pref = qVals / tau
+        maxPref = np.max(pref, axis=1).reshape((-1, 1))
+
+        ePref = np.exp(pref - maxPref)
+        sumEPref = np.sum(ePref, axis=1)
+
+        return (ePref / sumEPref.reshape((-1, 1))).squeeze()
+
+    # optimise network for RL training
     def optimiseNN(tN: NeuralNet, cN: NeuralNet, replays: List[object], gamma: float, tau: float, adam: Adam):
         # explode replays into separate lists
         states, actions, rewards, terminals, nStates = map(list, zip(*replays))
@@ -27,7 +37,7 @@ class NNUtils:
         deltaMatrix[indices, actions] = tdError
 
         # perform td update on target network
-        tdUpdate = NNUtils.backpropagation(tN, states, deltaMatrix)
+        tdUpdate = NNUtils.getTDUpdate(tN, states, deltaMatrix)
 
         # pass td update to adam optimiser to get a new set of values for the target network
         tN.setVals(adam.updateVals(tN.getVals(), tdUpdate))
@@ -47,8 +57,24 @@ class NNUtils:
 
         return targetVector - qVector
 
-    # backpropagation for TD error and minibatch pretraining
+    # backpropagation for TD error
+    def getTDUpdate(tN: NeuralNet, X: List[List[float]], deltaMat: List[List[float]]) -> List[dict[str, object]]:
+        return NNUtils.backpropBaseAlgo(tN, X, deltaMat=deltaMat)
+
+    # backpropagation for batched pre-training
     def backpropagation(tN: NeuralNet, X: List[List[float]], Y: List[List[float]]) -> List[dict[str, object]]:
+        return NNUtils.backpropBaseAlgo(tN, X, Y=Y)
+
+    # backpropagation base code
+    def backpropBaseAlgo(
+        tN: NeuralNet,
+        X: List[List[float]],
+        Y: List[List[float]] = None,
+        deltaMat: List[List[float]] = None,
+    ) -> List[dict[str, object]]:
+        if deltaMat is None and Y is None:
+            return None
+
         layers: int = len(tN.vals)
         gradient: List[dict[str, object]] = [dict() for i in range(layers)]
 
@@ -66,7 +92,11 @@ class NNUtils:
 
         # calculate deltas of each layer
         deltas = [None for i in range(layers)]
-        deltas[layers - 1] = Y
+
+        if deltaMat is None:
+            deltaMat = A[-1] - Y
+
+        deltas[layers - 1] = deltaMat
         for i in range(layers - 2, -1, -1):
             deltas[i] = np.dot(deltas[i + 1], tN.vals[i + 1]["W"].T) * dZ[i]
 
@@ -77,13 +107,3 @@ class NNUtils:
             gradient[i]["b"] = np.sum(deltas[i], axis=0, keepdims=True) / minibatchSize
 
         return gradient
-
-    # softmax function for exploration / exploitation actions
-    def softmax(qVals: List[float], tau: float) -> List[float]:
-        pref = qVals / tau
-        maxPref = np.max(pref, axis=1).reshape((-1, 1))
-
-        ePref = np.exp(pref - maxPref)
-        sumEPref = np.sum(ePref, axis=1)
-
-        return (ePref / sumEPref.reshape((-1, 1))).squeeze()
