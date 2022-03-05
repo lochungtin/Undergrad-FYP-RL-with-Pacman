@@ -43,18 +43,33 @@ class NNUtils:
         tN.setVals(adam.updateVals(tN.getVals(), tdUpdate))
 
     # get TD error from replays
-    def getTDError(tN: NeuralNet, cN: NeuralNet, s, a, r, t, nS, gamma: float, tau: float):
+    def getTDError(
+        tN: NeuralNet,
+        cN: NeuralNet,
+        s: List[List[float]],
+        a: List[int],
+        r: List[float],
+        t: List[int],
+        nS: List[List[float]],
+        gamma: float,
+        tau: float,
+    ):
+        # sample successor states
         nextQVals = cN.predict(nS)
+
+        # introduce randomness for exploration
         probsVals = NNUtils.softmax(nextQVals, tau)
 
+        # calculate target vector
         vNVector = np.sum(nextQVals * probsVals, axis=1) * (1 - t)
-
         targetVector = r + gamma * vNVector
 
+        # calculate current predictions
         curQVals = tN.predict(s)
         indices = np.arange(curQVals.shape[0])
         qVector = curQVals[indices, a]
 
+        # calculate delta
         return targetVector - qVector
 
     # backpropagation for TD error
