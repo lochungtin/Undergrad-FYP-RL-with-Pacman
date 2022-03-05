@@ -19,10 +19,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Pacman DQ Training Script",
+            "name": "Pacman DQL Training Script",
             "type": "python",
             "request": "launch",
-            "program": "train_deepq_pacman.py",
+            "program": "train_dql_pacman.py",
             "console": "integratedTerminal"
         },
         {
