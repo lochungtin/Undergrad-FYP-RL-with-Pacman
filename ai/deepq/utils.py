@@ -1,3 +1,4 @@
+from time import sleep
 from typing import List
 import numpy as np
 
@@ -109,7 +110,11 @@ class NNUtils:
         deltas = [None for i in range(layers)]
 
         if deltaMat is None:
-            deltaMat = A[-1] - Y
+            deltaMat = Y - A[-1]
+
+            print(A[-1])
+            print(Y)
+            print(deltaMat)
 
         deltas[layers - 1] = deltaMat
         for i in range(layers - 2, -1, -1):
