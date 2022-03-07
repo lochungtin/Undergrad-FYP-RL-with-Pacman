@@ -92,7 +92,6 @@ class DeepQLTraining:
         game.pacman.setDir(action)
 
         eps: int = 0
-        highscore: int = 0
         while eps < self.simCap:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
@@ -105,7 +104,7 @@ class DeepQLTraining:
                 if won:
                     self.agentEnd(2000)
                 else:
-                    self.agentEnd(-100 * game.pelletProgress)
+                    self.agentEnd(-20 * game.pelletProgress)
 
                 eps += 1
                 completion: float = printPacmanPerfomance(eps, game)
@@ -113,8 +112,7 @@ class DeepQLTraining:
                 if eps % self.saveOpt == 0:
                     self.network.save(eps, runPref)
 
-                if completion > highscore * 0.8 and completion > 50:
-                    highscore = completion
+                if completion > 70:
                     self.network.save(eps, runPref)
 
                 game = self.newGame()

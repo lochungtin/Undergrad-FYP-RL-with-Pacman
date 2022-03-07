@@ -19,6 +19,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Batch Auto Game Script",
+            "type": "python",
+            "request": "launch",
+            "program": "batch.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Pacman DQL Training Script",
             "type": "python",
             "request": "launch",
