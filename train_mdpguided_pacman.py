@@ -6,6 +6,7 @@ from agents.blinky import BlinkyClassicAgent
 from agents.pinky import PinkyClassicAgent
 from game.game import Game
 from gui.display import Display
+from utils.printer import printPacmanPerfomance
 
 
 class MDPGuidedTraining:
@@ -49,7 +50,7 @@ class MDPGuidedTraining:
 
     # ===== main training function =====
     def training(self) -> None:
-        ep: int = 0
+        eps: int = 0
 
         # create new game
         game: Game = self.newGame()
@@ -74,11 +75,11 @@ class MDPGuidedTraining:
 
             # reset game when gameover
             if gameover or won:
-                self.printPerformance(ep, game)
+                printPacmanPerfomance(eps, game)
 
                 # exit loop
-                ep += 1
-                if ep >= self.gameCap:
+                eps += 1
+                if eps >= self.gameCap:
                     break
 
                 # create new game
@@ -88,18 +89,6 @@ class MDPGuidedTraining:
 
                 # create new save file for new run
                 # open("./out/DG_DQL_EX/run{}.txt".format(ep), "x")
-
-    def printPerformance(self, ep: int, game: Game) -> None:
-        consumption: int = 68 - game.pelletProgress
-        print(
-            "ep: {}\tt: {}\tl: {}\tc: {}/68 = {}%".format(
-                ep,
-                game.timesteps,
-                game.pelletProgress,
-                consumption,
-                round(consumption / 68 * 100, 2),
-            )
-        )
 
 
 if __name__ == "__main__":
@@ -119,6 +108,6 @@ if __name__ == "__main__":
                 "kill": 30,
             },
         },
-        False,
+        True,
     )
     training.start()

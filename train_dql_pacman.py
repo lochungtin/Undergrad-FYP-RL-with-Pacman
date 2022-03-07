@@ -19,7 +19,7 @@ from data.config import POS
 from data.data import REP
 from game.game import Game
 from gui.display import Display
-from utils.coordinate import CPair
+from utils.printer import printPacmanPerfomance
 
 
 class DeepQLTraining:
@@ -33,8 +33,8 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
-        # self.network: NeuralNet = NeuralNet.load("./out/RL{}/rl_nnconf_ep{}.json".format("1902_1730", 20000))
+        # self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
+        self.network: NeuralNet = NeuralNet.load("./out/PACMAN_DQL_PRE/rl_nnconf_ep{}.json".format(8000))
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -91,10 +91,8 @@ class DeepQLTraining:
         action: int = self.agentInit(pacmanFeatureExtraction(game))
         game.pacman.setDir(action)
 
-        avgP: float = 0
-        avgR: float = 0
-
         eps: int = 0
+        highscore: int = 0
         while eps < self.simCap:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
@@ -105,22 +103,18 @@ class DeepQLTraining:
 
             if gameover or won or game.timesteps > 1000:
                 if won:
-                    self.agentEnd(200)
+                    self.agentEnd(2000)
                 else:
-                    self.agentEnd(-1000)
-
-                avgP = (avgP * eps + game.pelletProgress) / (eps + 1)
-                avgR = (avgR * eps + self.rSum) / (eps + 1)
+                    self.agentEnd(-100 * game.pelletProgress)
 
                 eps += 1
-
-                print(
-                    "ep{}\tr[{} | {}]\tp[{}/68 | {}/68]".format(
-                        eps, round(self.rSum, 2), avgR, game.pelletProgress, round(avgP, 2)
-                    )
-                )
+                completion: float = printPacmanPerfomance(eps, game)
 
                 if eps % self.saveOpt == 0:
+                    self.network.save(eps, runPref)
+
+                if completion > highscore * 0.8 and completion > 50:
+                    highscore = completion
                     self.network.save(eps, runPref)
 
                 game = self.newGame()
@@ -132,20 +126,20 @@ class DeepQLTraining:
 
             else:
                 # timestep based
-                reward: int = -1
+                reward: int = -0.5
 
                 # punish stationary action
                 if not game.pacman.moved:
                     reward = -10
                 # reward eating pellet
                 elif atePellet:
-                    reward = 10
+                    reward = 20
                 # reward eating power pellet
                 elif atePwrPlt:
                     reward = 3
                 # reward a kill
                 elif ateGhost:
-                    reward = 25
+                    reward = 50
 
                 action = self.agentStep(pacmanFeatureExtraction(game), reward)
                 game.pacman.setDir(action)
@@ -220,9 +214,7 @@ if __name__ == "__main__":
                 "stepSize": 1e-3,
                 "bM": 0.9,
                 "bV": 0.999,
-                "epsilon": 0.1,
-                "decay": 0.9999,
-                "decayMax": 0.001,
+                "epsilon": 0.001,
             },
             "gamma": 0.95,
             "nnConfig": {

@@ -15,6 +15,7 @@ from game.game import Game
 from data.config import BOARD
 from gui.controller import TimeController
 from gui.display import Display
+from utils.printer import printPacmanPerfomance
 
 
 class App:
@@ -52,30 +53,8 @@ class App:
         if not self.game.pacman.moved:
             self.stationary += 1
 
-        # calculate reward
-        reward: int = -1
-        # punish stationary action
-        if not self.game.pacman.moved:
-            reward = -10
-        # reward eating pellet
-        elif atePellet:
-            reward = 10
-        # reward eating power pellet
-        elif atePwrPlt:
-            reward = 3
-        # reward a kill
-        elif ateGhost:
-            reward = 25
-        print(reward)
-
         if gameover or won:
-            print("P: {}/{} K: {} S: {}/{}".format(
-                self.game.pelletProgress,
-                BOARD.TOTAL_PELLET_COUNT,
-                self.kills,
-                self.stationary,
-                self.game.timesteps,
-            ))
+            printPacmanPerfomance(0, self.game)
 
             self.tc.end()
             self.main.destroy()
@@ -95,18 +74,19 @@ def loadNeuralNet(parentFolder: str, prefix: str, ep: int) -> NeuralNet:
 def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
     return GenomeUtils.load("./{}/{}/ga_nnconf_ep{}.json".format(parentFolder, prefix, gen))
 
+# 7500
 
 if __name__ == "__main__":
     gameConfig: dict[str, object] = {
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL2302_0225", 5000)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL0703_2025", 2500)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,
             "pinky": PinkyClassicAgent(),
         },
         "enablePwrPlt": True,
-        "gameSpeed": 0.10,
+        "gameSpeed": 0.05,
     }
 
     App(gameConfig).run()

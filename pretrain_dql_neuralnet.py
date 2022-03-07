@@ -1,4 +1,5 @@
 from math import floor
+import os
 from random import shuffle
 from typing import List, Tuple
 import json
@@ -13,7 +14,7 @@ from ai.deepq.utils import NNUtils
 def loadFile(ep: int) -> List[List[float]]:
     rt: List[List[float]] = []
 
-    with open("./out/DG_DQL_EX/run{}.txt".format(ep), "r") as file:
+    with open("./out/PACMAN_MDP_EX/run{}.txt".format(ep), "r") as file:
         for line in file:
             rt.append(json.loads(line))
 
@@ -48,12 +49,12 @@ def makeBatches(data: List[List[float]]) -> Tuple[List[List[List[float]]], List[
     return np.array(stateSplt), np.array(targetSplt)
 
 
-def main(config: dict[str, dict[str, float]]):
+def main(config: dict[str, object]):
     # create network
     net: NeuralNet = NeuralNet(config["nnConfig"])
 
     # create optimiser
-    adam: Adam = Adam(config["adamConfig"])
+    adam: Adam = Adam(net.lDim, config["adamConfig"])
 
     # train neural network
     for i in range(1000):
@@ -68,11 +69,12 @@ def main(config: dict[str, dict[str, float]]):
             net.setVals(adam.updateVals(net.getVals(), update))
 
     # save network
-    net.save(0, "DQ_PRE")
+    os.mkdir("./out/PACMAN_DQL_PRE")
+    net.save(i * 8 + j + 1, "PACMAN_DQL_PRE")
 
 
 if __name__ == "__main__":
-    config: dict[str, dict[str, float]] = {
+    config: dict[str, object] = {
         "nnConfig": {
             "inSize": 23,
             "hidden": [
