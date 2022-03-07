@@ -1,7 +1,5 @@
 from tkinter import Tk
-from typing import List
 import _thread
-import numpy as np
 
 from agents.pacman import PacmanDQLAgent
 from agents.blinky import BlinkyClassicAgent
@@ -12,7 +10,6 @@ from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
 from game.game import Game
-from data.config import BOARD
 from gui.controller import TimeController
 from gui.display import Display
 from utils.printer import printPacmanPerfomance
