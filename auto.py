@@ -36,15 +36,14 @@ class App:
         self.display: Display = Display(self.main)
         self.display.newGame(self.game)
 
-        self.tc: TimeController = TimeController(
-            gameConfig["gameSpeed"], self.nextStep)
+        self.tc: TimeController = TimeController(gameConfig["gameSpeed"], self.nextStep)
 
         _thread.start_new_thread(self.tc.start, ())
 
     def nextStep(self):
         gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
 
-        if ateGhost: 
+        if ateGhost:
             self.kills += 1
 
         if not self.game.pacman.moved:
@@ -63,20 +62,27 @@ class App:
 
 
 # load neural network from config json
-def loadNeuralNet(parentFolder: str, prefix: str, ep: int) -> NeuralNet:
-    return NeuralNet.load("./{}/{}/rl_nnconf_ep{}.json".format(parentFolder, prefix, ep))
+def loadNeuralNet(parentFolder: str, prefix: str, index: int) -> NeuralNet:
+    indicator: str = "ep"
+    if parentFolder == "saves":
+        indicator = "avgc"
+
+    return NeuralNet.load("./{}/{}/rl_nnconf_{}{}.json".format(parentFolder, prefix, indicator, index))
 
 
 # load genome from config json
-def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
-    return GenomeUtils.load("./{}/{}/ga_nnconf_ep{}.json".format(parentFolder, prefix, gen))
+def loadGenome(parentFolder: str, prefix: str, index: int) -> Genome:
+    indicator: str = "ep"
+    if parentFolder == "saves":
+        indicator = "avgc"
 
-# 7500
+    return GenomeUtils.load("./{}/{}/ga_nnconf_{}{}.json".format(parentFolder, prefix, indicator, index))
+
 
 if __name__ == "__main__":
     gameConfig: dict[str, object] = {
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL0703_2025", 2500)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("saves", "pacman", 78)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,
