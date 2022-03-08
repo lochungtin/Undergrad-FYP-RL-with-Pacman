@@ -152,7 +152,7 @@ class PacmanMDPAgent(DirectionAgent):
         self.mdpConfig: dict[str, float] = mdpConfig
 
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        self.setDir(PacmanMDPSolver(game, self.rewards, self.mdpConfig).getAction())
+        self.setDir(PacmanMDPSolver(game, self.rewards, self.mdpConfig).getAction(self.pos))
         return super().getNextPos(game)
 
 

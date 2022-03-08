@@ -1,8 +1,10 @@
+from time import sleep
 from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
     from game.game import Game
+
 from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
 
@@ -23,7 +25,7 @@ class Solver:
         self.maxIter: int = config["maxIter"]
 
     # get optimal action
-    def getAction(self) -> int:
+    def getAction(self, pos: CPair) -> int:
         # get reward grid
         rewardGrid: List[List[float]] = self.makeRewardGrid()
 
@@ -36,7 +38,7 @@ class Solver:
                 break
 
         # get optimal action
-        return np.argmax(self.getUtilValues(utilities, self.game.pacman.pos))
+        return np.argmax(self.getUtilValues(utilities, pos))
 
     # bellman update for value iterations
     def bellmanUpdate(

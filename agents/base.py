@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
 from data.config import POS
-from data.data import GHOST_MODE, REP
+from data.data import GHOST_MODE
 from game.components.component import Component
 from game.utils.cell import Cell
 from game.utils.pathfinder import PathFinder

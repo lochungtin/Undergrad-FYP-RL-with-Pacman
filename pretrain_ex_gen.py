@@ -1,11 +1,15 @@
+from time import sleep
 from tkinter import Tk
 import _thread
 
-from agents.pacman import PacmanMDPAgent, pacmanFeatureExtraction
-from agents.blinky import BlinkyClassicAgent
-from agents.pinky import PinkyClassicAgent
+from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, pacmanFeatureExtraction
+from agents.blinky import BlinkyClassicAgent, BlinkyMDPAgent
+from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
+from agents.inky import InkyClassicAgent, InkyClassicAggrAgent
+from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
 from game.game import Game
 from gui.display import Display
+from utils.file import loadNeuralNet
 from utils.printer import printPacmanPerfomance
 
 
@@ -40,8 +44,8 @@ class MDPGuidedTraining:
 
     def newGame(self) -> Game:
         return Game(
-            PacmanMDPAgent(self.rewards, self.mdpConfig),
-            blinky=BlinkyClassicAgent(),
+            PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70)),
+            blinky=BlinkyMDPAgent(self.rewards, self.mdpConfig),
             pinky=PinkyClassicAgent(),
         )
 
@@ -71,7 +75,7 @@ class MDPGuidedTraining:
                 self.display.rerender()
 
             # reset game when gameover
-            if gameover or won:
+            if gameover or won or game.timesteps > 100:
                 printPacmanPerfomance(eps, game)
 
                 # exit loop
@@ -98,11 +102,10 @@ if __name__ == "__main__":
                 "epsilon": 0.00005,
             },
             "rewards": {
+                "ghost": 0,
+                "pacmanF": -10,
+                "pacmanR": 20,
                 "timestep": -0.05,
-                "pellet": 5,
-                "pwrplt": 2,
-                "ghost": -100,
-                "kill": 30,
             },
         },
         True,
