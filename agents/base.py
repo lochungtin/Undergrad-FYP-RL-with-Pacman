@@ -9,13 +9,23 @@ if TYPE_CHECKING:
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
-from data.config import POS
+from data.config import BOARD, POS
 from data.data import GHOST_MODE
 from game.components.component import Component
 from game.utils.cell import Cell
 from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
 from utils.direction import DIR
+
+
+# compare distances for feature extraction
+def distanceComparison(ref: CPair, comp: CPair) -> List[float]:
+    return [
+        max(0, ref.row - comp.row) / BOARD.ROW,
+        max(0, comp.row - ref.row) / BOARD.ROW,
+        max(0, ref.col - comp.col) / BOARD.COL,
+        max(0, comp.col - ref.col) / BOARD.COL,
+    ]
 
 
 # base class for game agents
@@ -69,6 +79,45 @@ class GhostAgent(Agent):
 
         self.isClassic: bool = isClassic
 
+    # bind pathfinder
+    def bindPathFinder(self, pathfinder: PathFinder) -> None:
+        self.pathfinder: PathFinder = pathfinder
+
+    # get next position of ghost
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        self.moved = False
+        # wait at ghost house
+        if hasattr(self, "initWait") and self.initWait > 0:
+            self.initWait -= 1
+            return self.pos, self.pos, self.moved
+
+        # dead and returned to ghost house
+        if self.isDead and self.pos == POS.GHOST_HOUSE_CENTER:
+            self.isDead = False
+
+        if self.isDead:
+            # generate path
+            self.prevPath = self.path
+            self.path = self.pathfinder.start(self.pos, POS.GHOST_HOUSE_CENTER, self.direction)
+
+            # update positions
+            self.prevPos = self.pos
+            if len(self.path) > 0:
+                self.pos = self.path[0]
+            self.moved = True
+
+            if self.moved:
+                self.direction = self.pos.relate(self.prevPos)
+
+            return self.pos, self.prevPos, self.moved
+        else:
+            return self.regularMovement(game)
+
+    # ===== REQUIRED TO OVERRIDE =====
+    # get regular movement positions
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        raise NotImplementedError()
+
 
 # base class for classic ghost agents
 class ClassicGhostAgent(GhostAgent):
@@ -84,27 +133,13 @@ class ClassicGhostAgent(GhostAgent):
 
         self.rand: Random = Random()
 
-    # bind pathfinder
-    def bindPathFinder(self, pathFinder: PathFinder) -> None:
-        self.pathfinder: PathFinder = pathFinder
-
-    # get next position of ghost
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        self.moved = False
-        # wait at ghost house
-        if self.initWait > 0:
-            self.initWait -= 1
-            return self.pos, self.pos, self.moved
-
-        # dead and returned to ghost house
-        if self.isDead and self.pos == POS.GHOST_HOUSE_CENTER:
-            self.isDead = False
-
+    # get regular movement positions
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         # start random walk if frightened
         if self.isFrightened and (not hasattr(self, "cruiseElroy") or not self.cruiseElroy):
             # slow down ghost speed
             self.speedReducer = (self.speedReducer + 1) % GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
-            if self.speedReducer == 0:             
+            if self.speedReducer == 0:
                 # filter out valid locations
                 valid: List[Cell] = []
                 for dir, neighbour in game.state[self.pos.row][self.pos.col].adj.items():

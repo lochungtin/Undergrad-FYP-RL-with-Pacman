@@ -16,12 +16,8 @@ class ClydeClassicAgent(ClassicGhostAgent):
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
-        # dead
-        if self.isDead:
-            return POS.GHOST_HOUSE_CENTER
-
         # scatter mode (head to corner)
-        elif self.mode == GHOST_MODE.SCATTER:
+        if self.mode == GHOST_MODE.SCATTER:
             return POS.CLYDE_CORNER
 
         # chase mode
@@ -39,10 +35,6 @@ class ClydeClassicAggrAgent(ClassicGhostAgent):
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
-        # dead
-        if self.isDead:
-            return POS.GHOST_HOUSE_CENTER
-
         # chase mode
         if self.pos != game.pacman.pos:
             if len(self.pathfinder.start(self.pos, game.pacman.pos, self.direction)) < 4:

@@ -16,12 +16,8 @@ class InkyClassicAgent(ClassicGhostAgent):
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
-        # dead
-        if self.isDead:
-            return POS.GHOST_HOUSE_CENTER
-
         # scatter mode (head to corner)
-        elif self.mode == GHOST_MODE.SCATTER:
+        if self.mode == GHOST_MODE.SCATTER:
             return POS.INKY_CORNER
 
         # chase mode
@@ -46,10 +42,6 @@ class InkyClassicAggrAgent(ClassicGhostAgent):
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
-        # dead
-        if self.isDead:
-            return POS.GHOST_HOUSE_CENTER
-
         # chase mode
         # get reflection tile
         pivot: CPair = game.pacman.pos

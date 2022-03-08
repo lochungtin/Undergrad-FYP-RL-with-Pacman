@@ -92,8 +92,7 @@ class Game:
         self.pf: PathFinder = PathFinder(self.state)
 
         for ghost in self.ghostList:
-            if ghost.isClassic:
-                ghost.bindPathFinder(self.pf)
+            ghost.bindPathFinder(self.pf)
 
         # canvas object
         self.canvas: Canvas = None

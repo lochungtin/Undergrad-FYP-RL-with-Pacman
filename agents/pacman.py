@@ -10,21 +10,13 @@ if TYPE_CHECKING:
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.mdp.solver import Solver
-from agents.base import DQLAgent, DirectionAgent, GhostAgent
+from agents.base import DQLAgent, DirectionAgent, GhostAgent, distanceComparison
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
 from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
 
-
-def distanceComparison(ref: CPair, comp: CPair) -> List[float]:
-    return [
-        max(0, ref.row - comp.row) / BOARD.ROW,
-        max(0, comp.row - ref.row) / BOARD.ROW,
-        max(0, ref.col - comp.col) / BOARD.COL,
-        max(0, comp.col - ref.col) / BOARD.COL,
-    ]
 
 
 def pacmanFeatureExtraction(game: "Game") -> List[float]:

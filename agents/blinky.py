@@ -1,16 +1,41 @@
 from typing import List, Tuple, TYPE_CHECKING
 
 from ai.mdp.solver import Solver
+from game.utils.cell import Cell
 from utils.grid import createGameSizeGrid
 
 
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base import ClassicGhostAgent, DirectionAgent, GhostAgent
+from agents.base import ClassicGhostAgent, DirectionAgent, GhostAgent, distanceComparison
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
+
+
+def blinkyFeatureExtraction(game: "Game") -> List[float]:
+    features: List[float] = [0, 0, 0, 0]
+
+    bPos: CPair = game.ghosts[REP.BLINKY]
+    bCell: Cell = game.getCell(bPos)
+
+    # feature 1: valid directions
+    for action, neighbour in bCell.adj.items():
+        if not neighbour is None:
+            features[action] = 1
+
+    # feature 2: distance to pacman
+    features += distanceComparison(bPos, game.pacman.pos)
+    features.append((game.pwrpltEffectCounter + 1) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
+
+    # feature 3: distance to neighbouring ghost
+    g: GhostAgent = None
+    for ghost in game.ghostList:
+        if ghost.repId != REP.BLINKY:
+            g = ghost
+
+    features += distanceComparison(bPos, g.pos)
 
 
 # classic ai agent for blinky
@@ -22,12 +47,8 @@ class BlinkyClassicAgent(ClassicGhostAgent):
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
-        # dead
-        if self.isDead:
-            return POS.GHOST_HOUSE_CENTER
-
         # scatter mode (head to corner)
-        elif self.mode == GHOST_MODE.SCATTER:
+        if self.mode == GHOST_MODE.SCATTER:
             return POS.BLINKY_CORNER
 
         # chase mode
@@ -43,10 +64,6 @@ class BlinkyClassicAggrAgent(ClassicGhostAgent):
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
-        # dead
-        if self.isDead:
-            return POS.GHOST_HOUSE_CENTER
-
         # chase mode
         return game.pacman.pos
 
