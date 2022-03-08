@@ -1,7 +1,6 @@
 from __future__ import annotations
 from copy import deepcopy
 from typing import List
-import json
 import numpy as np
 
 
@@ -43,8 +42,8 @@ class NeuralNet:
     # predict values
     def predict(self, input: List[List[int]]) -> List[float]:
         layers: int = len(self.vals) - 1
-        for i in range(layers):            
-            input = np.maximum(np.dot(input, self.vals[i]["W"]) + self.vals[i]["b"], 0)        
+        for i in range(layers):
+            input = np.maximum(np.dot(input, self.vals[i]["W"]) + self.vals[i]["b"], 0)
 
         return np.dot(input, self.vals[layers]["W"]) + self.vals[layers]["b"]
 
@@ -54,33 +53,3 @@ class NeuralNet:
 
     def setVals(self, vals: List[dict[str, object]]):
         self.vals = deepcopy(vals)
-
-    # save and load NN config
-    def save(self, epCount: int, runPref: str, parentFolder: str = "out"):
-        vals = deepcopy(self.vals)
-
-        for i in vals:
-            i["W"] = i["W"].tolist()
-            i["b"] = i["b"].tolist()
-
-        filename: str = "./{}/{}/rl_nnconf_ep{}.json".format(parentFolder, runPref, epCount)
-        with open(filename, "w+") as outfile:
-            json.dump({"inSize": self.inSize, "outSize": self.outSize, "lDim": self.lDim, "vals": vals}, outfile)
-
-    def load(filename: str) -> NeuralNet:
-        with open(filename, "r") as inFile:
-            data: dict[str, object] = json.load(inFile)
-
-            net = NeuralNet(None)
-
-            net.inSize = data["inSize"]
-            net.outSize = data["outSize"]
-            net.lDim = data["lDim"]
-
-            for i in data["vals"]:
-                i["W"] = np.array(i["W"])
-                i["b"] = np.array(i["b"])
-
-            net.vals = data["vals"]
-
-            return net

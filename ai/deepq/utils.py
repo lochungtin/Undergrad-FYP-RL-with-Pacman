@@ -1,5 +1,6 @@
-from time import sleep
+from copy import deepcopy
 from typing import List
+import json
 import numpy as np
 
 from ai.deepq.adam import Adam
@@ -7,6 +8,7 @@ from ai.deepq.neuralnet import NeuralNet
 
 
 class NNUtils:
+    # ===== policy related =====
     # softmax function for exploration / exploitation actions
     def softmax(qVals: List[float], tau: float) -> List[float]:
         pref = qVals / tau
@@ -17,6 +19,7 @@ class NNUtils:
 
         return (ePref / sumEPref.reshape((-1, 1))).squeeze()
 
+    # ===== optimisation related =====
     # optimise network for RL training
     def optimiseNN(tN: NeuralNet, cN: NeuralNet, replays: List[object], gamma: float, tau: float, adam: Adam):
         # explode replays into separate lists
@@ -123,3 +126,35 @@ class NNUtils:
             gradient[i]["b"] = np.sum(deltas[i], axis=0, keepdims=True) / minibatchSize
 
         return gradient
+
+    # ===== save and load functions =====
+    # save neural net config
+    def save(net: NeuralNet, epCount: int, runPref: str, parentFolder: str = "out") -> None:
+        vals = deepcopy(net.vals)
+
+        for i in vals:
+            i["W"] = i["W"].tolist()
+            i["b"] = i["b"].tolist()
+
+        filename: str = "./{}/{}/rl_nnconf_ep{}.json".format(parentFolder, runPref, epCount)
+        with open(filename, "w+") as outfile:
+            json.dump({"inSize": net.inSize, "outSize": net.outSize, "lDim": net.lDim, "vals": vals}, outfile)
+
+    # load neural net config
+    def load(filename: str) -> NeuralNet:
+        with open(filename, "r") as inFile:
+            data: dict[str, object] = json.load(inFile)
+
+            net = NeuralNet(None)
+
+            net.inSize = data["inSize"]
+            net.outSize = data["outSize"]
+            net.lDim = data["lDim"]
+
+            for i in data["vals"]:
+                i["W"] = np.array(i["W"])
+                i["b"] = np.array(i["b"])
+
+            net.vals = data["vals"]
+
+            return net

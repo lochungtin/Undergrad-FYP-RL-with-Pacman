@@ -142,7 +142,7 @@ class GenomeUtils:
 
         return filename
 
-    # load genome
+    # load genome config file
     def load(filename: str, parentFolder: str = "out", plain: bool = False) -> Genome:
         with open("./{}/{}".format(parentFolder, filename), "r") as infile:
             data: dict[str, object] = json.load(infile)
@@ -184,7 +184,7 @@ class GenomeUtils:
 
                 return genome
 
-    # load innovation map
+    # load innovation map file
     def loadInnov(filename: str, parentFolder: str = "out") -> dict[str, int]:
         with open("./{}/{}".format(parentFolder, filename), "r") as infile:
             return json.load(infile)

@@ -110,10 +110,10 @@ class DeepQLTraining:
                 completion: float = printPacmanPerfomance(eps, game)
 
                 if eps % self.saveOpt == 0:
-                    self.network.save(eps, runPref)
+                    NNUtils.save(self.network, eps, runPref)
 
                 if completion > 70:
-                    self.network.save(eps, runPref)
+                    NNUtils.save(self.network, eps, runPref)
 
                 game = self.newGame()
                 if self.hasDisplay:

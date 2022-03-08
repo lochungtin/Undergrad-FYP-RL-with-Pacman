@@ -70,7 +70,7 @@ def main(config: dict[str, object]):
 
     # save network
     os.mkdir("./out/PACMAN_DQL_PRE")
-    net.save(i * 8 + j + 1, "PACMAN_DQL_PRE")
+    NNUtils.save(net, i * 8 + j + 1, "PACMAN_DQL_PRE")
 
 
 if __name__ == "__main__":
