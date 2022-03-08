@@ -1,8 +1,10 @@
 from math import floor
+import re
 from typing import List, Tuple
 import os
 
 from ai.deepq.neuralnet import NeuralNet
+from ai.deepq.utils import NNUtils
 from data.data import GHOST_CLASS_TYPE
 from game.game import Game
 from utils.game import newGame
@@ -25,7 +27,7 @@ class BatchAutoApp:
         self.target: str = config["targetAgent"]
 
         # directory path
-        self.path: str = "./out/{}".format(config["runPref"])
+        self.runPref: str = config["runPref"]
 
         # iteration counts
         self.filterItr: int = config["iteration"]["filter"]
@@ -52,10 +54,11 @@ class BatchAutoApp:
     def filter(self) -> List[Tuple[str, int]]:
         filter: dict[str, int] = {}
 
+        path: str = "./out/{}".format(self.runPref)
         for i in range(self.filterItr):
             print("Filter Stage - Iteration: {}".format(i))
-            for file in os.listdir(self.path):
-                if self.runGame(NeuralNet.load("{}/{}".format(self.path, file))) > self.cThreshold:
+            for file in os.listdir(path):
+                if self.runGame(file) > self.cThreshold:
                     if not file in filter:
                         filter[file] = 0
 
@@ -78,16 +81,16 @@ class BatchAutoApp:
             print("Performance Stage - Filename: {}".format(file))
             average: float = 0
             for i in range(self.performanceItr):
-                average += self.runGame(NeuralNet.load("{}/{}".format(self.path, file)))
+                average += self.runGame(file)
 
             averages[file] = average / self.performanceItr
 
         return averages
 
     # run game
-    def runGame(self, net: NeuralNet) -> float:
+    def runGame(self, filename: str) -> float:
         # create new game
-        self.neuralnets[self.target] = net
+        self.neuralnets[self.target] = ("out", self.runPref, re.findall('[0-9]+', filename)[0])
         game: Game = newGame(self.ghosts, self.enablePwrPlt, self.neuralnets, self.genomes)
 
         # run game
@@ -115,11 +118,12 @@ if __name__ == "__main__":
                 "pinky": GHOST_CLASS_TYPE.OGNL,
             },
             "iteration": {
-                "filter": 20,
+                "filter": 10,
                 "performance": 100,
             },
             "neuralnets": {},
             "runPref": "RL0703_2107",
+            "targetAgent": "pacman",
             "threshold": {
                 "completion": 70,
                 "percentile": 0.1,
