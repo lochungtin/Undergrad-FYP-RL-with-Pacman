@@ -55,7 +55,7 @@ if __name__ == "__main__":
             "gameSpeed": 0.05,
             "genomes": {},
             "ghosts": {
-                "blinky": GHOST_CLASS_TYPE.GDQL,
+                "blinky": GHOST_CLASS_TYPE.OGNL,
                 "inky": GHOST_CLASS_TYPE.NONE,
                 "clyde": GHOST_CLASS_TYPE.NONE,
                 "pinky": GHOST_CLASS_TYPE.OGNL,

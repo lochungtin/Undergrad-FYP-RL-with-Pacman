@@ -1,6 +1,6 @@
 from data.data import GHOST_CLASS_TYPE
 from game.game import Game
-from utils.game import newGame
+from utils.game import newGame, newRndClassicGhostGame
 from utils.printer import printPacmanPerfomance
 
 
@@ -28,27 +28,14 @@ class App:
         print("Average Completion Rate: {}".format(average / self.iterations))
 
     def runGame(self) -> float:
-        game: Game = newGame(self.ghosts, self.enablePwrPlt, self.neuralnets, self.genomes)
-
-        kills: int = 0
-        stationary: int = 0
+        game: Game = newRndClassicGhostGame(self.enablePwrPlt, self.neuralnets)
 
         while True:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
+            if gameover or won or game.timesteps > 1000:
+                break                
 
-            if ateGhost:
-                kills += 1
-
-            if not game.pacman.moved:
-                stationary += 1
-
-            if gameover or won:
-                return printPacmanPerfomance(0, game, True)
-
-            if game.timesteps > 1000:
-                break
-
-        return 0
+        return printPacmanPerfomance(0, game, True)
 
 
 if __name__ == "__main__":
@@ -62,8 +49,8 @@ if __name__ == "__main__":
                 "clyde": GHOST_CLASS_TYPE.NONE,
                 "pinky": GHOST_CLASS_TYPE.OGNL,
             },
-            "iterations": 30,
-            "neuralnets": {"pacman": ("out", "RL0703_2107", 5895)},
+            "iterations": 1000,
+            "neuralnets": {"pacman": ("out", "RL0803_1832", 9895)},
         }
     )
     app.start()

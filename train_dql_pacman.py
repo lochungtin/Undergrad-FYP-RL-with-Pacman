@@ -14,11 +14,14 @@ from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
+from agents.clyde import ClydeClassicAgent
+from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
 from data.config import POS
 from data.data import REP
 from game.game import Game
 from gui.display import Display
+from utils.file import loadNeuralNet
 from utils.printer import printPacmanPerfomance
 
 
@@ -34,7 +37,7 @@ class DeepQLTraining:
 
         # setup neural network
         # self.network: NeuralNet = NeuralNet(config["nnConfig"])
-        self.network: NeuralNet = NeuralNet.load("./out/PACMAN_DQL_PRE/rl_nnconf_ep{}.json".format(8000))
+        self.network: NeuralNet = loadNeuralNet("out", "PACMAN_DQL_PRE", 8000)
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -71,10 +74,23 @@ class DeepQLTraining:
             self.training()
 
     def newGame(self) -> Game:
+        ghost: int = np.random.randint(0, 3)
+        
+        inky, clyde, pinky = None, None, None
+
+        if ghost == 0:
+            inky = InkyClassicAgent()
+        elif ghost == 1:
+            clyde = ClydeClassicAgent()
+        else:
+            pinky = PinkyClassicAgent()
+                
         return Game(
-            DirectionAgent(POS.PACMAN, REP.PACMAN),
+            pacman=DirectionAgent(POS.PACMAN, REP.PACMAN),
             blinky=BlinkyClassicAgent(),
-            pinky=PinkyClassicAgent(),
+            inky=inky,
+            clyde=clyde,
+            pinky=pinky,
         )
 
     # ===== main training function =====
@@ -112,7 +128,7 @@ class DeepQLTraining:
                 if eps % self.saveOpt == 0:
                     NNUtils.save(self.network, eps, runPref)
 
-                if completion > 70:
+                if completion > 80:
                     NNUtils.save(self.network, eps, runPref)
 
                 game = self.newGame()

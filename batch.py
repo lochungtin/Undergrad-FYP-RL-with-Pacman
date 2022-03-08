@@ -1,13 +1,13 @@
 from math import floor
-import re
 from typing import List, Tuple
+import numpy as np
+import re
 import os
 
-from ai.deepq.neuralnet import NeuralNet
-from ai.deepq.utils import NNUtils
-from data.data import GHOST_CLASS_TYPE
+
+from data.data import GHOST_CLASS_TYPE, REP
 from game.game import Game
-from utils.game import newGame
+from utils.game import newGame, newRndClassicGhostGame
 from utils.printer import printPacmanPerfomance
 
 
@@ -90,8 +90,8 @@ class BatchAutoApp:
     # run game
     def runGame(self, filename: str) -> float:
         # create new game
-        self.neuralnets[self.target] = ("out", self.runPref, re.findall('[0-9]+', filename)[0])
-        game: Game = newGame(self.ghosts, self.enablePwrPlt, self.neuralnets, self.genomes)
+        self.neuralnets[self.target] = ("out", self.runPref, re.findall("[0-9]+", filename)[0])
+        game: Game = newRndClassicGhostGame(self.enablePwrPlt, self.neuralnets)
 
         # run game
         while True:
@@ -112,17 +112,17 @@ if __name__ == "__main__":
             "enablePwrPlt": True,
             "genomes": {},
             "ghosts": {
-                "blinky": GHOST_CLASS_TYPE.OGNL,
-                "inky": GHOST_CLASS_TYPE.NONE,
-                "clyde": GHOST_CLASS_TYPE.NONE,
-                "pinky": GHOST_CLASS_TYPE.OGNL,
+                REP.BLINKY: GHOST_CLASS_TYPE.OGNL,
+                REP.INKY: GHOST_CLASS_TYPE.NONE,
+                REP.CLYDE: GHOST_CLASS_TYPE.NONE,
+                REP.PINKY: GHOST_CLASS_TYPE.NONE,
             },
             "iteration": {
                 "filter": 10,
                 "performance": 100,
             },
             "neuralnets": {},
-            "runPref": "RL0703_2107",
+            "runPref": "RL0803_1832",
             "targetAgent": "pacman",
             "threshold": {
                 "completion": 70,
