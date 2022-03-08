@@ -92,15 +92,10 @@ class BlinkyMDPSolver(Solver):
         return rewardGrid
 
 
-class BlinkyMDPAgent(DirectionAgent):
+class BlinkyMDPAgent(GhostAgent, DirectionAgent):
     def __init__(self, rewards: dict[str, float], mdpConfig: dict[str, float]) -> None:
-        super().__init__( POS.BLINKY, REP.BLINKY)
-
-        self.isDead: bool = False
-        self.isFrightened: bool = False
-        self.speedReducer: int = 0
-
-        self.isClassic: bool = False
+        GhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, False)
+        DirectionAgent.__init__(self, POS.BLINKY, REP.BLINKY)
 
         # reward values
         self.rewards: dict[str, float] = rewards
@@ -108,6 +103,6 @@ class BlinkyMDPAgent(DirectionAgent):
         # mdp config
         self.mdpConfig: dict[str, float] = mdpConfig
 
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         self.setDir(BlinkyMDPSolver(game, self.rewards, self.mdpConfig).getAction(self.pos))
-        return super().getNextPos(game)
+        return DirectionAgent.getNextPos(self, game)
