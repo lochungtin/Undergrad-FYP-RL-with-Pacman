@@ -64,7 +64,7 @@ class App:
 if __name__ == "__main__":
     app: App = App({
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL0703_2107", 5895)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL0703_2107", 5905)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,
