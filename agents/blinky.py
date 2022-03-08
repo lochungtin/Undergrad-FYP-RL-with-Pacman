@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from game.game import Game
 
 from agents.base import ClassicGhostAgent, DirectionAgent, GhostAgent, distanceComparison
-from data.config import POS
+from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 
@@ -26,11 +26,14 @@ def blinkyFeatureExtraction(game: "Game") -> List[float]:
         if not neighbour is None:
             features[action] = 1
 
-    # feature 2: distance to pacman
+    # feature 2: ghost house
+    features.append((blinky.pos.manDist(POS.GHOST_HOUSE_CENTER) < 3) * 1)
+
+    # feature 3: distance to pacman
     features += distanceComparison(bPos, game.pacman.pos)
     features.append((game.pwrpltEffectCounter + 1) * blinky.isFrightened / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
 
-    # feature 3: distance to neighbouring ghost
+    # feature 4: distance to neighbouring ghost
     g: GhostAgent = None
     for ghost in game.ghostList:
         if ghost.repId != REP.BLINKY:

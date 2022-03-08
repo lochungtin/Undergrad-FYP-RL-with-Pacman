@@ -50,28 +50,34 @@ class MDPGuidedTraining:
 
     def newGame(self) -> Game:
         ghost: int = np.random.randint(0, 3)
-        type: int = np.random.randint(1, 3)
+        gType: int = np.random.randint(0, 2)
+        pType: int = np.random.randint(0, 2)
 
         inky, clyde, pinky = None, None, None
 
         if ghost == 0:
-            if type == 0:
+            if gType == 0:
                 inky = InkyClassicAgent()
             else:
                 inky = InkyClassicAggrAgent()
         elif ghost == 1:
-            if type == 0:
+            if gType == 0:
                 clyde = ClydeClassicAgent()
             else:
                 clyde = ClydeClassicAggrAgent()
         else:
-            if type == 0:
+            if gType == 0:
                 pinky = PinkyClassicAgent()
             else:
                 pinky = PinkyClassicAggrAgent()
 
+        if pType == 0:
+            pacman = PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70))
+        else:
+            pacman = PacmanMDPAgent(self.pRewards, self.mdpConfig)
+
         return Game(
-            pacman=PacmanMDPAgent(self.pRewards, self.mdpConfig),
+            pacman=pacman,
             blinky=BlinkyMDPAgent(self.gRewards, self.mdpConfig),
             inky=inky,
             clyde=clyde,
@@ -80,7 +86,7 @@ class MDPGuidedTraining:
 
     # ===== main training function =====
     def training(self) -> None:
-        epStart: int = 20
+        epStart: int = 0
         eps: int = 0
 
         # create new game

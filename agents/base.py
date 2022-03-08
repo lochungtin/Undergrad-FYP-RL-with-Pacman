@@ -68,6 +68,33 @@ class DirectionAgent(Agent):
         return self.pos, self.prevPos, self.moved
 
 
+# base class for all (pacman and ghosts) deep q learning based agents
+class DQLAgent(DirectionAgent):
+    def __init__(self, pos: CPair, repId: int, neuralNet: NeuralNet) -> None:
+        super().__init__(pos, repId)
+
+        self.neuralNet: NeuralNet = neuralNet
+
+    # get next position of agent
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        # get action vals
+        state: List[int] = self.processGameState(game)
+        qVals: List[float] = self.neuralNet.predict(np.array([state]))
+
+        # get optimal action
+        action: int = np.argmax(qVals)
+
+        # selection action direction
+        self.setDir(action)
+
+        return super().getNextPos(game)
+
+    # ===== REQUIRED TO OVERRIDE =====
+    # preprocess game state for neural network
+    def processGameState(self, game: "Game") -> List[int]:
+        raise NotImplementedError
+
+
 # base class for ghost agents
 class GhostAgent(Agent):
     def __init__(self, pos: CPair, repId: int, isClassic: bool) -> None:
@@ -98,7 +125,9 @@ class GhostAgent(Agent):
         if self.isDead:
             # generate path
             self.prevPath = self.path
-            self.path = self.pathfinder.start(self.pos, POS.GHOST_HOUSE_CENTER, self.direction)
+            self.path = self.pathfinder.start(
+                self.pos, POS.GHOST_HOUSE_CENTER, self.direction
+            )
 
             # update positions
             self.prevPos = self.pos
@@ -129,6 +158,7 @@ class StaticGhostAgent(GhostAgent):
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         return self.pos, self.pos, False
 
+
 # base class for classic ghost agents
 class ClassicGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int, initWait: int) -> None:
@@ -146,14 +176,22 @@ class ClassicGhostAgent(GhostAgent):
     # get regular movement positions
     def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         # start random walk if frightened
-        if self.isFrightened and (not hasattr(self, "cruiseElroy") or not self.cruiseElroy):
+        if self.isFrightened and (
+            not hasattr(self, "cruiseElroy") or not self.cruiseElroy
+        ):
             # slow down ghost speed
-            self.speedReducer = (self.speedReducer + 1) % GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
+            self.speedReducer = (
+                self.speedReducer + 1
+            ) % GHOST_MODE.GHOST_FRIGHTENED_SPEED_REDUCTION_RATE
             if self.speedReducer == 0:
                 # filter out valid locations
                 valid: List[Cell] = []
-                for dir, neighbour in game.state[self.pos.row][self.pos.col].adj.items():
-                    if not neighbour is None and not (dir != DIR.UP and self.pos in POS.GHOST_NO_UP_CELLS):
+                for dir, neighbour in game.state[self.pos.row][
+                    self.pos.col
+                ].adj.items():
+                    if not neighbour is None and not (
+                        dir != DIR.UP and self.pos in POS.GHOST_NO_UP_CELLS
+                    ):
                         valid.append(neighbour)
 
                 # random choice
@@ -190,33 +228,6 @@ class ClassicGhostAgent(GhostAgent):
     # ===== REQUIRED TO OVERRIDE =====
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
-        raise NotImplementedError
-
-
-# base class for all (pacman and ghosts) deep q learning based agents
-class DQLAgent(DirectionAgent):
-    def __init__(self, pos: CPair, repId: int, neuralNet: NeuralNet) -> None:
-        super().__init__(pos, repId)
-
-        self.neuralNet: NeuralNet = neuralNet
-
-    # get next position of agent
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        # get action vals
-        state: List[int] = self.processGameState(game)
-        qVals: List[float] = self.neuralNet.predict(np.array([state]))
-
-        # get optimal action
-        action: int = np.argmax(qVals)
-
-        # selection action direction
-        self.setDir(action)
-
-        return super().getNextPos(game)
-
-    # ===== REQUIRED TO OVERRIDE =====
-    # preprocess game state for neural network
-    def processGameState(self, game: "Game") -> List[int]:
         raise NotImplementedError
 
 
