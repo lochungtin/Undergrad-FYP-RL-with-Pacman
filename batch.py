@@ -1,24 +1,28 @@
-from copy import deepcopy
 from math import floor
 from typing import List, Tuple
 import os
 
-from agents.base import GhostAgent
-from agents.blinky import BlinkyClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.clyde import ClydeClassicAgent
-from agents.pacman import PacmanDQLAgent
-from agents.pinky import PinkyClassicAgent
 from ai.deepq.neuralnet import NeuralNet
+from data.data import GHOST_CLASS_TYPE
 from game.game import Game
+from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
 class BatchAutoApp:
     def __init__(self, appConfig: dict[str, object]) -> None:
         # game config
-        self.ghosts: dict[str, bool] = appConfig["ghosts"]
-        self.pwrplt: bool = appConfig["enablePwrPlt"]
+        self.ghosts: dict[str, int] = appConfig["ghosts"]
+        self.enablePwrPlt: bool = appConfig["enablePwrPlt"]
+
+        # neural net
+        self.neuralnets: dict[str, str] = appConfig["neuralnets"]
+
+        # genomes
+        self.genomes: dict[str, str] = appConfig["genomes"]
+
+        # training target
+        self.target: str = appConfig["targetAgent"]
 
         # directory path
         self.path: str = "./out/{}".format(appConfig["runPref"])
@@ -82,19 +86,13 @@ class BatchAutoApp:
 
     # run game
     def runGame(self, net: NeuralNet) -> float:
-        game: Game = self.newGame(net)
+        # create new game
+        self.neuralnets[self.target] = net
+        game: Game = newGame(self.ghosts, self.enablePwrPlt, self.neuralnets, self.genomes)
 
-        kills: int = 0
-        stationary: int = 0
-
+        # run game
         while True:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
-
-            if ateGhost:
-                kills += 1
-
-            if not game.pacman.moved:
-                stationary += 1
 
             if gameover or won:
                 return printPacmanPerfomance(0, game, False)
@@ -104,41 +102,23 @@ class BatchAutoApp:
 
         return 0
 
-    # new game
-    def newGame(self, pacmanNet: NeuralNet) -> Game:
-        blinky: GhostAgent = None
-        if self.ghosts["blinky"]:
-            blinky = BlinkyClassicAgent()
-
-        inky: GhostAgent = None
-        if self.ghosts["inky"]:
-            inky = InkyClassicAgent()
-
-        clyde: GhostAgent = None
-        if self.ghosts["clyde"]:
-            clyde = ClydeClassicAgent()
-
-        pinky: GhostAgent = None
-        if self.ghosts["pinky"]:
-            pinky = PinkyClassicAgent()
-
-        return Game(PacmanDQLAgent(pacmanNet), blinky, inky, clyde, pinky, self.pwrplt)
-
 
 if __name__ == "__main__":
     app: BatchAutoApp = BatchAutoApp(
         {
-            "ghosts": {
-                "blinky": True,
-                "inky": False,
-                "clyde": False,
-                "pinky": True,
-            },
             "enablePwrPlt": True,
+            "genomes": {},
+            "ghosts": {
+                "blinky": GHOST_CLASS_TYPE.OGNL,
+                "inky": GHOST_CLASS_TYPE.NONE,
+                "clyde": GHOST_CLASS_TYPE.NONE,
+                "pinky": GHOST_CLASS_TYPE.OGNL,
+            },
             "iteration": {
                 "filter": 20,
                 "performance": 100,
             },
+            "neuralnets": {},
             "runPref": "RL0703_2107",
             "threshold": {
                 "completion": 70,

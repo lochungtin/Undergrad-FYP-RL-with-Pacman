@@ -1,19 +1,5 @@
-from copy import deepcopy
-from tkinter import Tk
-import _thread
-
-from agents.base import Agent, GhostAgent
-from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent
-from agents.inky import InkyClassicAgent, InkyClassicAggrAgent
-from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
-from agents.pacman import PacmanDQLAgent
-from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
-from ai.deepq.neuralnet import NeuralNet
-from ai.neat.genome import Genome
-from ai.neat.utils import GenomeUtils
 from data.data import GHOST_CLASS_TYPE
 from game.game import Game
-from utils.file import loadNeuralNet
 from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
@@ -68,16 +54,16 @@ class App:
 if __name__ == "__main__":
     app: App = App(
         {
+            "enablePwrPlt": True,
+            "genomes": {},
             "ghosts": {
                 "blinky": GHOST_CLASS_TYPE.OGNL,
                 "inky": GHOST_CLASS_TYPE.NONE,
                 "clyde": GHOST_CLASS_TYPE.NONE,
                 "pinky": GHOST_CLASS_TYPE.OGNL,
             },
-            "enablePwrPlt": True,
             "iterations": 30,
             "neuralnets": {"pacman": ("out", "RL0703_2107", 5895)},
-            "genomes": {},
         }
     )
     app.start()
