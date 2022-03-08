@@ -105,35 +105,35 @@ class PacmanMDPSolver(Solver):
         super().__init__(game, rewards, config)
 
     # create reward grid from state space
-    def makeRewardGrid(self, game: "Game") -> List[List[float]]:
+    def makeRewardGrid(self) -> List[List[float]]:
         # iniialise reward grid
         rewardGrid: List[List[float]] = createGameSizeGrid(self.rewards["timestep"])
 
         # set power pellet reward
-        for key, pwrplt in game.pwrplts.items():
+        for key, pwrplt in self.game.pwrplts.items():
             if pwrplt.valid:
                 avgGhostDist: float = 1
-                for ghost in game.ghostList:
+                for ghost in self.game.ghostList:
                     if not ghost.isDead:
                         avgGhostDist += pwrplt.pos.manDist(ghost.pos)
 
-                avgGhostDist /= len(game.ghostList)
+                avgGhostDist /= len(self.game.ghostList)
 
                 rewardGrid[pwrplt.pos.row][pwrplt.pos.col] = self.rewards["pwrplt"] * (1 / avgGhostDist**2)
 
         # set pellet reward
-        for key, pellet in game.pellets.items():
+        for key, pellet in self.game.pellets.items():
             if pellet.valid:
                 rewardGrid[pellet.pos.row][pellet.pos.col] = self.rewards["pellet"] * log2(
-                    BOARD.TOTAL_PELLET_COUNT - game.pelletProgress + 1
+                    BOARD.TOTAL_PELLET_COUNT - self.game.pelletProgress + 1
                 )
 
         # set ghost reward
-        for ghost in game.ghostList:
+        for ghost in self.game.ghostList:
             if not ghost.isDead:
                 if ghost.isFrightened:
                     rewardGrid[ghost.pos.row][ghost.pos.col] = (
-                        self.rewards["kill"] * game.pwrpltEffectCounter / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
+                        self.rewards["kill"] * self.game.pwrpltEffectCounter / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
                     )
                 else:
                     rewardGrid[ghost.pos.row][ghost.pos.col] = self.rewards["ghost"]
@@ -152,7 +152,8 @@ class PacmanMDPAgent(DirectionAgent):
         self.mdpConfig: dict[str, float] = mdpConfig
 
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        return PacmanMDPSolver(game, self.rewards, self.mdpConfig).getAction()
+        self.setDir(PacmanMDPSolver(game, self.rewards, self.mdpConfig).getAction())
+        return super().getNextPos(game)
 
 
 # deep q learning agent for pacman

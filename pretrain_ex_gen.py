@@ -19,14 +19,11 @@ class MDPGuidedTraining:
 
             self.display: Display = Display(self.main)
 
-        # mdp config
-        self.gamma: float = config["mdpConfig"]["gamma"]
-        self.epsilon: float = config["mdpConfig"]["epsilon"]
-
-        self.maxIter: int = config["mdpConfig"]["maxIterations"]
-
         # reward constants
         self.rewards: dict[str, float] = config["rewards"]
+
+        # mdp config
+        self.mdpConfig: float = config["mdpConfig"]
 
         # training config
         self.gameCap: int = config["gameCap"]
@@ -43,7 +40,7 @@ class MDPGuidedTraining:
 
     def newGame(self) -> Game:
         return Game(
-            PacmanMDPAgent(self.rewards, self.gamma, self.epsilon, self.maxIter),
+            PacmanMDPAgent(self.rewards, self.mdpConfig),
             blinky=BlinkyClassicAgent(),
             pinky=PinkyClassicAgent(),
         )
@@ -96,7 +93,7 @@ if __name__ == "__main__":
         {
             "gameCap": 10,
             "mdpConfig": {
-                "maxIterations": 10000,
+                "maxIter": 10000,
                 "gamma": 0.90,
                 "epsilon": 0.00005,
             },
