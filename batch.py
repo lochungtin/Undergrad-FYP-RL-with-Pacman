@@ -10,30 +10,30 @@ from utils.printer import printPacmanPerfomance
 
 
 class BatchAutoApp:
-    def __init__(self, appConfig: dict[str, object]) -> None:
+    def __init__(self, config: dict[str, object]) -> None:
         # game config
-        self.ghosts: dict[str, int] = appConfig["ghosts"]
-        self.enablePwrPlt: bool = appConfig["enablePwrPlt"]
+        self.ghosts: dict[str, int] = config["ghosts"]
+        self.enablePwrPlt: bool = config["enablePwrPlt"]
 
         # neural net
-        self.neuralnets: dict[str, str] = appConfig["neuralnets"]
+        self.neuralnets: dict[str, str] = config["neuralnets"]
 
         # genomes
-        self.genomes: dict[str, str] = appConfig["genomes"]
+        self.genomes: dict[str, str] = config["genomes"]
 
         # training target
-        self.target: str = appConfig["targetAgent"]
+        self.target: str = config["targetAgent"]
 
         # directory path
-        self.path: str = "./out/{}".format(appConfig["runPref"])
+        self.path: str = "./out/{}".format(config["runPref"])
 
         # iteration counts
-        self.filterItr: int = appConfig["iteration"]["filter"]
-        self.performanceItr: int = appConfig["iteration"]["performance"]
+        self.filterItr: int = config["iteration"]["filter"]
+        self.performanceItr: int = config["iteration"]["performance"]
 
         # threshold values
-        self.cThreshold: float = appConfig["threshold"]["completion"]
-        self.pThreshold: float = appConfig["threshold"]["percentile"]
+        self.cThreshold: float = config["threshold"]["completion"]
+        self.pThreshold: float = config["threshold"]["percentile"]
 
     def start(self) -> None:
         # first pass general filtering

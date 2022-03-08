@@ -40,10 +40,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Pacman MDP Training Script",
+            "name": "MDP Example Generation Script",
             "type": "python",
             "request": "launch",
-            "program": "train_mdpguided_pacman.py",
+            "program": "pretrain_ex_gen.py",
             "console": "integratedTerminal"
         },
         {

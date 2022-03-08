@@ -5,19 +5,19 @@ from utils.printer import printPacmanPerfomance
 
 
 class App:
-    def __init__(self, appConfig: dict[str, object]) -> None:
+    def __init__(self, config: dict[str, object]) -> None:
         # game config
-        self.ghosts: dict[str, int] = appConfig["ghosts"]
-        self.enablePwrPlt: bool = appConfig["enablePwrPlt"]
+        self.ghosts: dict[str, int] = config["ghosts"]
+        self.enablePwrPlt: bool = config["enablePwrPlt"]
 
         # neural net
-        self.neuralnets: dict[str, str] = appConfig["neuralnets"]
+        self.neuralnets: dict[str, str] = config["neuralnets"]
 
         # genomes
-        self.genomes: dict[str, str] = appConfig["genomes"]
+        self.genomes: dict[str, str] = config["genomes"]
 
         # iterations
-        self.iterations: int = appConfig["iterations"]
+        self.iterations: int = config["iterations"]
 
     def start(self) -> None:
         average: float = 0

@@ -10,7 +10,7 @@ from utils.printer import printPacmanPerfomance
 
 
 class MDPGuidedTraining:
-    def __init__(self, trainingConfig: dict[str, object], hasDisplay: bool = False) -> None:
+    def __init__(self, config: dict[str, object], hasDisplay: bool = False) -> None:
         # display
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
@@ -20,16 +20,16 @@ class MDPGuidedTraining:
             self.display: Display = Display(self.main)
 
         # mdp config
-        self.gamma: float = trainingConfig["mdpConfig"]["gamma"]
-        self.epsilon: float = trainingConfig["mdpConfig"]["epsilon"]
+        self.gamma: float = config["mdpConfig"]["gamma"]
+        self.epsilon: float = config["mdpConfig"]["epsilon"]
 
-        self.maxIter: int = trainingConfig["mdpConfig"]["maxIterations"]
+        self.maxIter: int = config["mdpConfig"]["maxIterations"]
 
         # reward constants
-        self.rewards: dict[str, float] = trainingConfig["rewards"]
+        self.rewards: dict[str, float] = config["rewards"]
 
         # training config
-        self.gameCap: int = trainingConfig["gameCap"]
+        self.gameCap: int = config["gameCap"]
 
     # start training (main function)
     def start(self) -> None:

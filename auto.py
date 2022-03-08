@@ -10,13 +10,13 @@ from utils.printer import printPacmanPerfomance
 
 
 class App:
-    def __init__(self, gameConfig: dict[str, object]) -> None:
+    def __init__(self, config: dict[str, object]) -> None:
         # create game
         self.game: Game = newGame(
-            gameConfig["ghosts"],
-            gameConfig["enablePwrPlt"],
-            gameConfig["neuralnets"],
-            gameConfig["genomes"],
+            config["ghosts"],
+            config["enablePwrPlt"],
+            config["neuralnets"],
+            config["genomes"],
         )
 
         # creat gui
@@ -27,7 +27,7 @@ class App:
         self.display.newGame(self.game)
 
         # create and enable auto timestep controller
-        self.tc: TimeController = TimeController(gameConfig["gameSpeed"], self.nextStep)
+        self.tc: TimeController = TimeController(config["gameSpeed"], self.nextStep)
 
         _thread.start_new_thread(self.tc.start, ())
 

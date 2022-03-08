@@ -4,10 +4,12 @@ from typing import List, TYPE_CHECKING, Tuple
 
 import numpy as np
 
+
 if TYPE_CHECKING:
     from game.game import Game
 
 from ai.deepq.neuralnet import NeuralNet
+from ai.mdp.solver import Solver
 from agents.base import DQLAgent, DirectionAgent, GhostAgent
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
@@ -98,39 +100,12 @@ class PlayableAgent(DirectionAgent):
 
 
 # mdp agent for pacman
-class PacmanMDPAgent(DirectionAgent):
-    def __init__(self, rewards: dict[str, float], gamma: float, epsilon: float, maxIter: int) -> None:
-        super().__init__(POS.PACMAN, REP.PACMAN)
-
-        self.rewards: dict[str, float] = rewards
-
-        self.gamma: float = gamma
-        self.epsilon: float = epsilon
-
-        self.maxIter: int = maxIter
-
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        self.setDir(self.mdpGetAction(game))
-        return super().getNextPos(game)
-
-    # ===== mdp solving functions =====
-    def mdpGetAction(self, game: "Game") -> int:
-        # get reward grid
-        rewardGrid: List[List[float]] = self.makeRewardGrid(game)
-
-        # perform value iteration
-        utilities: List[List[float]] = createGameSizeGrid(0)
-        for i in range(self.maxIter):
-            utilities, stable = self.bellmanUpdate(utilities, rewardGrid, game)
-
-            if stable:
-                break
-
-        # get optimal action
-        return np.argmax(self.getUtilValues(utilities, game, game.pacman.pos))
+class PacmanMDPSolver(Solver):
+    def __init__(self, game: "Game", rewards: dict[str, float], config: dict[str, object]) -> None:
+        super().__init__(game, rewards, config)
 
     # create reward grid from state space
-    def makeRewardGrid(self, game: "Game",) -> List[List[float]]:
+    def makeRewardGrid(self, game: "Game") -> List[List[float]]:
         # iniialise reward grid
         rewardGrid: List[List[float]] = createGameSizeGrid(self.rewards["timestep"])
 
@@ -165,39 +140,19 @@ class PacmanMDPAgent(DirectionAgent):
 
         return rewardGrid
 
-    # bellman update for value iterations
-    def bellmanUpdate(
-        self,
-        utilities: List[List[float]],
-        rewards: List[List[float]],
-        game: "Game",
-    ) -> Tuple[List[List[float]], bool]:
-        # initialise new utility value grid
-        newUtils: List[List[float]] = createGameSizeGrid(0)
 
-        # stable indicator
-        stable = True
+class PacmanMDPAgent(DirectionAgent):
+    def __init__(self, rewards: dict[str, float], mdpConfig: dict[str, float]) -> None:
+        super().__init__(POS.PACMAN, REP.PACMAN)
 
-        # get new utility values
-        for i, row in enumerate(game.state):
-            for j, cell in enumerate(row):
-                if not cell.isWall:
-                    newUtils[i][j] = rewards[i][j] + self.gamma * max(self.getUtilValues(utilities, game, cell.coords))
+        # reward values
+        self.rewards: dict[str, float] = rewards
 
-                    if abs(newUtils[i][j] - utilities[i][j]) > self.epsilon:
-                        stable = False
+        # mdp config
+        self.mdpConfig: dict[str, float] = mdpConfig
 
-        return newUtils, stable
-
-    # get utility value of neighbours
-    def getUtilValues(self, utilities: List[List[float]], game: "Game", pos: CPair):
-        adjVals: List[float] = [float("-inf"), float("-inf"), float("-inf"), float("-inf")]
-
-        for action, neighbour in game.getCell(pos).adj.items():
-            if not neighbour is None:
-                adjVals[action] = utilities[neighbour.coords.row][neighbour.coords.col]
-
-        return adjVals
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return PacmanMDPSolver(game, self.rewards, self.mdpConfig).getAction()
 
 
 # deep q learning agent for pacman

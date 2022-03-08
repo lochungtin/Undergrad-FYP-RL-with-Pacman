@@ -10,12 +10,11 @@ import time
 from ai.neat.gene import ConnGene
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
-from game.paiv import PAIV
 from gui.display import Display 
 
 
 class NEATTraining:
-    def __init__(self, trainingConfig: dict[str, object], hasDisplay: bool = False) -> None:
+    def __init__(self, config: dict[str, object], hasDisplay: bool = False) -> None:
         # display
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
@@ -25,31 +24,31 @@ class NEATTraining:
             self.display: Display = Display(self.main)
 
         # simulation config
-        self.enableGhost: bool = trainingConfig["simulationConfig"]["ghost"]
-        self.enablePwrPlt: bool = trainingConfig["simulationConfig"]["pwrplt"]
+        self.enableGhost: bool = config["simulationConfig"]["ghost"]
+        self.enablePwrPlt: bool = config["simulationConfig"]["pwrplt"]
 
         # training config
-        self.popSize: int = trainingConfig["populationSize"]
-        self.selSize: int = trainingConfig["selectionSize"]
-        self.genCap: int = trainingConfig["generationCap"]
+        self.popSize: int = config["populationSize"]
+        self.selSize: int = config["selectionSize"]
+        self.genCap: int = config["generationCap"]
 
         # genome config
-        self.gConf: dict[str, int] = trainingConfig["genomeConfig"]
+        self.gConf: dict[str, int] = config["genomeConfig"]
 
         # distance compatibility config
-        self.cConf: dict[str, float] = trainingConfig["comp"]
+        self.cConf: dict[str, float] = config["comp"]
 
         # fitness coefficent
-        self.fCoef: dict[str, int] = trainingConfig["fitnessCoeff"]
+        self.fCoef: dict[str, int] = config["fitnessCoeff"]
 
         # mutation probabilities
-        self.mProb: dict[str, float] = trainingConfig["mutationConfig"]
+        self.mProb: dict[str, float] = config["mutationConfig"]
 
         # crossing option
-        self.cOpt: int = trainingConfig["crossOpt"]
+        self.cOpt: int = config["crossOpt"]
 
         # generations per genome saving
-        self.saving: int = trainingConfig["saveOpt"]
+        self.saving: int = config["saveOpt"]
 
     # create mutation config
     def mutationConfig(self) -> dict[str, bool]:

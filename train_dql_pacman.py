@@ -23,7 +23,7 @@ from utils.printer import printPacmanPerfomance
 
 
 class DeepQLTraining:
-    def __init__(self, trainingConfig: dict[str, object], hasDisplay: bool = False) -> None:
+    def __init__(self, config: dict[str, object], hasDisplay: bool = False) -> None:
         # display
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
@@ -33,29 +33,29 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        # self.network: NeuralNet = NeuralNet(trainingConfig["nnConfig"])
+        # self.network: NeuralNet = NeuralNet(config["nnConfig"])
         self.network: NeuralNet = NeuralNet.load("./out/PACMAN_DQL_PRE/rl_nnconf_ep{}.json".format(8000))
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
 
         # setup optimiser
-        self.adam: Adam = Adam(self.network.lDim, trainingConfig["adamConfig"])
+        self.adam: Adam = Adam(self.network.lDim, config["adamConfig"])
 
         # setup replay buffer
-        self.replayBuff: ReplayBuffer = ReplayBuffer(trainingConfig["replayConfig"])
-        self.replayCount: int = trainingConfig["replayConfig"]["updatePerStep"]
+        self.replayBuff: ReplayBuffer = ReplayBuffer(config["replayConfig"])
+        self.replayCount: int = config["replayConfig"]["updatePerStep"]
 
         # setup hyperparameters
-        self.gamma: float = trainingConfig["gamma"]
-        self.tau: float = trainingConfig["tau"]
+        self.gamma: float = config["gamma"]
+        self.tau: float = config["tau"]
 
         # previous state and actions
         self.pState: List[List[int]] = None
         self.pAction: int = None
 
-        self.simCap: int = trainingConfig["simulationCap"]
-        self.saveOpt: int = trainingConfig["saveOpt"]
+        self.simCap: int = config["simulationCap"]
+        self.saveOpt: int = config["saveOpt"]
 
         # training status
         self.rSum: float = 0
