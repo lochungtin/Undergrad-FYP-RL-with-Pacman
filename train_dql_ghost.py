@@ -93,8 +93,6 @@ class DeepQLTraining:
 
     # ===== main training function =====
     def training(self) -> None:
-        print("start")
-
         runPref: str = "RL{}".format(datetime.now().strftime("%d%m_%H%M"))
         os.mkdir("out/{}".format(runPref))
 

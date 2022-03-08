@@ -1,5 +1,5 @@
 from agents.base import GhostAgent
-from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent
+from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent, BlinkyDQLAgent, BlinkyDQLTAgent
 from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
 from agents.inky import InkyClassicAgent, InkyClassicAggrAgent
 from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
@@ -19,6 +19,8 @@ def newGame(ghosts: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
         blinky = BlinkyClassicAgent()
     elif ghosts["blinky"] == GHOST_CLASS_TYPE.AGGR:
         blinky = BlinkyClassicAggrAgent()
+    elif ghosts["blinky"] == GHOST_CLASS_TYPE.GDQL:
+        blinky = BlinkyDQLAgent(loadNeuralNetT(neuralnets["blinky"]))
 
     # create ai inky agent
     inky: GhostAgent = None

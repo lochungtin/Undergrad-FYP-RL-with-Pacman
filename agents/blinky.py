@@ -1,10 +1,12 @@
 from queue import Queue
 from typing import List, Tuple, TYPE_CHECKING
 
+from ai.deepq.neuralnet import NeuralNet
+
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base import ClassicGhostAgent, DirectionAgent, GhostAgent, distanceComparison
+from agents.base import ClassicGhostAgent, DQLAgent, DirectionAgent, GhostAgent, distanceComparison
 from ai.mdp.solver import Solver
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
@@ -109,7 +111,7 @@ def blinkyFeatureExtraction(game: "Game") -> List[float]:
 # classic ai agent for blinky
 class BlinkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.BLINKY, REP.BLINKY, 0)
+        ClassicGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, 0)
 
         self.cruiseElroy: bool = False
 
@@ -126,7 +128,7 @@ class BlinkyClassicAgent(ClassicGhostAgent):
 # classic aggressive ai agent for blinky
 class BlinkyClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.BLINKY, REP.BLINKY, 0)
+        ClassicGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, 0)
 
         self.cruiseElroy: bool = False
 
@@ -187,3 +189,18 @@ class BlinkyDQLTAgent(GhostAgent, DirectionAgent):
     # get regular movements (not dead)
     def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         return DirectionAgent.getNextPos(self, game)
+
+
+# deep q learning agent for pacman
+class BlinkyDQLAgent(GhostAgent, DQLAgent):
+    def __init__(self, neuralNet: NeuralNet) -> None:
+        GhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, False)
+        DQLAgent.__init__(self, POS.BLINKY, REP.BLINKY, neuralNet)
+
+    # preprocess game state for neural network
+    def processGameState(self, game: "Game") -> List[int]:
+        return blinkyFeatureExtraction(game)
+
+    # get regular movement (not dead)
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return DQLAgent.getNextPos(self, game)

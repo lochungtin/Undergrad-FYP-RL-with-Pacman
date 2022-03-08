@@ -55,13 +55,16 @@ if __name__ == "__main__":
             "gameSpeed": 0.05,
             "genomes": {},
             "ghosts": {
-                "blinky": GHOST_CLASS_TYPE.OGNL,
+                "blinky": GHOST_CLASS_TYPE.GDQL,
                 "inky": GHOST_CLASS_TYPE.NONE,
                 "clyde": GHOST_CLASS_TYPE.NONE,
                 "pinky": GHOST_CLASS_TYPE.OGNL,
             },
             "iterations": 30,
-            "neuralnets": {"pacman": ("out", "RL0703_2107", 5895)},
+            "neuralnets": {
+                "pacman": ("saves", "pacman", 70),
+                "blinky": ("out", "RL0803_1642", 500),
+            },
         }
     )
     app.start()

@@ -31,7 +31,7 @@ def distanceComparison(ref: CPair, comp: CPair) -> List[float]:
 # base class for game agents
 class Agent(Component):
     def __init__(self, pos: CPair, repId: int) -> None:
-        super().__init__(pos, repId)
+        Component.__init__(self, pos, repId)
 
         self.direction: int = DIR.UP
         self.prevPos: CPair = deepcopy(pos)
@@ -46,7 +46,7 @@ class Agent(Component):
 # base class for all (pacman and ghosts) direction controllable game agents
 class DirectionAgent(Agent):
     def __init__(self, pos: CPair, repId: int) -> None:
-        super().__init__(pos, repId)
+        Agent.__init__(self, pos, repId)
 
     # set direction
     def setDir(self, direction: int) -> None:
@@ -71,7 +71,7 @@ class DirectionAgent(Agent):
 # base class for all (pacman and ghosts) deep q learning based agents
 class DQLAgent(DirectionAgent):
     def __init__(self, pos: CPair, repId: int, neuralNet: NeuralNet) -> None:
-        super().__init__(pos, repId)
+        DirectionAgent.__init__(self, pos, repId)
 
         self.neuralNet: NeuralNet = neuralNet
 
@@ -98,7 +98,7 @@ class DQLAgent(DirectionAgent):
 # base class for ghost agents
 class GhostAgent(Agent):
     def __init__(self, pos: CPair, repId: int, isClassic: bool) -> None:
-        super().__init__(pos, repId)
+        Agent.__init__(self, pos, repId)
 
         self.isDead: bool = False
         self.isFrightened: bool = False
@@ -151,10 +151,11 @@ class GhostAgent(Agent):
 # placeholder ghost agent
 class StaticGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int) -> None:
-        super().__init__(pos, repId, True)
+        GhostAgent.__init__(self, pos, repId, False)
 
         self.moved = False
 
+    # return static position
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         return self.pos, self.pos, False
 
@@ -162,7 +163,7 @@ class StaticGhostAgent(GhostAgent):
 # base class for classic ghost agents
 class ClassicGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int, initWait: int) -> None:
-        super().__init__(pos, repId, True)
+        GhostAgent.__init__(self, pos, repId, True)
 
         self.mode: int = GHOST_MODE.SCATTER
 
