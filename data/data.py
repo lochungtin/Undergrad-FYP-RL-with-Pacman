@@ -71,3 +71,12 @@ class REP:
 
     def isGhost(rep: int) -> bool:
         return rep > 5 and rep < 10
+
+
+# agent class types
+class GHOST_CLASS_TYPE:
+    NONE: int = 0
+    OGNL: int = 1
+    AGGR: int = 2
+    GDQL: int = 3
+    NEAT: int = 4

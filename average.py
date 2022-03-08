@@ -11,22 +11,27 @@ from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
+from data.data import GHOST_CLASS_TYPE
 from game.game import Game
 from utils.file import loadNeuralNet
+from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
 class App:
     def __init__(self, appConfig: dict[str, object]) -> None:
         # game config
-        self.ghosts: dict[str, GhostAgent] = appConfig["ghosts"]
-        self.pwrplt: bool = appConfig["enablePwrPlt"]
+        self.ghosts: dict[str, int] = appConfig["ghosts"]
+        self.enablePwrPlt: bool = appConfig["enablePwrPlt"]
+
+        # neural net
+        self.neuralnets: dict[str, str] = appConfig["neuralnets"]
+
+        # genomes
+        self.genomes: dict[str, str] = appConfig["genomes"]
 
         # iterations
         self.iterations: int = appConfig["iterations"]
-
-        # neural net
-        self.neuralnets: NeuralNet = appConfig["neuralnets"]
 
     def start(self) -> None:
         average: float = 0
@@ -37,7 +42,7 @@ class App:
         print("Average Completion Rate: {}".format(average / self.iterations))
 
     def runGame(self) -> float:
-        game: Game = self.newGame(self.neuralnets["pacman"])
+        game: Game = newGame(self.ghosts, self.enablePwrPlt, self.neuralnets, self.genomes)
 
         kills: int = 0
         stationary: int = 0
@@ -59,38 +64,20 @@ class App:
 
         return 0
 
-    def newGame(self, pacmanNet: NeuralNet) -> Game:
-        blinky: GhostAgent = None
-        if self.ghosts["blinky"]:
-            blinky = BlinkyClassicAgent()
-
-        inky: GhostAgent = None
-        if self.ghosts["inky"]:
-            inky = InkyClassicAgent()
-
-        clyde: GhostAgent = None
-        if self.ghosts["clyde"]:
-            clyde = ClydeClassicAgent()
-
-        pinky: GhostAgent = None
-        if self.ghosts["pinky"]:
-            pinky = PinkyClassicAgent()
-
-        return Game(PacmanDQLAgent(pacmanNet), blinky, inky, clyde, pinky, self.pwrplt)
-
 
 if __name__ == "__main__":
-    app: App = App({
-        "ghosts": {
-            "blinky": True,
-            "inky": False,
-            "clyde": False,
-            "pinky": True,
-        },
-        "enablePwrPlt": True,
-        "iterations": 100,
-        "neuralnets": {
-            "pacman": loadNeuralNet("out", "RL0703_2107", 5895)
+    app: App = App(
+        {
+            "ghosts": {
+                "blinky": GHOST_CLASS_TYPE.OGNL,
+                "inky": GHOST_CLASS_TYPE.NONE,
+                "clyde": GHOST_CLASS_TYPE.NONE,
+                "pinky": GHOST_CLASS_TYPE.OGNL,
+            },
+            "enablePwrPlt": True,
+            "iterations": 30,
+            "neuralnets": {"pacman": ("out", "RL0703_2107", 5895)},
+            "genomes": {},
         }
-    })
+    )
     app.start()
