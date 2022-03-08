@@ -17,7 +17,8 @@ from utils.coordinate import CPair
 def blinkyFeatureExtraction(game: "Game") -> List[float]:
     features: List[float] = [0, 0, 0, 0]
 
-    bPos: CPair = game.ghosts[REP.BLINKY]
+    blinky: GhostAgent = game.ghosts[REP.BLINKY]
+    bPos: CPair = blinky.pos
     bCell: Cell = game.getCell(bPos)
 
     # feature 1: valid directions
@@ -27,7 +28,7 @@ def blinkyFeatureExtraction(game: "Game") -> List[float]:
 
     # feature 2: distance to pacman
     features += distanceComparison(bPos, game.pacman.pos)
-    features.append((game.pwrpltEffectCounter + 1) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
+    features.append((game.pwrpltEffectCounter + 1) * blinky.isFrightened / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
 
     # feature 3: distance to neighbouring ghost
     g: GhostAgent = None
@@ -36,7 +37,9 @@ def blinkyFeatureExtraction(game: "Game") -> List[float]:
             g = ghost
 
     features += distanceComparison(bPos, g.pos)
+    features.append((game.pwrpltEffectCounter + 1) * g.isFrightened / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
 
+    return features
 
 # classic ai agent for blinky
 class BlinkyClassicAgent(ClassicGhostAgent):

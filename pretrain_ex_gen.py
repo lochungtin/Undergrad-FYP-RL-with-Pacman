@@ -1,12 +1,15 @@
+import os
 from time import sleep
 from tkinter import Tk
 import _thread
+from typing import List
 
 from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, pacmanFeatureExtraction
-from agents.blinky import BlinkyClassicAgent, BlinkyMDPAgent
+from agents.blinky import BlinkyClassicAgent, BlinkyMDPAgent, blinkyFeatureExtraction
 from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
 from agents.inky import InkyClassicAgent, InkyClassicAggrAgent
 from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
+from data.data import REP
 from game.game import Game
 from gui.display import Display
 from utils.file import loadNeuralNet
@@ -46,11 +49,14 @@ class MDPGuidedTraining:
         return Game(
             PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70)),
             blinky=BlinkyMDPAgent(self.rewards, self.mdpConfig),
-            pinky=PinkyClassicAgent(),
+            # inky=InkyClassicAggrAgent(),
+            # clyde=ClydeClassicAggrAgent(),
+            pinky=PinkyClassicAggrAgent(),
         )
 
     # ===== main training function =====
     def training(self) -> None:
+        epStart: int = 220
         eps: int = 0
 
         # create new game
@@ -59,16 +65,18 @@ class MDPGuidedTraining:
             self.display.newGame(game)
 
         # create new save file for new run
-        # open("./out/DG_DQL_EX/run{}.txt".format(ep), "x")
+        open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
 
         while True:
-            # save array
-            # runFile = open("./out/DG_DQL_EX/run{}.txt".format(ep), "a")
-            # runFile.write(str(features) + "\n")
-            # runFile.close()
-
-            # perform next step
+                       # perform next step
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
+
+            # save array
+            features: List[float] = blinkyFeatureExtraction(game)
+            features.append(game.ghosts[REP.BLINKY].direction)
+            runFile = open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "a")
+            runFile.write(str(features) + "\n")
+            runFile.close()
 
             # rerender display if enabled
             if self.hasDisplay:
@@ -89,13 +97,13 @@ class MDPGuidedTraining:
                     self.display.newGame(game)
 
                 # create new save file for new run
-                # open("./out/DG_DQL_EX/run{}.txt".format(ep), "x")
+                open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
 
 
 if __name__ == "__main__":
     training: MDPGuidedTraining = MDPGuidedTraining(
         {
-            "gameCap": 10,
+            "gameCap": 20,
             "mdpConfig": {
                 "maxIter": 10000,
                 "gamma": 0.90,
@@ -108,6 +116,6 @@ if __name__ == "__main__":
                 "timestep": -0.05,
             },
         },
-        True,
+        False,
     )
     training.start()
