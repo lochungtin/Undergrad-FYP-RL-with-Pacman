@@ -26,6 +26,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Evaluate Completion Average Script",
+            "type": "python",
+            "request": "launch",
+            "program": "average.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Pacman DQL Training Script",
             "type": "python",
             "request": "launch",

@@ -10,26 +10,15 @@ from agents.clyde import ClydeClassicAgent
 from agents.pacman import PacmanDQLAgent
 from agents.pinky import PinkyClassicAgent
 from ai.deepq.neuralnet import NeuralNet
-from ai.neat.genome import Genome
-from ai.neat.utils import GenomeUtils
 from game.game import Game
 from utils.printer import printPacmanPerfomance
 
 
-# load neural network from config json
-def loadNeuralNet(parentFolder: str, prefix: str, ep: int) -> NeuralNet:
-    return NeuralNet.load("./{}/{}/rl_nnconf_ep{}.json".format(parentFolder, prefix, ep))
-
-
-# load genome from config json
-def loadGenome(parentFolder: str, prefix: str, gen: int) -> Genome:
-    return GenomeUtils.load("./{}/{}/ga_nnconf_ep{}.json".format(parentFolder, prefix, gen))
-
-
 class BatchAutoApp:
     def __init__(self, appConfig: dict[str, object]) -> None:
-        # ghost agent config
-        self.ghosts: dict[str, GhostAgent] = appConfig["ghosts"]
+        # game config
+        self.ghosts: dict[str, bool] = appConfig["ghosts"]
+        self.pwrplt: bool = appConfig["enablePwrPlt"]
 
         # directory path
         self.path: str = "./out/{}".format(appConfig["runPref"])
@@ -93,14 +82,7 @@ class BatchAutoApp:
 
     # run game
     def runGame(self, net: NeuralNet) -> float:
-        ghosts: dict[str, GhostAgent] = deepcopy(self.ghosts)
-        game: Game = Game(
-            pacman=PacmanDQLAgent(net),
-            blinky=ghosts["blinky"],
-            inky=ghosts["inky"],
-            clyde=ghosts["clyde"],
-            pinky=ghosts["pinky"],
-        )
+        game: Game = self.newGame(net)
 
         kills: int = 0
         stationary: int = 0
@@ -122,16 +104,37 @@ class BatchAutoApp:
 
         return 0
 
+    # new game
+    def newGame(self, pacmanNet: NeuralNet) -> Game:
+        blinky: GhostAgent = None
+        if self.ghosts["blinky"]:
+            blinky = BlinkyClassicAgent()
+
+        inky: GhostAgent = None
+        if self.ghosts["inky"]:
+            inky = InkyClassicAgent()
+
+        clyde: GhostAgent = None
+        if self.ghosts["clyde"]:
+            clyde = ClydeClassicAgent()
+
+        pinky: GhostAgent = None
+        if self.ghosts["pinky"]:
+            pinky = PinkyClassicAgent()
+
+        return Game(PacmanDQLAgent(pacmanNet), blinky, inky, clyde, pinky, self.pwrplt)
+
 
 if __name__ == "__main__":
     app: BatchAutoApp = BatchAutoApp(
         {
             "ghosts": {
-                "blinky": BlinkyClassicAgent(),
-                "inky": None,
-                "clyde": None,
-                "pinky": PinkyClassicAgent(),
+                "blinky": True,
+                "inky": False,
+                "clyde": False,
+                "pinky": True,
             },
+            "enablePwrPlt": True,
             "iteration": {
                 "filter": 20,
                 "performance": 100,

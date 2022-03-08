@@ -12,7 +12,7 @@ from utils.direction import DIR
 # classic ai agent for inky
 class InkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.INKY, REP.INKY, BOARD.GHOST_EXIT_INTERVAL)
+        super().__init__(POS.INKY, REP.INKY, GHOST_MODE.GHOST_EXIT_INTERVAL)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -42,7 +42,7 @@ class InkyClassicAgent(ClassicGhostAgent):
 # classic aggressive ai agent for inky
 class InkyClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.INKY, REP.INKY, BOARD.GHOST_EXIT_INTERVAL)
+        super().__init__(POS.INKY, REP.INKY, GHOST_MODE.GHOST_EXIT_INTERVAL)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:

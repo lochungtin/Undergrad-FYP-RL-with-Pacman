@@ -2,16 +2,17 @@ from tkinter import Tk
 import _thread
 
 from agents.pacman import PacmanDQLAgent
-from agents.blinky import BlinkyClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.clyde import ClydeClassicAgent
-from agents.pinky import PinkyClassicAgent
+from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent
+from agents.inky import InkyClassicAgent, InkyClassicAggrAgent
+from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
+from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
 from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display
+from utils.file import loadNeuralNet
 from utils.printer import printPacmanPerfomance
 
 
@@ -60,29 +61,10 @@ class App:
     def run(self) -> None:
         self.main.mainloop()
 
-
-# load neural network from config json
-def loadNeuralNet(parentFolder: str, prefix: str, index: int) -> NeuralNet:
-    indicator: str = "ep"
-    if parentFolder == "saves":
-        indicator = "avgc"
-
-    return NeuralNet.load("./{}/{}/rl_nnconf_{}{}.json".format(parentFolder, prefix, indicator, index))
-
-
-# load genome from config json
-def loadGenome(parentFolder: str, prefix: str, index: int) -> Genome:
-    indicator: str = "ep"
-    if parentFolder == "saves":
-        indicator = "avgc"
-
-    return GenomeUtils.load("./{}/{}/ga_nnconf_{}{}.json".format(parentFolder, prefix, indicator, index))
-
-
 if __name__ == "__main__":
-    gameConfig: dict[str, object] = {
+    app: App = App({
         "agents": {
-            "pacman": PacmanDQLAgent(loadNeuralNet("saves", "pacman", 78)),
+            "pacman": PacmanDQLAgent(loadNeuralNet("out", "RL0703_2107", 5895)),
             "blinky": BlinkyClassicAgent(),
             "inky": None,
             "clyde": None,
@@ -90,6 +72,5 @@ if __name__ == "__main__":
         },
         "enablePwrPlt": True,
         "gameSpeed": 0.05,
-    }
-
-    App(gameConfig).run()
+    })
+    app.run()
