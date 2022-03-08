@@ -4,6 +4,8 @@ from tkinter import Tk
 import _thread
 from typing import List
 
+import numpy as np
+
 from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, pacmanFeatureExtraction
 from agents.blinky import BlinkyClassicAgent, BlinkyMDPAgent, blinkyFeatureExtraction
 from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
@@ -27,7 +29,8 @@ class MDPGuidedTraining:
             self.display: Display = Display(self.main)
 
         # reward constants
-        self.rewards: dict[str, float] = config["rewards"]
+        self.gRewards: dict[str, float] = config["ghostRewards"]
+        self.pRewards: dict[str, float] = config["pacmanRewards"]
 
         # mdp config
         self.mdpConfig: float = config["mdpConfig"]
@@ -46,12 +49,33 @@ class MDPGuidedTraining:
             self.training()
 
     def newGame(self) -> Game:
+        ghost: int = np.random.randint(0, 3)
+        type: int = np.random.randint(1, 3)
+
+        inky, clyde, pinky = None, None, None
+
+        if ghost == 0:
+            if type == 0:
+                inky = InkyClassicAgent()
+            else:
+                inky = InkyClassicAggrAgent()
+        elif ghost == 1:
+            if type == 0:
+                clyde = ClydeClassicAgent()
+            else:
+                clyde = ClydeClassicAggrAgent()
+        else:
+            if type == 0:
+                pinky = PinkyClassicAgent()
+            else:
+                pinky = PinkyClassicAggrAgent()
+
         return Game(
-            PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70)),
-            blinky=BlinkyMDPAgent(self.rewards, self.mdpConfig),
-            # inky=InkyClassicAggrAgent(),
-            # clyde=ClydeClassicAggrAgent(),
-            pinky=PinkyClassicAggrAgent(),
+            pacman=PacmanMDPAgent(self.pRewards, self.mdpConfig),
+            blinky=BlinkyMDPAgent(self.gRewards, self.mdpConfig),
+            inky=inky,
+            clyde=clyde,
+            pinky=pinky,
         )
 
     # ===== main training function =====
@@ -68,12 +92,13 @@ class MDPGuidedTraining:
         open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
 
         while True:
-                       # perform next step
+            # perform next step
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # save array
             features: List[float] = blinkyFeatureExtraction(game)
             features.append(game.ghosts[REP.BLINKY].direction)
+
             runFile = open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "a")
             runFile.write(str(features) + "\n")
             runFile.close()
@@ -83,7 +108,7 @@ class MDPGuidedTraining:
                 self.display.rerender()
 
             # reset game when gameover
-            if gameover or won or game.timesteps > 100:
+            if gameover or won or game.timesteps > 200:
                 printPacmanPerfomance(eps, game)
 
                 # exit loop
@@ -103,13 +128,20 @@ class MDPGuidedTraining:
 if __name__ == "__main__":
     training: MDPGuidedTraining = MDPGuidedTraining(
         {
-            "gameCap": 20,
+            "gameCap": 1000,
             "mdpConfig": {
                 "maxIter": 10000,
                 "gamma": 0.90,
                 "epsilon": 0.00005,
             },
-            "rewards": {
+            "pacmanRewards": {
+                "timestep": -0.5,
+                "pwrplt": 3,
+                "pellet": 10,
+                "kill": 50,
+                "ghost": -100,
+            },
+            "ghostRewards": {
                 "ghost": 0,
                 "pacmanF": -10,
                 "pacmanR": 20,
