@@ -148,6 +148,11 @@ class PacmanMDPAgent(DirectionAgent):
         return super().getNextPos(game)
 
 
+# deep q learning training agent for pacman
+class PacmanDQLTAgent(DirectionAgent):
+    def __init__(self) -> None:
+        super().__init__(POS.PACMAN, REP.PACMAN)
+
 # deep q learning agent for pacman
 class PacmanDQLAgent(DQLAgent):
     def __init__(self, neuralNet: NeuralNet) -> None:

@@ -40,6 +40,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Ghost DQL Training Script",
+            "type": "python",
+            "request": "launch",
+            "program": "train_dql_ghost.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "MDP Example Generation Script",
             "type": "python",
             "request": "launch",

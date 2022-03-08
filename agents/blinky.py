@@ -109,3 +109,13 @@ class BlinkyMDPAgent(GhostAgent, DirectionAgent):
     def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         self.setDir(BlinkyMDPSolver(game, self.rewards, self.mdpConfig).getAction(self.pos))
         return DirectionAgent.getNextPos(self, game)
+
+
+# deep q learning training agent for blinky
+class BlinkyDQLTAgent(GhostAgent, DirectionAgent):
+    def __init__(self) -> None:
+        GhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, False)
+        DirectionAgent.__init__(self, POS.BLINKY, REP.BLINKY)
+
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return DirectionAgent.getNextPos(self, game)
