@@ -56,7 +56,7 @@ class MDPGuidedTraining:
 
     # ===== main training function =====
     def training(self) -> None:
-        epStart: int = 220
+        epStart: int = 20
         eps: int = 0
 
         # create new game

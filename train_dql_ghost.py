@@ -7,8 +7,8 @@ import numpy as np
 import os
 import time
 
-from agents.base import GhostAgent
-from agents.pacman import PacmanDQLAgent
+from agents.base import GhostAgent, StaticGhostAgent
+from agents.pacman import PacmanDQLAgent, PacmanMDPAgent
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
@@ -35,7 +35,7 @@ class DeepQLTraining:
 
         # setup neural network
         # self.network: NeuralNet = NeuralNet(config["nnConfig"])
-        self.network: NeuralNet = NeuralNet.load("./out/BLINKY_DQL_PRE/rl_nnconf_ep{}.json".format(1937))
+        self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 1937)
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -73,9 +73,22 @@ class DeepQLTraining:
 
     def newGame(self) -> Game:
         return Game(
-            PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70)),
+            PacmanMDPAgent(
+                {
+                    "timestep": -0.5,
+                    "pwrplt": 3,
+                    "pellet": 10,
+                    "kill": 50,
+                    "ghost": -100,
+                },
+                {
+                    "maxIter": 10000,
+                    "gamma": 0.90,
+                    "epsilon": 0.00005,
+                },
+            ),
             blinky=BlinkyDQLTAgent(),
-            pinky=PinkyClassicAgent(),
+            pinky=StaticGhostAgent(POS.PINKY, REP.PINKY),
         )
 
     # ===== main training function =====
@@ -122,7 +135,6 @@ class DeepQLTraining:
 
                 action = self.agentInit(blinkyFeatureExtraction(game))
                 game.ghosts[REP.BLINKY].setDir(action)
-
 
             else:
                 blinky: GhostAgent = game.ghosts[REP.BLINKY]
@@ -235,6 +247,6 @@ if __name__ == "__main__":
             "simulationCap": 100000,
             "tau": 0.001,
         },
-        False,
+        True,
     )
     training.start()

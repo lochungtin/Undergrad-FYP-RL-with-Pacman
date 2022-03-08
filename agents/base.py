@@ -119,6 +119,16 @@ class GhostAgent(Agent):
         raise NotImplementedError()
 
 
+# placeholder ghost agent
+class StaticGhostAgent(GhostAgent):
+    def __init__(self, pos: CPair, repId: int) -> None:
+        super().__init__(pos, repId, True)
+
+        self.moved = False
+
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return self.pos, self.pos, False
+
 # base class for classic ghost agents
 class ClassicGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int, initWait: int) -> None:

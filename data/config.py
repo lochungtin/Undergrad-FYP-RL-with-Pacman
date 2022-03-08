@@ -9,7 +9,7 @@ class BOARD:
         [1, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 1],
         [1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 4, 1],
         [1, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 1],
-        [1, 3, 1, 3, 1, 1, 2, 1, 1, 3, 1, 3, 1],
+        [1, 3, 1, 3, 1, 1, 1, 1, 1, 3, 1, 3, 1],
         [1, 3, 3, 3, 1, 0, 0, 0, 1, 3, 3, 3, 1],
         [1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1],
         [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
@@ -41,7 +41,7 @@ class POS:
     PACMAN: CPair = CPair(9, 6)
 
     # initial ghost locations
-    BLINKY: CPair = CPair(5, 6)
+    BLINKY: CPair = CPair(3, 6)
     INKY: CPair = CPair(6, 5)
     CLYDE: CPair = CPair(6, 6)
     PINKY: CPair = CPair(6, 7)
