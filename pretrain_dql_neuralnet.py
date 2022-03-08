@@ -59,7 +59,7 @@ def main(config: dict[str, object]):
     adam: Adam = Adam(net.lDim, config["adamConfig"])
 
     # train neural network
-    for i in range(431):
+    for i in range(config["samples"]):
         # load data and split into batches
         stateSplt, targetSplt = makeBatches(loadFile(i), config["batchSize"], config["nnConfig"]["inSize"])
 
@@ -71,7 +71,7 @@ def main(config: dict[str, object]):
             net.setVals(adam.updateVals(net.getVals(), update))
 
     # save network
-    os.mkdir("./out/BLINKY_DQL_PRE")
+    # os.mkdir("./out/BLINKY_DQL_PRE")
     NNUtils.save(net, i * config["batchSize"] + j + 1, "BLINKY_DQL_PRE")
 
 
@@ -93,5 +93,6 @@ if __name__ == "__main__":
             ],
             "outSize": 4,
         },
+        "samples": 750,
     }
     main(config)

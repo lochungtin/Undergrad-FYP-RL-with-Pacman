@@ -71,7 +71,7 @@ class MDPGuidedTraining:
             else:
                 pinky = PinkyClassicAggrAgent()
 
-        if pType == 0:
+        if True and pType == 0:
             pacman = PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70))
         else:
             pacman = PacmanMDPAgent(self.pRewards, self.mdpConfig)
@@ -95,7 +95,7 @@ class MDPGuidedTraining:
             self.display.newGame(game)
 
         # create new save file for new run
-        open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
+        # open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
 
         while True:
             # perform next step
@@ -105,9 +105,9 @@ class MDPGuidedTraining:
             features: List[float] = blinkyFeatureExtraction(game)
             features.append(game.ghosts[REP.BLINKY].direction)
 
-            runFile = open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "a")
-            runFile.write(str(features) + "\n")
-            runFile.close()
+            # runFile = open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "a")
+            # runFile.write(str(features) + "\n")
+            # runFile.close()
 
             # rerender display if enabled
             if self.hasDisplay:
@@ -128,7 +128,7 @@ class MDPGuidedTraining:
                     self.display.newGame(game)
 
                 # create new save file for new run
-                open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
+                # open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
 
 
 if __name__ == "__main__":
@@ -154,6 +154,6 @@ if __name__ == "__main__":
                 "timestep": -0.05,
             },
         },
-        False,
+        True,
     )
     training.start()

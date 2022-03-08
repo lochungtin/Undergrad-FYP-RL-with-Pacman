@@ -34,8 +34,8 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        # self.network: NeuralNet = NeuralNet(config["nnConfig"])
-        self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 3452)
+        self.network: NeuralNet = NeuralNet(config["nnConfig"])
+        # self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 5996)
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -73,9 +73,22 @@ class DeepQLTraining:
 
     def newGame(self) -> Game:
         return Game(
-            PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70)),
+            PacmanMDPAgent(
+                {
+                    "timestep": -0.5,
+                    "pwrplt": 3,
+                    "pellet": 10,
+                    "kill": 50,
+                    "ghost": -100,
+                },
+                {
+                    "maxIter": 10000,
+                    "gamma": 0.90,
+                    "epsilon": 0.00005,
+                },
+            ),
             blinky=BlinkyDQLTAgent(),
-            pinky=PinkyClassicAgent(),
+            pinky=StaticGhostAgent(POS.PINKY, REP.PINKY),
         )
 
     # ===== main training function =====
@@ -113,7 +126,7 @@ class DeepQLTraining:
                 if eps % self.saveOpt == 0:
                     NNUtils.save(self.network, eps, runPref)
 
-                if completion > 70:
+                if completion < 30:
                     NNUtils.save(self.network, eps, runPref)
 
                 game = self.newGame()
@@ -127,22 +140,18 @@ class DeepQLTraining:
                 blinky: GhostAgent = game.ghosts[REP.BLINKY]
 
                 # timestep based
-                reward: int = -1
+                reward: int = -0.5
 
                 # punish stationary action
                 if not blinky.moved:
-                    reward = -10
-
-                elif blinky.pos.manDist(POS.GHOST_HOUSE_CENTER) < 3:
                     reward = -10
 
                 # able to follow pacman
                 else:
                     prevDist: int = game.pacman.prevPos.manDist(blinky.prevPos)
                     curDist: int = game.pacman.pos.manDist(blinky.pos)
-                    print(prevDist - curDist)
                     if curDist <= prevDist:
-                        reward = 1
+                        reward = prevDist - curDist + 1
 
                 action = self.agentStep(blinkyFeatureExtraction(game), reward)
                 blinky.setDir(action)
@@ -221,7 +230,7 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 23,
+                "inSize": 28,
                 "hidden": [
                     256,
                     16,
@@ -238,6 +247,6 @@ if __name__ == "__main__":
             "simulationCap": 100000,
             "tau": 0.001,
         },
-        True,
+        False,
     )
     training.start()

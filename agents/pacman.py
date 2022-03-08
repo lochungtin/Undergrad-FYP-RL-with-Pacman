@@ -44,10 +44,12 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
         # update closed list
         closedList[curCell.coords.row][curCell.coords.col] = True
 
+        # break condition
         if curCell.hasPellet:
             closestPellet = curCell.coords
             break
 
+        # add unvisited neighbours to openlist
         for neighbour in curCell.getValidNeighbours():
             if not closedList[neighbour.coords.row][neighbour.coords.col]:
                 openlist.put(neighbour)
@@ -96,7 +98,7 @@ class PacmanMDPSolver(Solver):
     def __init__(self, game: "Game", rewards: dict[str, float], config: dict[str, object]) -> None:
         super().__init__(game, rewards, config)
 
-    # create reward grid from state space
+    # set rewards
     def makeRewardGrid(self) -> List[List[float]]:
         # iniialise reward grid
         rewardGrid: List[List[float]] = createGameSizeGrid(self.rewards["timestep"])
@@ -143,6 +145,7 @@ class PacmanMDPAgent(DirectionAgent):
         # mdp config
         self.mdpConfig: dict[str, float] = mdpConfig
 
+    # get next position
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         self.setDir(PacmanMDPSolver(game, self.rewards, self.mdpConfig).getAction(self.pos))
         return super().getNextPos(game)
