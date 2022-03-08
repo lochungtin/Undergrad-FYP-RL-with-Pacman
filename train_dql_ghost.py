@@ -8,7 +8,7 @@ import os
 import time
 
 from agents.base import GhostAgent, StaticGhostAgent
-from agents.pacman import PacmanDQLAgent, PacmanMDPAgent
+from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, pacmanFeatureExtraction
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
@@ -35,7 +35,7 @@ class DeepQLTraining:
 
         # setup neural network
         # self.network: NeuralNet = NeuralNet(config["nnConfig"])
-        self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 1937)
+        self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 3452)
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -73,22 +73,9 @@ class DeepQLTraining:
 
     def newGame(self) -> Game:
         return Game(
-            PacmanMDPAgent(
-                {
-                    "timestep": -0.5,
-                    "pwrplt": 3,
-                    "pellet": 10,
-                    "kill": 50,
-                    "ghost": -100,
-                },
-                {
-                    "maxIter": 10000,
-                    "gamma": 0.90,
-                    "epsilon": 0.00005,
-                },
-            ),
+            PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70)),
             blinky=BlinkyDQLTAgent(),
-            pinky=StaticGhostAgent(POS.PINKY, REP.PINKY),
+            pinky=PinkyClassicAgent(),
         )
 
     # ===== main training function =====
@@ -146,10 +133,14 @@ class DeepQLTraining:
                 if not blinky.moved:
                     reward = -10
 
+                elif blinky.pos.manDist(POS.GHOST_HOUSE_CENTER) < 3:
+                    reward = -10
+
                 # able to follow pacman
                 else:
                     prevDist: int = game.pacman.prevPos.manDist(blinky.prevPos)
                     curDist: int = game.pacman.pos.manDist(blinky.pos)
+                    print(prevDist - curDist)
                     if curDist <= prevDist:
                         reward = 1
 
