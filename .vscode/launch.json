@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Main Game Script",
+            "name": "Playable Script",
             "type": "python",
             "request": "launch",
             "program": "play.py",
@@ -19,14 +19,14 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Batch Auto Game Script",
+            "name": "Batch Analysis Script",
             "type": "python",
             "request": "launch",
             "program": "batch.py",
             "console": "integratedTerminal"
         },
         {
-            "name": "Evaluate Completion Average Script",
+            "name": "Completion Average Script",
             "type": "python",
             "request": "launch",
             "program": "average.py",
@@ -47,14 +47,14 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "MDP Example Generation Script",
+            "name": "DQL Example Generation Script",
             "type": "python",
             "request": "launch",
             "program": "pretrain_ex_gen.py",
             "console": "integratedTerminal"
         },
         {
-            "name": "DQ Net Pretrain Script",
+            "name": "DQL Pretraining Script",
             "type": "python",
             "request": "launch",
             "program": "pretrain_dql_neuralnet.py",

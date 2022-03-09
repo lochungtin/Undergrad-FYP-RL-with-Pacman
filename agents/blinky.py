@@ -96,15 +96,6 @@ def blinkyFeatureExtraction(game: "Game") -> List[float]:
         features += distanceComparison(bPos, intersection)
         features.append(bPos.manDist(intersection) / BOARD.MAX_DIST)
 
-    # feature 6: distance to neighbouring ghost
-    g: GhostAgent = None
-    for ghost in game.ghostList:
-        if ghost.repId != REP.BLINKY:
-            g = ghost
-
-    features += distanceComparison(bPos, g.pos)
-    features.append((game.pwrpltEffectCounter + 1) * g.isFrightened / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
-
     return features
 
 

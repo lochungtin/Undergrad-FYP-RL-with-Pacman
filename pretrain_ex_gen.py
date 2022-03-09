@@ -1,10 +1,10 @@
-import os
-from time import sleep
+from random import choice
 from tkinter import Tk
-import _thread
 from typing import List
-
+import _thread
 import numpy as np
+import os
+
 
 from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, pacmanFeatureExtraction
 from agents.blinky import BlinkyClassicAgent, BlinkyMDPAgent, blinkyFeatureExtraction
@@ -72,7 +72,7 @@ class MDPGuidedTraining:
                 pinky = PinkyClassicAggrAgent()
 
         if True and pType == 0:
-            pacman = PacmanDQLAgent(loadNeuralNet("saves", "pacman", 70))
+            pacman = PacmanDQLAgent(loadNeuralNet("saves", "pacman", choice([50, 52, 55, 60, 63])))
         else:
             pacman = PacmanMDPAgent(self.pRewards, self.mdpConfig)
 
@@ -86,7 +86,7 @@ class MDPGuidedTraining:
 
     # ===== main training function =====
     def training(self) -> None:
-        epStart: int = 0
+        epStart: int = 133
         eps: int = 0
 
         # create new game
@@ -95,7 +95,7 @@ class MDPGuidedTraining:
             self.display.newGame(game)
 
         # create new save file for new run
-        # open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
+        open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
 
         while True:
             # perform next step
@@ -105,9 +105,9 @@ class MDPGuidedTraining:
             features: List[float] = blinkyFeatureExtraction(game)
             features.append(game.ghosts[REP.BLINKY].direction)
 
-            # runFile = open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "a")
-            # runFile.write(str(features) + "\n")
-            # runFile.close()
+            runFile = open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "a")
+            runFile.write(str(features) + "\n")
+            runFile.close()
 
             # rerender display if enabled
             if self.hasDisplay:
@@ -128,7 +128,7 @@ class MDPGuidedTraining:
                     self.display.newGame(game)
 
                 # create new save file for new run
-                # open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
+                open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "x")
 
 
 if __name__ == "__main__":
@@ -154,6 +154,6 @@ if __name__ == "__main__":
                 "timestep": -0.05,
             },
         },
-        True,
+        False,
     )
     training.start()

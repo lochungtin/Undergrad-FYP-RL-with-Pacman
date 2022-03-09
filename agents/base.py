@@ -100,10 +100,16 @@ class GhostAgent(Agent):
     def __init__(self, pos: CPair, repId: int, isClassic: bool) -> None:
         Agent.__init__(self, pos, repId)
 
+        # ghost states
         self.isDead: bool = False
         self.isFrightened: bool = False
         self.speedReducer: int = 0
 
+        # paths
+        self.path: List[CPair] = []
+        self.pathId: int = -1
+
+        # classic indicator
         self.isClassic: bool = isClassic
 
     # bind pathfinder
@@ -165,13 +171,13 @@ class ClassicGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int, initWait: int) -> None:
         GhostAgent.__init__(self, pos, repId, True)
 
+        # ghost mode
         self.mode: int = GHOST_MODE.SCATTER
 
-        self.path: List[CPair] = []
-        self.pathId: int = -1
-
+        # initial waiting countdown
         self.initWait: int = initWait
 
+        # random state (for set seed analysis)
         self.rand: Random = Random()
 
     # get regular movement positions
