@@ -1,13 +1,12 @@
 from data.data import GHOST_CLASS_TYPE
 from game.game import Game
-from utils.game import newGame, newRndClassicGhostGame
+from utils.game import newGame, newRndAGGRGhostGame, newRndORGLGhostGame
 from utils.printer import printPacmanPerfomance
 
 
 class App:
     def __init__(self, config: dict[str, object]) -> None:
         # game config
-        self.ghosts: dict[str, int] = config["ghosts"]
         self.enablePwrPlt: bool = config["enablePwrPlt"]
 
         # neural net
@@ -28,7 +27,7 @@ class App:
         print("Average Completion Rate: {}".format(average / self.iterations))
 
     def runGame(self) -> float:
-        game: Game = newRndClassicGhostGame(self.enablePwrPlt, self.neuralnets)
+        game: Game = newRndAGGRGhostGame(self.enablePwrPlt, self.neuralnets)
 
         while True:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
@@ -43,12 +42,6 @@ if __name__ == "__main__":
         {
             "enablePwrPlt": True,
             "genomes": {},
-            "ghosts": {
-                "blinky": GHOST_CLASS_TYPE.OGNL,
-                "inky": GHOST_CLASS_TYPE.NONE,
-                "clyde": GHOST_CLASS_TYPE.NONE,
-                "pinky": GHOST_CLASS_TYPE.OGNL,
-            },
             "iterations": 1000,
             "neuralnets": {"pacman": ("out", "RL0803_1832", 9895)},
         }

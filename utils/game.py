@@ -9,7 +9,7 @@ from data.data import GHOST_CLASS_TYPE, REP
 from game.game import Game
 from utils.file import loadNeuralNetT
 
-
+# create game with any configuration of agents
 def newGame(ghosts: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, str], genomes: dict[str, str]) -> Game:
     # create ai pacman agent
     pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets["pacman"]))
@@ -47,7 +47,8 @@ def newGame(ghosts: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
     return Game(pacman, blinky, inky, clyde, pinky, enablePwrPlt)
 
 
-def newRndClassicGhostGame(enablePwrPlt: bool, neuralnets: dict[str, str]) -> Game:
+# create game with random g2s (secondary ghost) [Classic Algorithm]
+def newRndORGLGhostGame(enablePwrPlt: bool, neuralnets: dict[str, str]) -> Game:
     # create ai pacman agent
     pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets["pacman"]))
 
@@ -65,3 +66,24 @@ def newRndClassicGhostGame(enablePwrPlt: bool, neuralnets: dict[str, str]) -> Ga
         pinky = PinkyClassicAgent()
 
     return Game(pacman, BlinkyClassicAgent(), inky, clyde, pinky, enablePwrPlt)
+
+
+# create game with random g2s (secondary ghost) [Aggressive Classic Algorithm]
+def newRndAGGRGhostGame(enablePwrPlt: bool, neuralnets: dict[str, str]) -> Game:
+    # create ai pacman agent
+    pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets["pacman"]))
+
+    inky, clyde, pinky = None, None, None
+
+    # create agent randomly
+    selection: int = np.random.randint(0, 3)
+
+    # create agents
+    if selection == 0:
+        inky = InkyClassicAggrAgent()
+    elif selection == 1:
+        clyde = ClydeClassicAggrAgent()
+    else:
+        pinky = PinkyClassicAggrAgent()
+
+    return Game(pacman, BlinkyClassicAggrAgent(), inky, clyde, pinky, enablePwrPlt)

@@ -14,7 +14,6 @@ from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyDQLTAgent, blinkyFeatureExtraction
-from agents.pinky import PinkyClassicAgent
 from data.config import POS
 from data.data import REP
 from game.game import Game
@@ -34,8 +33,8 @@ class DeepQLTraining:
             self.display: Display = Display(self.main)
 
         # setup neural network
-        self.network: NeuralNet = NeuralNet(config["nnConfig"])
-        # self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 5996)
+        # self.network: NeuralNet = NeuralNet(config["nnConfig"])
+        self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 9058)
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -137,19 +136,13 @@ class DeepQLTraining:
             else:
                 blinky: GhostAgent = game.ghosts[REP.BLINKY]
 
-                # timestep based
-                reward: int = -0.5
+                prevDist: int = game.pacman.prevPos.manDist(blinky.prevPos)
+                curDist: int = game.pacman.pos.manDist(blinky.pos)
+                
+                reward: int = prevDist - curDist
 
-                # punish stationary action
-                if not blinky.moved:
+                if blinky.moved:
                     reward = -10
-
-                # able to follow pacman
-                else:
-                    prevDist: int = game.pacman.prevPos.manDist(blinky.prevPos)
-                    curDist: int = game.pacman.pos.manDist(blinky.pos)
-                    if curDist <= prevDist:
-                        reward = prevDist - curDist + 1
 
                 action = self.agentStep(blinkyFeatureExtraction(game), reward)
                 blinky.setDir(action)

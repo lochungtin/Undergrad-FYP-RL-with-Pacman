@@ -7,7 +7,7 @@ import os
 
 from data.data import GHOST_CLASS_TYPE, REP
 from game.game import Game
-from utils.game import newGame, newRndClassicGhostGame
+from utils.game import newGame, newRndORGLGhostGame
 from utils.printer import printPacmanPerfomance
 
 
@@ -91,7 +91,7 @@ class BatchAutoApp:
     def runGame(self, filename: str) -> float:
         # create new game
         self.neuralnets[self.target] = ("out", self.runPref, re.findall("[0-9]+", filename)[0])
-        game: Game = newRndClassicGhostGame(self.enablePwrPlt, self.neuralnets)
+        game: Game = newRndORGLGhostGame(self.enablePwrPlt, self.neuralnets)
 
         # run game
         while True:

@@ -1,23 +1,28 @@
 from tkinter import Tk
 import _thread
 
-from data.data import GHOST_CLASS_TYPE
+import numpy as np
+from agents.base import StaticGhostAgent
+
+from agents.blinky import BlinkyClassicAgent, BlinkyDQLAgent, blinkyFeatureExtraction
+from agents.clyde import ClydeClassicAgent
+from agents.inky import InkyClassicAgent
+from agents.pinky import PinkyClassicAgent
+from agents.pacman import PacmanDQLAgent
+from data.data import GHOST_CLASS_TYPE, REP
+from data.config import POS
 from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display
-from utils.game import newGame
+from utils.file import loadNeuralNet
+from utils.game import newRndORGLGhostGame
 from utils.printer import printPacmanPerfomance
 
 
 class App:
     def __init__(self, config: dict[str, object]) -> None:
         # create game
-        self.game: Game = newGame(
-            config["ghosts"],
-            config["enablePwrPlt"],
-            config["neuralnets"],
-            config["genomes"],
-        )
+        self.game: Game = newRndORGLGhostGame(config["enablePwrPlt"], config["neuralnets"])
 
         # creat gui
         self.main: Tk = Tk()
@@ -31,9 +36,11 @@ class App:
 
         _thread.start_new_thread(self.tc.start, ())
 
+
     # perform update step
     def nextStep(self):
         gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
+        self.display.rerender()
 
         if gameover or won:
             printPacmanPerfomance(0, self.game)
@@ -41,7 +48,6 @@ class App:
             self.tc.end()
             self.main.destroy()
 
-        self.display.rerender()
 
     # run gui
     def start(self) -> None:
@@ -49,22 +55,12 @@ class App:
 
 
 if __name__ == "__main__":
+
     app: App = App(
         {
             "enablePwrPlt": True,
-            "gameSpeed": 0.05,
-            "genomes": {},
-            "ghosts": {
-                "blinky": GHOST_CLASS_TYPE.OGNL,
-                "inky": GHOST_CLASS_TYPE.NONE,
-                "clyde": GHOST_CLASS_TYPE.NONE,
-                "pinky": GHOST_CLASS_TYPE.OGNL,
-            },
-            "iterations": 30,
-            "neuralnets": {
-                "pacman": ("saves", "pacman", 70),
-                "blinky": ("out", "RL0803_1642", 500),
-            },
+            "gameSpeed": 0.10,
+            "neuralnets": {"pacman": ("saves", "pacman", 63)},
         }
     )
     app.start()
