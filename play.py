@@ -10,6 +10,7 @@ from agents.clyde import ClydeClassicAgent
 from agents.inky import InkyClassicAgent
 from agents.pinky import PinkyClassicAgent
 from agents.pacman import PlayableAgent, pacmanFeatureExtraction
+from data.color import COLOR
 from data.config import BOARD
 from data.data import GHOST_MODE
 from utils.direction import DIR
@@ -39,8 +40,10 @@ class App:
         self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
 
         # create game display and bind game objects
-        self.display: Display = Display(self.main)
+        self.display: Display = Display(self.main, COLOR.CLASSIC_RETRO)
         self.display.newGame(self.game)
+
+        print(np.array(self.game.state).shape)
 
         # bind nextStep() controllers
         if manualControl:
@@ -59,10 +62,6 @@ class App:
     def nextStep(self):
         # update game, proceed to next step
         gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
-
-        for row in self.makeRewardGrid(self.game):
-            print(row)
-        print()
 
         # handle gameover
         if gameover or won:

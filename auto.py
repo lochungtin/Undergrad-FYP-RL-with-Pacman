@@ -15,14 +15,19 @@ from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display
 from utils.file import loadNeuralNet
-from utils.game import newRndORGLGhostGame
+from utils.game import newGame, newRndORGLGhostGame
 from utils.printer import printPacmanPerfomance
 
 
 class App:
     def __init__(self, config: dict[str, object]) -> None:
         # create game
-        self.game: Game = newRndORGLGhostGame(config["enablePwrPlt"], config["neuralnets"])
+        self.game: Game = newGame(
+            config["ghosts"],
+            config["enablePwrPlt"],
+            config["neuralnets"],
+            config["genomes"],
+        )
 
         # creat gui
         self.main: Tk = Tk()
@@ -36,7 +41,6 @@ class App:
 
         _thread.start_new_thread(self.tc.start, ())
 
-
     # perform update step
     def nextStep(self):
         gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
@@ -47,7 +51,6 @@ class App:
 
             self.tc.end()
             self.main.destroy()
-
 
     # run gui
     def start(self) -> None:
@@ -60,7 +63,17 @@ if __name__ == "__main__":
         {
             "enablePwrPlt": True,
             "gameSpeed": 0.10,
-            "neuralnets": {"pacman": ("saves", "pacman", 63)},
+            "genomes": {},
+            "ghosts": {
+                REP.BLINKY: GHOST_CLASS_TYPE.GDQL,
+                REP.INKY: GHOST_CLASS_TYPE.NONE,
+                REP.CLYDE: GHOST_CLASS_TYPE.NONE,
+                REP.PINKY: GHOST_CLASS_TYPE.OGNL,
+            },
+            "neuralnets": {
+                "pacman": ("saves", "pacman", 63),
+                REP.BLINKY: ("out", "RL2103_1506", 9000),
+            },
         }
     )
     app.start()

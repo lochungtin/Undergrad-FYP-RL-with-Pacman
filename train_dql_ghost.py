@@ -34,7 +34,7 @@ class DeepQLTraining:
 
         # setup neural network
         # self.network: NeuralNet = NeuralNet(config["nnConfig"])
-        self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 9058)
+        self.network: NeuralNet = loadNeuralNet("out", "BLINKY_DQL_PRE", 7810)
 
         # random state for softmax policy
         self.rand = np.random.RandomState()
@@ -221,11 +221,10 @@ if __name__ == "__main__":
             },
             "gamma": 0.95,
             "nnConfig": {
-                "inSize": 28,
+                "inSize": 9,
                 "hidden": [
-                    256,
+                    128,
                     16,
-                    4,
                 ],
                 "outSize": 4,
             },

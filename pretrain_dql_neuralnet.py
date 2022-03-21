@@ -85,14 +85,13 @@ if __name__ == "__main__":
         },
         "batchSize": 8,
         "nnConfig": {
-            "inSize": 23,
+            "inSize": 9,
             "hidden": [
-                256,
+                128,
                 16,
-                4,
             ],
             "outSize": 4,
         },
-        "samples": 1133,
+        "samples": 977,
     }
     main(config)

@@ -36,65 +36,65 @@ def blinkyFeatureExtraction(game: "Game") -> List[float]:
     features.append((game.pwrpltEffectCounter + 1) * blinky.isFrightened / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
 
     # feature 3: nearest intersection to blinky
-    openlist: Queue[Cell] = Queue()
-    openlist.put(pCell)
-    closedList: List[List[bool]] = createGameSizeGrid(False)
+    # openlist: Queue[Cell] = Queue()
+    # openlist.put(pCell)
+    # closedList: List[List[bool]] = createGameSizeGrid(False)
 
-    curCell: Cell = None
-    while not openlist.empty():
-        # get current visiting cell
-        curCell = openlist.get()
+    # curCell: Cell = None
+    # while not openlist.empty():
+    #     # get current visiting cell
+    #     curCell = openlist.get()
 
-        # update closed list
-        closedList[curCell.coords.row][curCell.coords.col] = True
+    #     # update closed list
+    #     closedList[curCell.coords.row][curCell.coords.col] = True
 
-        # break condition
-        if curCell.isIntersection():
-            break
+    #     # break condition
+    #     if curCell.isIntersection():
+    #         break
 
-        # add unvisited neighbours to openlist
-        for neighbour in curCell.getValidNeighbours():
-            if not closedList[neighbour.coords.row][neighbour.coords.col]:
-                openlist.put(neighbour)
+    #     # add unvisited neighbours to openlist
+    #     for neighbour in curCell.getValidNeighbours():
+    #         if not closedList[neighbour.coords.row][neighbour.coords.col]:
+    #             openlist.put(neighbour)
 
-    features += distanceComparison(bPos, curCell.coords)
+    # features += distanceComparison(bPos, curCell.coords)
 
     # feature 4: pacman position
     features += distanceComparison(bPos, pPos)
 
     # feature 5: nearest intersections to pacman
-    openlist = Queue()
-    openlist.put(pCell)
-    closedList = createGameSizeGrid(False)
+    # openlist = Queue()
+    # openlist.put(pCell)
+    # closedList = createGameSizeGrid(False)
 
-    intersections: List[CPair] = []
-    if pCell.isIntersection():
-        intersections = [bPos, bPos]
-    else:
-        while not openlist.empty():
-            # get current visiting cell
-            curCell: Cell = openlist.get()
+    # intersections: List[CPair] = []
+    # if pCell.isIntersection():
+    #     intersections = [bPos, bPos]
+    # else:
+    #     while not openlist.empty():
+    #         # get current visiting cell
+    #         curCell: Cell = openlist.get()
 
-            # update closed list
-            closedList[curCell.coords.row][curCell.coords.col] = True
+    #         # update closed list
+    #         closedList[curCell.coords.row][curCell.coords.col] = True
 
-            # add intersection to list
-            if curCell.isIntersection():
-                intersections.append(curCell.coords)
+    #         # add intersection to list
+    #         if curCell.isIntersection():
+    #             intersections.append(curCell.coords)
 
-            # break condition
-            if len(intersections) == 2:
-                break
+    #         # break condition
+    #         if len(intersections) == 2:
+    #             break
 
-            # add unvisited neighbours to openlist
-            for neighbour in curCell.getValidNeighbours():
-                if not closedList[neighbour.coords.row][neighbour.coords.col]:
-                    openlist.put(neighbour)
+    #         # add unvisited neighbours to openlist
+    #         for neighbour in curCell.getValidNeighbours():
+    #             if not closedList[neighbour.coords.row][neighbour.coords.col]:
+    #                 openlist.put(neighbour)
 
-    # add intersection to feature vector
-    for intersection in intersections:
-        features += distanceComparison(bPos, intersection)
-        features.append(bPos.manDist(intersection) / BOARD.MAX_DIST)
+    # # add intersection to feature vector
+    # for intersection in intersections:
+    #     features += distanceComparison(bPos, intersection)
+    #     features.append(bPos.manDist(intersection) / BOARD.MAX_DIST)
 
     return features
 
