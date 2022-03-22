@@ -1,4 +1,3 @@
-from copy import deepcopy
 from random import Random
 from typing import List, Tuple, TYPE_CHECKING
 
@@ -11,17 +10,6 @@ from data.data import GHOST_MODE
 from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.direction import DIR
-
-# placeholder ghost agent
-class StaticGhostAgent(GhostAgent):
-    def __init__(self, pos: CPair, repId: int) -> None:
-        GhostAgent.__init__(self, pos, repId, False)
-
-        self.moved = False
-
-    # return static position
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        return self.pos, self.pos, False
 
 
 # base class for classic ghost agents
@@ -86,3 +74,15 @@ class ClassicGhostAgent(GhostAgent):
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
         raise NotImplementedError
+
+
+# placeholder ghost agent
+class StaticGhostAgent(GhostAgent):
+    def __init__(self, pos: CPair, repId: int) -> None:
+        GhostAgent.__init__(self, pos, repId, False)
+
+        self.moved = False
+
+    # return static position
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return self.pos, self.pos, False

@@ -1,15 +1,10 @@
 from copy import deepcopy
-from random import Random
 from typing import List, Tuple, TYPE_CHECKING
-import numpy as np
 
 if TYPE_CHECKING:
     from game.game import Game
 
-from ai.deepq.neuralnet import NeuralNet
-from ai.neat.genome import Genome
-from data.config import BOARD, POS
-from data.data import GHOST_MODE
+from data.config import POS
 from game.components.component import Component
 from game.utils.cell import Cell
 from game.utils.pathfinder import PathFinder
@@ -47,9 +42,11 @@ class DirectionAgent(Agent):
         nextPos: Cell = curPos.adj[self.direction]
         self.moved = False
 
+        # check if move is valid
         if nextPos is None:
             return self.pos, self.prevPos, self.moved
 
+        # update data
         self.pos = nextPos.coords
         self.prevPos = curPos.coords
         self.moved = True
@@ -90,6 +87,7 @@ class GhostAgent(Agent):
         if self.isDead and self.pos == POS.GHOST_HOUSE_CENTER:
             self.isDead = False
 
+        # dead movement sequence
         if self.isDead:
             # generate path
             self.prevPath = self.path
@@ -107,6 +105,8 @@ class GhostAgent(Agent):
                 self.direction = self.pos.relate(self.prevPos)
 
             return self.pos, self.prevPos, self.moved
+
+        # regular movement sequence
         else:
             return self.regularMovement(game)
 

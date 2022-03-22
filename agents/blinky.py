@@ -1,43 +1,18 @@
-from queue import Queue
 from typing import List, Tuple, TYPE_CHECKING
-
-from ai.deepq.neuralnet import NeuralNet
 
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import ClassicGhostAgent, DQLAgent, DirectionAgent, GhostAgent
+from agents.base.base import DirectionAgent, GhostAgent
+from agents.base.dql import DQLAgent
+from agents.base.ghost import ClassicGhostAgent
+from agents.utils.features import ghostFeatureExtraction
+from ai.deepq.neuralnet import NeuralNet
 from ai.mdp.solver import Solver
-from data.config import BOARD, POS
+from data.config import POS
 from data.data import GHOST_MODE, REP
-from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
-
-def blinkyFeatureExtraction(game: "Game") -> List[float]:
-    features: List[float] = [0, 0, 0, 0]
-
-    # blinky data
-    blinky: GhostAgent = game.ghosts[REP.BLINKY]
-    bPos: CPair = blinky.pos
-    bCell: Cell = game.getCell(bPos)
-
-    # pacman data
-    pPos: CPair = game.pacman.pos
-    pCell: Cell = game.getCell(pPos)
-
-    # feature 1: valid directions
-    for action, neighbour in bCell.adj.items():
-        if not neighbour is None:
-            features[action] = 1
-
-    # feature 2: frightened state
-    features.append((game.pwrpltEffectCounter + 1) * blinky.isFrightened / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
-
-    # feature 3: pacman position
-    features += BOARD.relativeDistance(bPos, pPos)
-
-    return features
 
 
 # classic ai agent for blinky
@@ -133,7 +108,7 @@ class BlinkyDQLAgent(GhostAgent, DQLAgent):
 
     # preprocess game state for neural network
     def processGameState(self, game: "Game") -> List[int]:
-        return blinkyFeatureExtraction(game)
+        return ghostFeatureExtraction(game, self.repId)
 
     # get regular movement (not dead)
     def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:

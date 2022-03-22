@@ -1,89 +1,18 @@
 from math import log2
-from queue import Queue
-from typing import List, TYPE_CHECKING, Tuple
-
-import numpy as np
-
+from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from game.game import Game
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.mdp.solver import Solver
-from agents.base.base import DQLAgent, DirectionAgent, GhostAgent
+from agents.base.base import DirectionAgent
+from agents.base.dql import DQLAgent
+from agents.base.mdp import MDPAgent
+from agents.utils.features import pacmanFeatureExtraction
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
-from game.utils.cell import Cell
-from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
-
-
-def pacmanFeatureExtraction(game: "Game") -> List[float]:
-    features: List[float] = [0, 0, 0, 0, (game.pwrpltEffectCounter + 1) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT]
-
-    pPos: CPair = game.pacman.pos
-    pCell: Cell = game.getCell(pPos)
-
-    # feature 1: valid directions
-    for action, neighbour in pCell.adj.items():
-        if not neighbour is None:
-            features[action] = 1
-
-    # feature 2: relative position to closest pellet
-    closestPellet: CPair = 0
-
-    openlist: Queue[Cell] = Queue()
-    openlist.put(pCell)
-    closedList: List[List[bool]] = createGameSizeGrid(False)
-
-    while not openlist.empty():
-        # get current visiting cell
-        curCell = openlist.get()
-
-        # update closed list
-        closedList[curCell.coords.row][curCell.coords.col] = True
-
-        # break condition
-        if curCell.hasPellet:
-            closestPellet = curCell.coords
-            break
-
-        # add unvisited neighbours to openlist
-        for neighbour in curCell.getValidNeighbours():
-            if not closedList[neighbour.coords.row][neighbour.coords.col]:
-                openlist.put(neighbour)
-
-    features += BOARD.relativeDistance(pPos, closestPellet)
-
-    # feature 3: relative position to closest power pellet
-    closestPwrplt: CPair = pPos
-    closestPwrpltD: int = BOARD.MAX_DIST
-    for key, pwrplt in game.pwrplts.items():
-        if pwrplt.valid:
-            d: int = pPos.manDist(pwrplt.pos)
-            if d < closestPwrpltD:
-                closestPwrplt = pwrplt.pos
-                closestPwrpltD = d
-
-    features += BOARD.relativeDistance(pPos, closestPwrplt)
-
-    # feature 4: relative position to #1 closest ghost + ghost state
-    g0: GhostAgent = game.ghostList[0]
-    if g0.isDead:
-        features += [0, 0, 0, 0, 0]
-    else:
-        features += BOARD.relativeDistance(pPos, g0.pos)
-        features.append(g0.isFrightened * 1)
-
-    # feature 5: relative position to #2 closest ghost + ghost state
-    g1: GhostAgent = game.ghostList[1]
-    if g1.isDead:
-        features += [0, 0, 0, 0, 0]
-    else:
-        features += BOARD.relativeDistance(pPos, g1.pos)
-        features.append(g1.isFrightened * 1)
-
-    return features
 
 
 # playable keyboard agent for pacman
@@ -134,23 +63,21 @@ class PacmanMDPSolver(Solver):
         return rewardGrid
 
 
-class PacmanMDPAgent(DirectionAgent):
+class PacmanMDPAgent(MDPAgent):
     def __init__(self) -> None:
-        super().__init__(POS.PACMAN, REP.PACMAN)
-
-        # reward values
-        self.rewards: dict[str, float] = {
-            "timestep": -0.5,
-            "pwrplt": 3,
-            "pellet": 10,
-            "kill": 50,
-            "ghost": -100,
-        }
-
-    # get next position
-    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        self.setDir(PacmanMDPSolver(game, self.rewards).getAction(self.pos))
-        return super().getNextPos(game)
+        MDPAgent.__init__(
+            self,
+            POS.PACMAN,
+            REP.PACMAN,
+            PacmanMDPSolver,
+            {
+                "timestep": -0.5,
+                "pwrplt": 3,
+                "pellet": 10,
+                "kill": 50,
+                "ghost": -100,
+            },
+        )
 
 
 # deep q learning training agent for pacman

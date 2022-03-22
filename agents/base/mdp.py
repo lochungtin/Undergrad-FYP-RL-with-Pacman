@@ -1,17 +1,23 @@
-from copy import deepcopy
-from random import Random
-from typing import List, Tuple, TYPE_CHECKING
-import numpy as np
+from typing import Tuple, TYPE_CHECKING
+from agents.base.base import DirectionAgent
 
 if TYPE_CHECKING:
     from game.game import Game
 
-from ai.deepq.neuralnet import NeuralNet
-from ai.neat.genome import Genome
-from data.config import BOARD, POS
-from data.data import GHOST_MODE
-from game.components.component import Component
-from game.utils.cell import Cell
-from game.utils.pathfinder import PathFinder
 from utils.coordinate import CPair
-from utils.direction import DIR
+
+
+class MDPAgent(DirectionAgent):
+    def __init__(self, pos: CPair, repId: int, solver: type, rewards: dict[str, float]) -> None:
+        super().__init__(pos, repId)
+
+        # mdp solver
+        self.solver: type = solver
+
+        # rewards
+        self.rewards: dict[str, float] = rewards
+
+    # get next position
+    def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        self.setDir(self.solver(game, self.rewards).getAction(self.pos))
+        return super().getNextPos(game)
