@@ -2,7 +2,6 @@ from copy import deepcopy
 from random import Random
 from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
-from agents.base.base import DirectionAgent
 
 
 if TYPE_CHECKING:
@@ -10,6 +9,7 @@ if TYPE_CHECKING:
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.neat.genome import Genome
+from agents.base.base import DirectionAgent
 from data.config import BOARD, POS
 from data.data import GHOST_MODE
 from game.components.component import Component

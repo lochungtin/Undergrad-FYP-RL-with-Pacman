@@ -56,7 +56,7 @@ class DirectionAgent(Agent):
 
 # base class for ghost agents
 class GhostAgent(Agent):
-    def __init__(self, pos: CPair, repId: int, isClassic: bool) -> None:
+    def __init__(self, pos: CPair, repId: int) -> None:
         Agent.__init__(self, pos, repId)
 
         # ghost states
@@ -67,9 +67,6 @@ class GhostAgent(Agent):
         # paths
         self.path: List[CPair] = []
         self.pathId: int = -1
-
-        # classic indicator
-        self.isClassic: bool = isClassic
 
     # bind pathfinder
     def bindPathFinder(self, pathfinder: PathFinder) -> None:
@@ -91,9 +88,7 @@ class GhostAgent(Agent):
         if self.isDead:
             # generate path
             self.prevPath = self.path
-            self.path = self.pathfinder.start(
-                self.pos, POS.GHOST_HOUSE_CENTER, self.direction
-            )
+            self.path = self.pathfinder.start(self.pos, POS.GHOST_HOUSE_CENTER, self.direction)
 
             # update positions
             self.prevPos = self.pos

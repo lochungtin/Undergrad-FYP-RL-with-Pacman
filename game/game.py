@@ -210,7 +210,7 @@ class Game:
         ateGhost: bool = False
         for ghost in self.ghostList:
             if newGhostMode:
-                if ghost.isClassic:
+                if hasattr(ghost, "mode"):
                     ghost.mode = self.ghostMode
 
             gPos, gPrevPos, gMoved = ghost.getNextPos(self)

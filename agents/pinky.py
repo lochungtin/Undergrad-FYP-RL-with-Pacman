@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import ClassicGhostAgent
+from agents.base.ghost import ClassicGhostAgent
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
