@@ -7,7 +7,7 @@ import numpy as np
 import os
 import time
 
-from agents.base import DirectionAgent
+from agents.base.base import DirectionAgent
 from agents.pacman import pacmanFeatureExtraction
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet

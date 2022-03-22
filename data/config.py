@@ -32,8 +32,18 @@ class BOARD:
 
     CRUISE_ELROY_TRIGGER: int = 12
 
+    # check if position is within the boundaries of the box
     def isValidPos(pos: CPair):
         return pos.row > -1 and pos.col > -1 and pos.row < BOARD.ROW and pos.col < BOARD.COL
+
+    # compare distances for feature extraction
+    def relativeDistance(ref: CPair, comp: CPair) -> List[float]:
+        return [
+            max(0, ref.row - comp.row) / BOARD.ROW,
+            max(0, comp.row - ref.row) / BOARD.ROW,
+            max(0, ref.col - comp.col) / BOARD.COL,
+            max(0, comp.col - ref.col) / BOARD.COL,
+        ]
 
 
 class POS:

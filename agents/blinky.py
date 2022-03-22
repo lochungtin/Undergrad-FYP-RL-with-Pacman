@@ -6,14 +6,13 @@ from ai.deepq.neuralnet import NeuralNet
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base import ClassicGhostAgent, DQLAgent, DirectionAgent, GhostAgent, distanceComparison
+from agents.base.base import ClassicGhostAgent, DQLAgent, DirectionAgent, GhostAgent
 from ai.mdp.solver import Solver
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
 from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
-
 
 def blinkyFeatureExtraction(game: "Game") -> List[float]:
     features: List[float] = [0, 0, 0, 0]
@@ -35,66 +34,8 @@ def blinkyFeatureExtraction(game: "Game") -> List[float]:
     # feature 2: frightened state
     features.append((game.pwrpltEffectCounter + 1) * blinky.isFrightened / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT)
 
-    # feature 3: nearest intersection to blinky
-    # openlist: Queue[Cell] = Queue()
-    # openlist.put(pCell)
-    # closedList: List[List[bool]] = createGameSizeGrid(False)
-
-    # curCell: Cell = None
-    # while not openlist.empty():
-    #     # get current visiting cell
-    #     curCell = openlist.get()
-
-    #     # update closed list
-    #     closedList[curCell.coords.row][curCell.coords.col] = True
-
-    #     # break condition
-    #     if curCell.isIntersection():
-    #         break
-
-    #     # add unvisited neighbours to openlist
-    #     for neighbour in curCell.getValidNeighbours():
-    #         if not closedList[neighbour.coords.row][neighbour.coords.col]:
-    #             openlist.put(neighbour)
-
-    # features += distanceComparison(bPos, curCell.coords)
-
-    # feature 4: pacman position
-    features += distanceComparison(bPos, pPos)
-
-    # feature 5: nearest intersections to pacman
-    # openlist = Queue()
-    # openlist.put(pCell)
-    # closedList = createGameSizeGrid(False)
-
-    # intersections: List[CPair] = []
-    # if pCell.isIntersection():
-    #     intersections = [bPos, bPos]
-    # else:
-    #     while not openlist.empty():
-    #         # get current visiting cell
-    #         curCell: Cell = openlist.get()
-
-    #         # update closed list
-    #         closedList[curCell.coords.row][curCell.coords.col] = True
-
-    #         # add intersection to list
-    #         if curCell.isIntersection():
-    #             intersections.append(curCell.coords)
-
-    #         # break condition
-    #         if len(intersections) == 2:
-    #             break
-
-    #         # add unvisited neighbours to openlist
-    #         for neighbour in curCell.getValidNeighbours():
-    #             if not closedList[neighbour.coords.row][neighbour.coords.col]:
-    #                 openlist.put(neighbour)
-
-    # # add intersection to feature vector
-    # for intersection in intersections:
-    #     features += distanceComparison(bPos, intersection)
-    #     features.append(bPos.manDist(intersection) / BOARD.MAX_DIST)
+    # feature 3: pacman position
+    features += BOARD.relativeDistance(bPos, pPos)
 
     return features
 

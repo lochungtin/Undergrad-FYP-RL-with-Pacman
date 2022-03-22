@@ -7,18 +7,18 @@ import numpy as np
 import os
 import time
 
-from agents.base import GhostAgent, StaticGhostAgent
-from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, pacmanFeatureExtraction
+from agents.base.base import GhostAgent
+from agents.pacman import PacmanMDPAgent
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyDQLTAgent, blinkyFeatureExtraction
-from data.config import POS
-from data.data import REP
+from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
 from gui.display import Display
 from utils.file import loadNeuralNet
+from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
@@ -71,10 +71,19 @@ class DeepQLTraining:
             self.training()
 
     def newGame(self) -> Game:
-        return Game(
-            PacmanMDPAgent(),
-            blinky=BlinkyDQLTAgent(),
-            pinky=StaticGhostAgent(POS.PINKY, REP.PINKY),
+        return newGame(
+            {
+                REP.PACMAN: PacmanMDPAgent(),
+                REP.BLINKY: BlinkyDQLTAgent(),
+                "secondary": {
+                    REP.INKY: AGENT_CLASS_TYPE.NONE,
+                    REP.CLYDE: AGENT_CLASS_TYPE.NONE,
+                    REP.PINKY: AGENT_CLASS_TYPE.STTC,
+                },
+            },
+            True,
+            {},
+            {},
         )
 
     # ===== main training function =====
@@ -125,7 +134,7 @@ class DeepQLTraining:
 
                 prevDist: int = game.pacman.prevPos.manDist(blinky.prevPos)
                 curDist: int = game.pacman.pos.manDist(blinky.pos)
-                
+
                 reward: int = prevDist - curDist
 
                 if blinky.moved:

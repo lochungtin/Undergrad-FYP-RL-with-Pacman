@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 from ai.deepq.neuralnet import NeuralNet
 from ai.mdp.solver import Solver
-from agents.base import DQLAgent, DirectionAgent, GhostAgent, distanceComparison
+from agents.base.base import DQLAgent, DirectionAgent, GhostAgent
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
 from game.utils.cell import Cell
@@ -53,7 +53,7 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
             if not closedList[neighbour.coords.row][neighbour.coords.col]:
                 openlist.put(neighbour)
 
-    features += distanceComparison(pPos, closestPellet)
+    features += BOARD.relativeDistance(pPos, closestPellet)
 
     # feature 3: relative position to closest power pellet
     closestPwrplt: CPair = pPos
@@ -65,14 +65,14 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
                 closestPwrplt = pwrplt.pos
                 closestPwrpltD = d
 
-    features += distanceComparison(pPos, closestPwrplt)
+    features += BOARD.relativeDistance(pPos, closestPwrplt)
 
     # feature 4: relative position to #1 closest ghost + ghost state
     g0: GhostAgent = game.ghostList[0]
     if g0.isDead:
         features += [0, 0, 0, 0, 0]
     else:
-        features += distanceComparison(pPos, g0.pos)
+        features += BOARD.relativeDistance(pPos, g0.pos)
         features.append(g0.isFrightened * 1)
 
     # feature 5: relative position to #2 closest ghost + ghost state
@@ -80,7 +80,7 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
     if g1.isDead:
         features += [0, 0, 0, 0, 0]
     else:
-        features += distanceComparison(pPos, g1.pos)
+        features += BOARD.relativeDistance(pPos, g1.pos)
         features.append(g1.isFrightened * 1)
 
     return features

@@ -1,5 +1,5 @@
 import numpy as np
-from agents.base import GhostAgent, StaticGhostAgent
+from agents.base.base import GhostAgent, StaticGhostAgent
 from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent, BlinkyDQLAgent
 from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
 from agents.inky import InkyClassicAgent, InkyClassicAggrAgent

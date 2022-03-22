@@ -1,8 +1,7 @@
 from tkinter import Canvas
 from typing import List, Tuple
 
-from agents.base import DirectionAgent, GhostAgent
-from agents.pacman import pacmanFeatureExtraction
+from agents.base.base import DirectionAgent, GhostAgent
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
 from game.components.pellet import Pellet, PowerPellet

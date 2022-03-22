@@ -10,6 +10,7 @@ import time
 from ai.neat.gene import ConnGene
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
+from game.game import Game
 from gui.display import Display 
 
 
@@ -62,22 +63,15 @@ class NEATTraining:
 
     # run genome against simluation and get fitness value
     def runSim(self, genome: Genome) -> float:
-        game: PAIV = PAIV(genome, self.enableGhost, self.enablePwrPlt)
+        game: Game = 
 
         if self.hasDisplay:
             self.display.newGame(game)
 
-        pellets: int = 0
-        timesteps: int = 0
         gameover: bool = False
         won: bool = False
-        while game.pelletDrought < 50 and not gameover and not won:
-            gameover, won = game.nextStep()
-
-            if atePellet:
-                pellets += 1
-
-            timesteps += 1
+        while not gameover and not won or game.timesteps > 200:
+            gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # enable display
             if self.hasDisplay:
@@ -105,7 +99,7 @@ class NEATTraining:
 
     # ===== population creation =====
     # create fresh population
-    def newPop(self) -> Tuple[List[Genome], dict[str, int]]:
+    def newPopulation(self) -> Tuple[List[Genome], dict[str, int]]:
         # create population
         pop: List[Genome] = [Genome(self.gConf, True) for _ in range(self.popSize)]
 
@@ -127,7 +121,7 @@ class NEATTraining:
         return pop, innovMap
 
     # load best genome and repopulate
-    def loadPop(self, gFilename: str, iFilename: str) -> Tuple[List[Genome], dict[str, int]]:
+    def loadPopulation(self, gFilename: str, iFilename: str) -> Tuple[List[Genome], dict[str, int]]:
         # load genome and innovMap from config file
         genome: Genome = GenomeUtils.load(gFilename, "milestones")
         innovMap: dict[str, int] = GenomeUtils.loadInnov(iFilename, "milestones")
@@ -148,8 +142,8 @@ class NEATTraining:
         os.mkdir("out/{}".format(runPref))
 
         # initialise population and innovation map
-        # pop, innovMap = self.newPop()
-        pop, innovMap = self.loadPop("NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json")
+        pop, innovMap = self.newPopulation()
+        # pop, innovMap = self.loadPopulation("NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json")
 
         # best score so far
         bestScore: float = float("-inf")
