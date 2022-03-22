@@ -56,6 +56,7 @@ class InkyClassicAggrAgent(ClassicGhostAgent):
         # reflect blinky's position wrt to reflection tile to get target tile
         return game.ghosts[REP.BLINKY].pos.reflect(pivot)
 
+
 # static agent for inky
 class InkyStaticAgent(StaticGhostAgent):
     def __init__(self) -> None:

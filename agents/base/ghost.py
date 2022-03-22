@@ -4,7 +4,7 @@ from typing import List, Tuple, TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import GhostAgent
+from agents.base.base import DirectionAgent, GhostAgent
 from agents.base.dql import DQLAgent
 from agents.base.mdp import MDPAgent
 from agents.utils.features import ghostFeatureExtraction
@@ -133,6 +133,17 @@ class MDPGhostAgent(GhostAgent, MDPAgent):
     # get regular movements (not dead)
     def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         return MDPAgent.getNextPos(self, game)
+
+
+# deep q learning training agent for ghosts
+class DQLTGhostAgent(GhostAgent, DirectionAgent):
+    def __init__(self) -> None:
+        GhostAgent.__init__(self, POS.BLINKY, REP.BLINKY)
+        DirectionAgent.__init__(self, POS.BLINKY, REP.BLINKY)
+
+    # get regular movements (not dead)
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return DirectionAgent.getNextPos(self, game)
 
 
 # base class for deep q learning based ghost agnets

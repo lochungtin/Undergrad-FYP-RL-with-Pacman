@@ -58,17 +58,6 @@ class BlinkyMDPAgent(MDPGhostAgent):
         return MDPAgent.getNextPos(self, game)
 
 
-# deep q learning training agent for blinky
-class BlinkyDQLTAgent(GhostAgent, DirectionAgent):
-    def __init__(self) -> None:
-        GhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, False)
-        DirectionAgent.__init__(self, POS.BLINKY, REP.BLINKY)
-
-    # get regular movements (not dead)
-    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        return DirectionAgent.getNextPos(self, game)
-
-
 # deep q learning agent for blinky
 class BlinkyDQLAgent(DQLGhostAgent):
     def __init__(self, neuralNet: NeuralNet) -> None:

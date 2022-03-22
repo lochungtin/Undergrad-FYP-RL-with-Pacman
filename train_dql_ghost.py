@@ -8,12 +8,13 @@ import os
 import time
 
 from agents.base.base import GhostAgent
+from agents.base.ghost import DQLTGhostAgent
 from agents.pacman import PacmanMDPAgent
+from agents.utils.features import ghostFeatureExtraction
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
-from agents.blinky import BlinkyDQLTAgent, blinkyFeatureExtraction
 from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
 from gui.display import Display
@@ -74,7 +75,7 @@ class DeepQLTraining:
         return newGame(
             {
                 REP.PACMAN: PacmanMDPAgent(),
-                REP.BLINKY: BlinkyDQLTAgent(),
+                REP.BLINKY: DQLTGhostAgent(),
                 "secondary": {
                     REP.INKY: AGENT_CLASS_TYPE.NONE,
                     REP.CLYDE: AGENT_CLASS_TYPE.NONE,
@@ -95,7 +96,7 @@ class DeepQLTraining:
         if self.hasDisplay:
             self.display.newGame(game)
 
-        action: int = self.agentInit(blinkyFeatureExtraction(game))
+        action: int = self.agentInit(ghostFeatureExtraction(game))
         game.ghosts[REP.BLINKY].setDir(action)
 
         eps: int = 0
@@ -126,7 +127,7 @@ class DeepQLTraining:
                 if self.hasDisplay:
                     self.display.newGame(game)
 
-                action = self.agentInit(blinkyFeatureExtraction(game))
+                action = self.agentInit(ghostFeatureExtraction(game))
                 game.ghosts[REP.BLINKY].setDir(action)
 
             else:
@@ -140,7 +141,7 @@ class DeepQLTraining:
                 if blinky.moved:
                     reward = -10
 
-                action = self.agentStep(blinkyFeatureExtraction(game), reward)
+                action = self.agentStep(ghostFeatureExtraction(game), reward)
                 blinky.setDir(action)
 
     # ===== auxiliary training functions =====
