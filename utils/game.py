@@ -4,7 +4,7 @@ from agents.base.base import GhostAgent
 from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent, BlinkyDQLAgent, BlinkyMDPAgent
 from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
 from agents.inky import InkyClassicAgent, InkyClassicAggrAgent, InkyStaticAgent
-from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, PlayableAgent
+from agents.pacman import PacmanDQLAgent, PacmanDQLTAgent, PacmanMDPAgent, PlayableAgent
 from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
 from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
@@ -17,6 +17,8 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
         pacman: PlayableAgent = PlayableAgent()
     elif agents[REP.PACMAN] == AGENT_CLASS_TYPE.SMDP:
         pacman: PacmanMDPAgent = PacmanMDPAgent()
+    elif agents[REP.PACMAN] == AGENT_CLASS_TYPE.DQLT:
+        pacman: PacmanDQLTAgent = PacmanDQLTAgent()
     else:
         pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets[REP.PACMAN]))
 
@@ -40,22 +42,28 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
     if agents["secondary"] == AGENT_CLASS_TYPE.RAND:
         inky, clyde, pinky = None, None, None
 
-        rnIndex: int = np.random.randint(0, 6)
+        ghostIndex: int = np.random.randint(0, 3)
+        typeIndex: int = np.random.randint(0, 2)
+        if "randType" in agents:
+            typeIndex = agents["randType"]
 
-        if rnIndex == 0:
-            inky = InkyClassicAgent()
-        elif rnIndex == 1:
-            inky = InkyClassicAggrAgent()
+        if ghostIndex == 0:
+            if typeIndex == AGENT_CLASS_TYPE.OGNL:
+                inky = InkyClassicAgent()
+            else:
+                inky = InkyClassicAggrAgent()
 
-        elif rnIndex == 2:            
-            clyde = ClydeClassicAgent()
-        elif rnIndex == 3:
-            clyde = ClydeClassicAggrAgent()
+        elif ghostIndex == 1:
+            if typeIndex == AGENT_CLASS_TYPE.OGNL:
+                clyde = ClydeClassicAgent()
+            else:
+                clyde = ClydeClassicAggrAgent()
 
-        elif rnIndex == 4:            
-            pinky = PinkyClassicAgent()
         else:
-            pinky = PinkyClassicAggrAgent()
+            if typeIndex == AGENT_CLASS_TYPE.OGNL:
+                pinky = PinkyClassicAgent()
+            else:
+                pinky = PinkyClassicAggrAgent()
     else:
         # create ai inky agent
         if agents["secondary"][REP.INKY] == AGENT_CLASS_TYPE.OGNL:

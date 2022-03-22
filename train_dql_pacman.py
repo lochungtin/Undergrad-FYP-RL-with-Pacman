@@ -7,21 +7,18 @@ import numpy as np
 import os
 import time
 
-from agents.base.base import DirectionAgent
-from agents.pacman import pacmanFeatureExtraction
+from agents.pacman import PacmanDQLTAgent
+from agents.utils.features import pacmanFeatureExtraction
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
 from agents.blinky import BlinkyClassicAgent
-from agents.clyde import ClydeClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.pinky import PinkyClassicAgent
-from data.config import POS
-from data.data import REP
+from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
 from gui.display import Display
 from utils.file import loadNeuralNet
+from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
@@ -74,23 +71,16 @@ class DeepQLTraining:
             self.training()
 
     def newGame(self) -> Game:
-        ghost: int = np.random.randint(0, 3)
-        
-        inky, clyde, pinky = None, None, None
-
-        if ghost == 0:
-            inky = InkyClassicAgent()
-        elif ghost == 1:
-            clyde = ClydeClassicAgent()
-        else:
-            pinky = PinkyClassicAgent()
-                
-        return Game(
-            pacman=DirectionAgent(POS.PACMAN, REP.PACMAN),
-            blinky=BlinkyClassicAgent(),
-            inky=inky,
-            clyde=clyde,
-            pinky=pinky,
+        return newGame(
+            {
+                REP.PACMAN: AGENT_CLASS_TYPE.DQLT,
+                REP.BLINKY: AGENT_CLASS_TYPE.OGNL,
+                "secondary": AGENT_CLASS_TYPE.RAND,
+                "randType": AGENT_CLASS_TYPE.OGNL,
+            },
+            True,
+            {},
+            {},
         )
 
     # ===== main training function =====

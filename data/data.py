@@ -85,11 +85,13 @@ class AGENT_CLASS_TYPE:
     AGGR: int = 2
     # simple mdp type (pretraining)
     SMDP: int = 3
+    # guided deep q learning type (training)
+    DQLT: int = 4
     # guided deep q learning type (ghost variant 3)
-    GDQL: int = 4
+    GDQL: int = 5
     # neuroevolution of augmenting topologies type (ghost variant 4)
-    NEAT: int = 5
+    NEAT: int = 6
     # static type (ghost placeholder)
-    STTC: int = 6
+    STTC: int = 7
     # random flag
-    RAND: int = 7
+    RAND: int = 8
