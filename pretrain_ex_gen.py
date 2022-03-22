@@ -1,20 +1,15 @@
 from random import choice
 from tkinter import Tk
-from typing import List
+from typing import List, Tuple
 import _thread
 import numpy as np
 import os
 
-
-from agents.pacman import PacmanDQLAgent, PacmanMDPAgent, pacmanFeatureExtraction
-from agents.blinky import BlinkyClassicAgent, BlinkyMDPAgent, blinkyFeatureExtraction
-from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
-from agents.inky import InkyClassicAgent, InkyClassicAggrAgent
-from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
-from data.data import REP
+from agents.utils.features import ghostFeatureExtraction, pacmanFeatureExtraction
+from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
 from gui.display import Display
-from utils.file import loadNeuralNet
+from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
@@ -42,39 +37,23 @@ class MDPGuidedTraining:
             self.training()
 
     def newGame(self) -> Game:
-        ghost: int = np.random.randint(0, 3)
-        gType: int = np.random.randint(0, 2)
-        pType: int = np.random.randint(0, 2)
+        pacmanType: int = AGENT_CLASS_TYPE.SMDP
+        pacmanNN: Tuple[str, str, int] = None
+        if np.random.rand() > 0.5:
+            pacmanType = AGENT_CLASS_TYPE.GDQL
+            pacmanNN = ("saves", "pacman", choice([50, 52, 55, 60, 63]))
 
-        inky, clyde, pinky = None, None, None
-
-        if ghost == 0:
-            if gType == 0:
-                inky = InkyClassicAgent()
-            else:
-                inky = InkyClassicAggrAgent()
-        elif ghost == 1:
-            if gType == 0:
-                clyde = ClydeClassicAgent()
-            else:
-                clyde = ClydeClassicAggrAgent()
-        else:
-            if gType == 0:
-                pinky = PinkyClassicAgent()
-            else:
-                pinky = PinkyClassicAggrAgent()
-
-        if True and pType == 0:
-            pacman = PacmanDQLAgent(loadNeuralNet("saves", "pacman", choice([50, 52, 55, 60, 63])))
-        else:
-            pacman = PacmanMDPAgent()
-
-        return Game(
-            pacman=pacman,
-            blinky=BlinkyMDPAgent(),
-            inky=inky,
-            clyde=clyde,
-            pinky=pinky,
+        return newGame(
+            {
+                REP.PACMAN: pacmanType,
+                REP.BLINKY: AGENT_CLASS_TYPE.SMDP,
+                "secondary": AGENT_CLASS_TYPE.RAND,
+            },
+            True,
+            {
+                REP.PACMAN: pacmanNN,
+            },
+            {},
         )
 
     # ===== main training function =====
@@ -95,7 +74,7 @@ class MDPGuidedTraining:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # save array
-            features: List[float] = blinkyFeatureExtraction(game)
+            features: List[float] = ghostFeatureExtraction(game, REP.BLINKY)
             features.append(game.ghosts[REP.BLINKY].direction)
 
             runFile = open("./out/BLINKY_MDP_EX/run{}.txt".format(epStart + eps), "a")

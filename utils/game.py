@@ -40,8 +40,6 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
 
     # check for random generation flag
     if agents["secondary"] == AGENT_CLASS_TYPE.RAND:
-        inky, clyde, pinky = None, None, None
-
         ghostIndex: int = np.random.randint(0, 3)
         typeIndex: int = np.random.randint(0, 2)
         if "randType" in agents:
