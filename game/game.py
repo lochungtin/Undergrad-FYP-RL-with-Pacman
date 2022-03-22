@@ -250,8 +250,13 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
     else:
         pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets[REP.PACMAN]))
 
-    # create ai blinky agent
+    # create blank ghost agents
     blinky: GhostAgent = None
+    inky: GhostAgent = None
+    clyde: GhostAgent = None
+    pinky: GhostAgent = None
+
+    # create ai blinky agent
     if agents[REP.BLINKY] == AGENT_CLASS_TYPE.OGNL:
         blinky = BlinkyClassicAgent()
     elif agents[REP.BLINKY] == AGENT_CLASS_TYPE.AGGR:
@@ -259,12 +264,7 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
     elif agents[REP.BLINKY] == AGENT_CLASS_TYPE.SMDP:
         blinky = BlinkyMDPAgent()
     elif agents[REP.BLINKY] == AGENT_CLASS_TYPE.GDQL:
-        blinky = BlinkyDQLAgent(loadNeuralNetT(neuralnets[REP.BLINKY]))
-
-    # create secondary ghost ai agent
-    inky: GhostAgent = None
-    clyde: GhostAgent = None
-    pinky: GhostAgent = None
+        blinky = BlinkyDQLAgent(loadNeuralNetT(neuralnets[REP.BLINKY]))    
 
     # check for random generation flag
     if agents["secondary"] == AGENT_CLASS_TYPE.RAND:
