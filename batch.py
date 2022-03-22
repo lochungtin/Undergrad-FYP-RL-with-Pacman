@@ -12,8 +12,10 @@ from utils.printer import printPacmanPerfomance
 
 class BatchAutoApp:
     def __init__(self, config: dict[str, object]) -> None:
+        # agent config
+        self.agents: dict[str, int] = config["agents"]
+
         # game config
-        self.ghosts: dict[str, int] = config["ghosts"]
         self.enablePwrPlt: bool = config["enablePwrPlt"]
 
         # neural net
@@ -110,7 +112,7 @@ if __name__ == "__main__":
         {
             "enablePwrPlt": True,
             "genomes": {},
-            "ghosts": {
+            "agents": {
                 REP.BLINKY: AGENT_CLASS_TYPE.OGNL,
                 REP.INKY: AGENT_CLASS_TYPE.NONE,
                 REP.CLYDE: AGENT_CLASS_TYPE.NONE,

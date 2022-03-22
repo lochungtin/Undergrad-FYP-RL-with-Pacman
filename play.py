@@ -1,33 +1,34 @@
-import _thread
 from tkinter import Tk
-from typing import List
+import _thread
 
-import numpy as np
-
-
-from agents.blinky import BlinkyClassicAgent
-from agents.clyde import ClydeClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.pinky import PinkyClassicAgent
-from agents.pacman import PlayableAgent, pacmanFeatureExtraction
 from data.color import COLOR
-from data.config import BOARD
-from data.data import GHOST_MODE
+from data.data import AGENT_CLASS_TYPE, REP
 from utils.direction import DIR
-from game.game import Game
+from game.game import Game, newGame
 from gui.controller import TimeController
 from gui.display import Display
-from utils.grid import createGameSizeGrid
 
 
 # app class
 class App:
-    def __init__(self, manualControl: bool) -> None:
+    def __init__(self, config: dict[str, object], manualControl: bool = False, retroColors: bool = False) -> None:
+        # agent config
+        self.agents: dict[str, object] = config["agents"]
+
+        # game config
+        self.enablePwrPlt: bool = config["enablePwrPlt"]
+
+        # neural net
+        self.neuralnets: dict[str, str] = config["neuralnets"]
+
+        # genomes
+        self.genomes: dict[str, str] = config["genomes"]
+
         # create game object
         self.game: Game = self.newGame()
 
         # create time controller object
-        self.timeController: TimeController = TimeController(0.1, self.nextStep)
+        self.timeController: TimeController = TimeController(config["gameSpeed"], self.nextStep)
 
         # create application
         self.main: Tk = Tk()
@@ -40,10 +41,12 @@ class App:
         self.main.bind("<Right>", lambda _: self.game.pacman.setDir(DIR.RT))
 
         # create game display and bind game objects
-        self.display: Display = Display(self.main, COLOR.CLASSIC_RETRO)
+        self.display: Display = None
+        if retroColors:
+            self.display: Display = Display(self.main, COLOR.CLASSIC_RETRO)
+        else:
+            self.display: Display = Display(self.main)
         self.display.newGame(self.game)
-
-        print(np.array(self.game.state).shape)
 
         # bind nextStep() controllers
         if manualControl:
@@ -52,11 +55,7 @@ class App:
             _thread.start_new_thread(self.timeController.start, ())
 
     def newGame(self):
-        return Game(
-            PlayableAgent(),
-            blinky=BlinkyClassicAgent(),
-            pinky=PinkyClassicAgent(),
-        )
+        return newGame(self.agents, self.enablePwrPlt, self.neuralnets, self.genomes)
 
     # trigger Game.nextStep() and update dislay, reset if gameover
     def nextStep(self):
@@ -65,8 +64,6 @@ class App:
 
         # handle gameover
         if gameover or won:
-            print(self.game.timesteps)
-
             # create new game
             self.game = self.newGame()
             self.display.newGame(self.game)
@@ -79,36 +76,25 @@ class App:
         self.main.mainloop()
 
 
-    def makeRewardGrid(self, game: Game) -> List[List[float]]:
-        rewardGrid: List[List[float]] = createGameSizeGrid(-1)
-
-        for ghost in game.ghostList:
-            if not ghost.isDead:
-                if ghost.isFrightened:
-                    rewardGrid[ghost.pos.row][ghost.pos.col] = (
-                        20 * game.pwrpltEffectCounter / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT
-                    )
-                else:
-                    rewardGrid[ghost.pos.row][ghost.pos.col] = -100
-
-        for key, pwrplt in game.pwrplts.items():
-            if pwrplt.valid:
-                avgGhostDist: float = 1
-                for ghost in game.ghostList:
-                    if not ghost.isDead:
-                        avgGhostDist += pwrplt.pos.manDist(ghost.pos)
-
-                avgGhostDist /= len(game.ghostList)
-
-                rewardGrid[pwrplt.pos.row][pwrplt.pos.col] = 50 * (1 / avgGhostDist ** 2)
-
-        for key, pellet in game.pellets.items():
-            if pellet.valid:
-                rewardGrid[pellet.pos.row][pellet.pos.col] = 5 * ((BOARD.TOTAL_PELLET_COUNT - game.pelletProgress + 1) / BOARD.TOTAL_PELLET_COUNT)
-
-        return rewardGrid
-
-
 # execute app
 if __name__ == "__main__":
-    App(manualControl=True).run()
+    app: App = App(
+        {
+            "agents": {
+                REP.PACMAN: AGENT_CLASS_TYPE.CTRL,
+                REP.BLINKY: AGENT_CLASS_TYPE.OGNL,
+                "secondary": {
+                    REP.INKY: AGENT_CLASS_TYPE.NONE,
+                    REP.CLYDE: AGENT_CLASS_TYPE.NONE,
+                    REP.PINKY: AGENT_CLASS_TYPE.OGNL,
+                },
+            },
+            "enablePwrPlt": True,
+            "gameSpeed": 0.1,
+            "genomes": {},
+            "neuralnets": {},
+        },
+        manualControl=True,
+        retroColors=False,
+    )
+    app.run()

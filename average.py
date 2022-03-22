@@ -1,4 +1,3 @@
-from re import A
 from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game, newGame
 from utils.printer import printPacmanPerfomance
@@ -30,12 +29,7 @@ class App:
         print("Average Completion Rate: {}".format(average / self.iterations))
 
     def runGame(self) -> float:
-        game: Game = newGame(
-            self.agents,
-            self.enablePwrPlt,
-            self.neuralnets,
-            self.genomes,
-        )
+        game: Game = newGame(self.agents, self.enablePwrPlt, self.neuralnets, self.genomes)
 
         while True:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
