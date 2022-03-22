@@ -3,16 +3,16 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.ghost import ClassicGhostAgent
+from agents.base.ghost import ClassicGhostAgent, StaticGhostAgent
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 
 
-# classic ai agent for clyde
+# original agent for clyde
 class ClydeClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
+        ClassicGhostAgent.__init__(self, POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -28,10 +28,10 @@ class ClydeClassicAgent(ClassicGhostAgent):
         return game.pacman.pos
 
 
-# classic aggressive ai for clyde
+# hyperaggressive agent for clyde
 class ClydeClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
-        super().__init__(POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
+        ClassicGhostAgent.__init__(self, POS.CLYDE, REP.CLYDE, GHOST_MODE.GHOST_EXIT_INTERVAL * 2)
 
     # get target tile of ghost
     def getTargetTile(self, game: "Game") -> CPair:
@@ -41,3 +41,9 @@ class ClydeClassicAggrAgent(ClassicGhostAgent):
                 return POS.CLYDE_CORNER
 
         return game.pacman.pos
+
+
+# static agent for clyde
+class ClydeStaticAgent(StaticGhostAgent):
+    def __init__(self) -> None:
+        StaticGhostAgent.__init__(self, POS.CLYDE, REP.CLYDE)

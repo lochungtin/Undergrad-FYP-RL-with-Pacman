@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.ghost import ClassicGhostAgent
+from agents.base.ghost import ClassicGhostAgent, StaticGhostAgent
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 from utils.direction import DIR
 
 
-# classic ai agent for pinky
+# original agent for pinky
 class PinkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.PINKY, REP.PINKY, 0)
@@ -34,7 +34,7 @@ class PinkyClassicAgent(ClassicGhostAgent):
         return targetTile
 
 
-# classic aggressive ai agent for pinky
+# hyperaggressive agent for pinky
 class PinkyClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.PINKY, REP.PINKY, 0)
@@ -52,3 +52,9 @@ class PinkyClassicAggrAgent(ClassicGhostAgent):
                 targetTile = targetTile.move(DIR.LF)
 
         return targetTile
+
+
+# static agent for pinky
+class PinkyStaticAgent(StaticGhostAgent):
+    def __init__(self) -> None:
+        StaticGhostAgent.__init__(self, POS.PINKY, REP.PINKY)

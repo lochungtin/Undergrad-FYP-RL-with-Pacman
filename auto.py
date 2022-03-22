@@ -1,7 +1,6 @@
 from tkinter import Tk
 import _thread
 
-from agents.blinky import blinkyFeatureExtraction
 from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
 from gui.controller import TimeController

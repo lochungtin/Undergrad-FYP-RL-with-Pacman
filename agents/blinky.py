@@ -12,7 +12,7 @@ from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 
 
-# classic ai agent for blinky
+# original agent for blinky
 class BlinkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         ClassicGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, 0)
@@ -29,7 +29,7 @@ class BlinkyClassicAgent(ClassicGhostAgent):
         return game.pacman.pos
 
 
-# classic aggressive ai agent for blinky
+# hyperaggressive agent for blinky
 class BlinkyClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         ClassicGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, 0)
@@ -69,7 +69,7 @@ class BlinkyDQLTAgent(GhostAgent, DirectionAgent):
         return DirectionAgent.getNextPos(self, game)
 
 
-# deep q learning agent for pacman
+# deep q learning agent for blinky
 class BlinkyDQLAgent(DQLGhostAgent):
     def __init__(self, neuralNet: NeuralNet) -> None:
         DQLGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, neuralNet)

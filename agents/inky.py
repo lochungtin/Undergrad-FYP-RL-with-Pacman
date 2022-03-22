@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.ghost import ClassicGhostAgent
+from agents.base.ghost import ClassicGhostAgent, StaticGhostAgent
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 from utils.direction import DIR
 
-# classic ai agent for inky
+# original agent for inky
 class InkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.INKY, REP.INKY, GHOST_MODE.GHOST_EXIT_INTERVAL)
@@ -35,7 +35,7 @@ class InkyClassicAgent(ClassicGhostAgent):
         return game.ghosts[REP.BLINKY].pos.reflect(pivot)
 
 
-# classic aggressive ai agent for inky
+# hyperaggressive agent for inky
 class InkyClassicAggrAgent(ClassicGhostAgent):
     def __init__(self) -> None:
         super().__init__(POS.INKY, REP.INKY, GHOST_MODE.GHOST_EXIT_INTERVAL)
@@ -55,3 +55,8 @@ class InkyClassicAggrAgent(ClassicGhostAgent):
 
         # reflect blinky's position wrt to reflection tile to get target tile
         return game.ghosts[REP.BLINKY].pos.reflect(pivot)
+
+# static agent for inky
+class InkyStaticAgent(StaticGhostAgent):
+    def __init__(self) -> None:
+        StaticGhostAgent.__init__(self, POS.INKY, REP.INKY)
