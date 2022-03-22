@@ -8,6 +8,7 @@ from agents.base.agent import DirectionAgent
 from ai.neat.genome import Genome
 from utils.coordinate import CPair
 
+
 # base class for all neuroevolution based agents
 class NEATAgent(DirectionAgent):
     def __init__(self, pos: CPair, repId: int, genome: Genome) -> None:

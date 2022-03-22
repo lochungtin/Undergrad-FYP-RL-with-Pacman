@@ -10,7 +10,8 @@ import time
 from ai.neat.gene import ConnGene
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
-from game.game import Game
+from data.data import AGENT_CLASS_TYPE, REP
+from game.game import Game, newGame
 from gui.display import Display 
 
 
@@ -63,7 +64,20 @@ class NEATTraining:
 
     # run genome against simluation and get fitness value
     def runSim(self, genome: Genome) -> float:
-        game: Game = 
+        game: Game = newGame(
+            {
+                REP.PACMAN: AGENT_CLASS_TYPE.SMDP,
+                REP.BLINKY: AGENT_CLASS_TYPE.TRNG,
+                "secondary": {
+                    REP.INKY: AGENT_CLASS_TYPE.NONE,
+                    REP.CLYDE: AGENT_CLASS_TYPE.NONE,
+                    REP.PINKY: AGENT_CLASS_TYPE.STTC,
+                },
+            },
+            True,
+            {},
+            {},
+        )
 
         if self.hasDisplay:
             self.display.newGame(game)
@@ -212,12 +226,12 @@ if __name__ == "__main__":
                 "fitnessCoeff": {
                     "p": 2,
                     "t": 1,
-                    "w": 1000,
-                    "l": -1000,
+                    "w": -1000,
+                    "l": 1000,
                 },
-                "generationCap": 5000,
+                "generationCap": 10000,
                 "genomeConfig": {
-                    "inSize": 37,
+                    "inSize": 9,
                     "outSize": 4,
                 },
                 "mutationConfig": {

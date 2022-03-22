@@ -19,7 +19,7 @@ def loadNeuralNet(parentFolder: str, prefix: str, index: int) -> NeuralNet:
 
 
 # load genome from config json
-def loadGenometT(tuple: Tuple[str, str, int]) -> NeuralNet:
+def loadGenomeT(tuple: Tuple[str, str, int]) -> NeuralNet:
     return loadGenome(tuple[0], tuple[1], tuple[2])
 
 

@@ -1,7 +1,6 @@
 from random import Random
 from typing import List, Tuple, TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from game.game import Game
 
@@ -138,8 +137,8 @@ class MDPGhostAgent(GhostAgent, MDPAgent):
         return MDPAgent.getNextPos(self, game)
 
 
-# deep q learning training agent for ghosts
-class DQLTGhostAgent(GhostAgent, DirectionAgent):
+# deep q learning and neurevolution training agent for ghosts
+class TrainingGhostAgent(GhostAgent, DirectionAgent):
     def __init__(self) -> None:
         GhostAgent.__init__(self, POS.BLINKY, REP.BLINKY)
         DirectionAgent.__init__(self, POS.BLINKY, REP.BLINKY)
@@ -179,7 +178,7 @@ class NEATGhostAgent(GhostAgent, NEATAgent):
         return NEATAgent.getNextPos(self, game)
 
 
-# placeholder ghost agent
+# static placeholder ghost agent
 class StaticGhostAgent(GhostAgent):
     def __init__(self, pos: CPair, repId: int) -> None:
         GhostAgent.__init__(self, pos, repId)

@@ -3,10 +3,10 @@ from typing import Tuple, TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.agent import DirectionAgent, GhostAgent
-from agents.base.ghost import ClassicGhostAgent, DQLGhostAgent, GhostMDPSolver, MDPGhostAgent
+from agents.base.ghost import ClassicGhostAgent, DQLGhostAgent, GhostMDPSolver, MDPGhostAgent, NEATGhostAgent
 from agents.base.mdp import MDPAgent
 from ai.deepq.neuralnet import NeuralNet
+from ai.neat.genome import Genome
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
@@ -62,3 +62,9 @@ class BlinkyMDPAgent(MDPGhostAgent):
 class BlinkyDQLAgent(DQLGhostAgent):
     def __init__(self, neuralNet: NeuralNet) -> None:
         DQLGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, neuralNet)
+
+
+# neuroevolution agent for blinky
+class BlinkyNEATAgent(NEATGhostAgent):
+    def __init__(self, genome: Genome) -> None:
+        NEATGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, genome)

@@ -3,11 +3,12 @@ from typing import List, Tuple
 import numpy as np
 
 from agents.base.agent import DirectionAgent, GhostAgent
-from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent, BlinkyDQLAgent, BlinkyMDPAgent
-from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent, ClydeStaticAgent
-from agents.inky import InkyClassicAgent, InkyClassicAggrAgent, InkyStaticAgent
-from agents.pacman import PacmanDQLAgent, PacmanDQLTAgent, PacmanMDPAgent, PlayableAgent
-from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent, PinkyStaticAgent
+from agents.base.ghost import TrainingGhostAgent
+from agents.blinky import *
+from agents.clyde import *
+from agents.inky import *
+from agents.pacman import *
+from agents.pinky import *
 from data.data import AGENT_CLASS_TYPE, REP
 from data.config import BOARD, POS
 from data.data import GHOST_MODE, REP
@@ -16,7 +17,7 @@ from game.utils.pathfinder import PathFinder
 from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.direction import DIR
-from utils.file import loadNeuralNetT
+from utils.file import loadGenomeT, loadNeuralNetT
 from utils.grid import createGameSizeGrid
 
 
@@ -245,7 +246,7 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
         pacman: PlayableAgent = PlayableAgent()
     elif agents[REP.PACMAN] == AGENT_CLASS_TYPE.SMDP:
         pacman: PacmanMDPAgent = PacmanMDPAgent()
-    elif agents[REP.PACMAN] == AGENT_CLASS_TYPE.DQLT:
+    elif agents[REP.PACMAN] == AGENT_CLASS_TYPE.TRNG:
         pacman: PacmanDQLTAgent = PacmanDQLTAgent()
     else:
         pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets[REP.PACMAN]))
@@ -263,8 +264,12 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
         blinky = BlinkyClassicAggrAgent()
     elif agents[REP.BLINKY] == AGENT_CLASS_TYPE.SMDP:
         blinky = BlinkyMDPAgent()
+    elif agents[REP.BLINKY] == AGENT_CLASS_TYPE.TRNG:
+        blinky = TrainingGhostAgent()
     elif agents[REP.BLINKY] == AGENT_CLASS_TYPE.GDQL:
-        blinky = BlinkyDQLAgent(loadNeuralNetT(neuralnets[REP.BLINKY]))    
+        blinky = BlinkyDQLAgent(loadNeuralNetT(neuralnets[REP.BLINKY]))
+    else:
+        blinky = BlinkyNEATAgent(loadGenomeT(genomes[REP.BLINKY]))
 
     # check for random generation flag
     if agents["secondary"] == AGENT_CLASS_TYPE.RAND:

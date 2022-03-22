@@ -7,9 +7,6 @@ import numpy as np
 import os
 import time
 
-from agents.base.agent import GhostAgent
-from agents.base.ghost import DQLTGhostAgent
-from agents.pacman import PacmanMDPAgent
 from agents.utils.features import ghostFeatureExtraction
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
@@ -73,8 +70,8 @@ class DeepQLTraining:
     def newGame(self) -> Game:
         return newGame(
             {
-                REP.PACMAN: PacmanMDPAgent(),
-                REP.BLINKY: DQLTGhostAgent(),
+                REP.PACMAN: AGENT_CLASS_TYPE.SMDP,
+                REP.BLINKY: AGENT_CLASS_TYPE.TRNG,
                 "secondary": {
                     REP.INKY: AGENT_CLASS_TYPE.NONE,
                     REP.CLYDE: AGENT_CLASS_TYPE.NONE,
@@ -130,18 +127,16 @@ class DeepQLTraining:
                 game.ghosts[REP.BLINKY].setDir(action)
 
             else:
-                blinky: GhostAgent = game.ghosts[REP.BLINKY]
-
-                prevDist: int = game.pacman.prevPos.manDist(blinky.prevPos)
-                curDist: int = game.pacman.pos.manDist(blinky.pos)
+                prevDist: int = game.pacman.prevPos.manDist(game.ghosts[REP.BLINKY].prevPos)
+                curDist: int = game.pacman.pos.manDist(game.ghosts[REP.BLINKY].pos)
 
                 reward: int = prevDist - curDist
 
-                if blinky.moved:
+                if game.ghosts[REP.BLINKY].moved:
                     reward = -10
 
                 action = self.agentStep(ghostFeatureExtraction(game), reward)
-                blinky.setDir(action)
+                game.ghosts[REP.BLINKY].setDir(action)
 
     # ===== auxiliary training functions =====
     # softmax policy for probabilistic action selection
