@@ -131,8 +131,8 @@ class BlinkyClassicAggrAgent(ClassicGhostAgent):
 
 # mdp agent for blinky
 class BlinkyMDPSolver(Solver):
-    def __init__(self, game: "Game", rewards: dict[str, float], config: dict[str, object]) -> None:
-        super().__init__(game, rewards, config)
+    def __init__(self, game: "Game", rewards: dict[str, float]) -> None:
+        super().__init__(game, rewards)
 
     # set rewards
     def makeRewardGrid(self) -> List[List[float]]:
@@ -155,19 +155,21 @@ class BlinkyMDPSolver(Solver):
 
 
 class BlinkyMDPAgent(GhostAgent, DirectionAgent):
-    def __init__(self, rewards: dict[str, float], mdpConfig: dict[str, float]) -> None:
+    def __init__(self) -> None:
         GhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, False)
         DirectionAgent.__init__(self, POS.BLINKY, REP.BLINKY)
 
         # reward values
-        self.rewards: dict[str, float] = rewards
-
-        # mdp config
-        self.mdpConfig: dict[str, float] = mdpConfig
+        self.rewards: dict[str, float] = {
+            "ghost": 0,
+            "pacmanF": -10,
+            "pacmanR": 20,
+            "timestep": -0.05,
+        }
 
     # get regular movements (not dead)
     def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        self.setDir(BlinkyMDPSolver(game, self.rewards, self.mdpConfig).getAction(self.pos))
+        self.setDir(BlinkyMDPSolver(game, self.rewards).getAction(self.pos))
         return DirectionAgent.getNextPos(self, game)
 
 

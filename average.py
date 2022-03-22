@@ -1,6 +1,6 @@
-from data.data import GHOST_CLASS_TYPE
+from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
-from utils.game import newGame, newRndAGGRGhostGame, newRndORGLGhostGame
+from utils.game import newGame, newRndAGGRGhostGame, newRndORGLGhostGame, newRndSubGhostGame
 from utils.printer import printPacmanPerfomance
 
 
@@ -27,12 +27,17 @@ class App:
         print("Average Completion Rate: {}".format(average / self.iterations))
 
     def runGame(self) -> float:
-        game: Game = newRndAGGRGhostGame(self.enablePwrPlt, self.neuralnets)
+        game: Game = newRndSubGhostGame(
+            AGENT_CLASS_TYPE.GDQL,
+            self.enablePwrPlt,
+            self.neuralnets,
+            self.genomes,
+        )
 
         while True:
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
             if gameover or won or game.timesteps > 1000:
-                break                
+                break
 
         return printPacmanPerfomance(0, game, True)
 
@@ -43,7 +48,10 @@ if __name__ == "__main__":
             "enablePwrPlt": True,
             "genomes": {},
             "iterations": 1000,
-            "neuralnets": {"pacman": ("out", "RL0803_1832", 9895)},
+            "neuralnets": {
+                "pacman": ("saves", "pacman", 63),
+                REP.BLINKY: ("out", "RL2103_1506", 10000),
+            },
         }
     )
     app.start()

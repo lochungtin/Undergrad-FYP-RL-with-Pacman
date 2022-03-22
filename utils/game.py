@@ -5,7 +5,7 @@ from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent
 from agents.inky import InkyClassicAgent, InkyClassicAggrAgent
 from agents.pinky import PinkyClassicAgent, PinkyClassicAggrAgent
 from agents.pacman import PacmanDQLAgent
-from data.data import GHOST_CLASS_TYPE, REP
+from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
 from utils.file import loadNeuralNetT
 
@@ -16,32 +16,32 @@ def newGame(ghosts: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
 
     # create ai blinky agent
     blinky: GhostAgent = None
-    if ghosts[REP.BLINKY] == GHOST_CLASS_TYPE.OGNL:
+    if ghosts[REP.BLINKY] == AGENT_CLASS_TYPE.OGNL:
         blinky = BlinkyClassicAgent()
-    elif ghosts[REP.BLINKY] == GHOST_CLASS_TYPE.AGGR:
+    elif ghosts[REP.BLINKY] == AGENT_CLASS_TYPE.AGGR:
         blinky = BlinkyClassicAggrAgent()
-    elif ghosts[REP.BLINKY] == GHOST_CLASS_TYPE.GDQL:
+    elif ghosts[REP.BLINKY] == AGENT_CLASS_TYPE.GDQL:
         blinky = BlinkyDQLAgent(loadNeuralNetT(neuralnets[REP.BLINKY]))
 
     # create ai inky agent
     inky: GhostAgent = None
-    if ghosts[REP.INKY] == GHOST_CLASS_TYPE.OGNL:
+    if ghosts[REP.INKY] == AGENT_CLASS_TYPE.OGNL:
         inky = InkyClassicAgent()
-    elif ghosts[REP.INKY] == GHOST_CLASS_TYPE.AGGR:
+    elif ghosts[REP.INKY] == AGENT_CLASS_TYPE.AGGR:
         inky = InkyClassicAggrAgent()
 
     # create ai clyde agent
     clyde: GhostAgent = None
-    if ghosts[REP.CLYDE] == GHOST_CLASS_TYPE.OGNL:
+    if ghosts[REP.CLYDE] == AGENT_CLASS_TYPE.OGNL:
         clyde = ClydeClassicAgent()
-    elif ghosts[REP.CLYDE] == GHOST_CLASS_TYPE.AGGR:
+    elif ghosts[REP.CLYDE] == AGENT_CLASS_TYPE.AGGR:
         clyde = ClydeClassicAggrAgent()
 
     # create ai pinky agent
     pinky: GhostAgent = None
-    if ghosts[REP.PINKY] == GHOST_CLASS_TYPE.OGNL:
+    if ghosts[REP.PINKY] == AGENT_CLASS_TYPE.OGNL:
         pinky = PinkyClassicAgent()
-    elif ghosts[REP.PINKY] == GHOST_CLASS_TYPE.AGGR:
+    elif ghosts[REP.PINKY] == AGENT_CLASS_TYPE.AGGR:
         pinky = PinkyClassicAggrAgent()
 
     return Game(pacman, blinky, inky, clyde, pinky, enablePwrPlt)
@@ -87,3 +87,45 @@ def newRndAGGRGhostGame(enablePwrPlt: bool, neuralnets: dict[str, str]) -> Game:
         pinky = PinkyClassicAggrAgent()
 
     return Game(pacman, BlinkyClassicAggrAgent(), inky, clyde, pinky, enablePwrPlt)
+
+
+# create game with random g2s (secondary ghost) [Classic or Aggressive]
+def newRndSubGhostGame(
+    blinkyClassType: int, enablePwrPlt: bool, neuralnets: dict[str, str], genomes: dict[str, str]
+) -> Game:
+    # create pacman agent
+    pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets["pacman"]))
+
+    # create ai blinky agent
+    blinky: GhostAgent = None
+    if blinkyClassType == AGENT_CLASS_TYPE.OGNL:
+        blinky = BlinkyClassicAgent()
+    elif blinkyClassType == AGENT_CLASS_TYPE.AGGR:
+        blinky = BlinkyClassicAggrAgent()
+    elif blinkyClassType == AGENT_CLASS_TYPE.GDQL:
+        blinky = BlinkyDQLAgent(loadNeuralNetT(neuralnets[REP.BLINKY]))
+
+    # create random agent for remaining ghost
+    ghost: int = np.random.randint(0, 3)
+    gType: int = np.random.randint(0, 2)
+    pType: int = np.random.randint(0, 2)
+
+    inky, clyde, pinky = None, None, None
+
+    if ghost == 0:
+        if gType == 0:
+            inky = InkyClassicAgent()
+        else:
+            inky = InkyClassicAggrAgent()
+    elif ghost == 1:
+        if gType == 0:
+            clyde = ClydeClassicAgent()
+        else:
+            clyde = ClydeClassicAggrAgent()
+    else:
+        if gType == 0:
+            pinky = PinkyClassicAgent()
+        else:
+            pinky = PinkyClassicAggrAgent()
+
+    return Game(pacman, blinky, inky, clyde, pinky, enablePwrPlt)

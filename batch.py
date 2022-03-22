@@ -5,7 +5,7 @@ import re
 import os
 
 
-from data.data import GHOST_CLASS_TYPE, REP
+from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
 from utils.game import newGame, newRndORGLGhostGame
 from utils.printer import printPacmanPerfomance
@@ -112,10 +112,10 @@ if __name__ == "__main__":
             "enablePwrPlt": True,
             "genomes": {},
             "ghosts": {
-                REP.BLINKY: GHOST_CLASS_TYPE.OGNL,
-                REP.INKY: GHOST_CLASS_TYPE.NONE,
-                REP.CLYDE: GHOST_CLASS_TYPE.NONE,
-                REP.PINKY: GHOST_CLASS_TYPE.NONE,
+                REP.BLINKY: AGENT_CLASS_TYPE.OGNL,
+                REP.INKY: AGENT_CLASS_TYPE.NONE,
+                REP.CLYDE: AGENT_CLASS_TYPE.NONE,
+                REP.PINKY: AGENT_CLASS_TYPE.NONE,
             },
             "iteration": {
                 "filter": 10,

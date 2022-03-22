@@ -72,20 +72,7 @@ class DeepQLTraining:
 
     def newGame(self) -> Game:
         return Game(
-            PacmanMDPAgent(
-                {
-                    "timestep": -0.5,
-                    "pwrplt": 3,
-                    "pellet": 10,
-                    "kill": 50,
-                    "ghost": -100,
-                },
-                {
-                    "maxIter": 10000,
-                    "gamma": 0.90,
-                    "epsilon": 0.00005,
-                },
-            ),
+            PacmanMDPAgent(),
             blinky=BlinkyDQLTAgent(),
             pinky=StaticGhostAgent(POS.PINKY, REP.PINKY),
         )

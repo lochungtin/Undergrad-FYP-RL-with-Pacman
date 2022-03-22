@@ -18,7 +18,6 @@ from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
 
 
-
 def pacmanFeatureExtraction(game: "Game") -> List[float]:
     features: List[float] = [0, 0, 0, 0, (game.pwrpltEffectCounter + 1) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT]
 
@@ -95,8 +94,8 @@ class PlayableAgent(DirectionAgent):
 
 # mdp agent for pacman
 class PacmanMDPSolver(Solver):
-    def __init__(self, game: "Game", rewards: dict[str, float], config: dict[str, object]) -> None:
-        super().__init__(game, rewards, config)
+    def __init__(self, game: "Game", rewards: dict[str, float]) -> None:
+        super().__init__(game, rewards)
 
     # set rewards
     def makeRewardGrid(self) -> List[List[float]]:
@@ -136,18 +135,21 @@ class PacmanMDPSolver(Solver):
 
 
 class PacmanMDPAgent(DirectionAgent):
-    def __init__(self, rewards: dict[str, float], mdpConfig: dict[str, float]) -> None:
+    def __init__(self) -> None:
         super().__init__(POS.PACMAN, REP.PACMAN)
 
         # reward values
-        self.rewards: dict[str, float] = rewards
-
-        # mdp config
-        self.mdpConfig: dict[str, float] = mdpConfig
+        self.rewards: dict[str, float] = {
+            "timestep": -0.5,
+            "pwrplt": 3,
+            "pellet": 10,
+            "kill": 50,
+            "ghost": -100,
+        }
 
     # get next position
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        self.setDir(PacmanMDPSolver(game, self.rewards, self.mdpConfig).getAction(self.pos))
+        self.setDir(PacmanMDPSolver(game, self.rewards).getAction(self.pos))
         return super().getNextPos(game)
 
 
@@ -155,6 +157,7 @@ class PacmanMDPAgent(DirectionAgent):
 class PacmanDQLTAgent(DirectionAgent):
     def __init__(self) -> None:
         super().__init__(POS.PACMAN, REP.PACMAN)
+
 
 # deep q learning agent for pacman
 class PacmanDQLAgent(DQLAgent):

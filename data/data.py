@@ -74,9 +74,10 @@ class REP:
 
 
 # agent class types
-class GHOST_CLASS_TYPE:
+class AGENT_CLASS_TYPE:
     NONE: int = 0
     OGNL: int = 1
     AGGR: int = 2
-    GDQL: int = 3
-    NEAT: int = 4
+    SMDP: int = 3
+    GDQL: int = 4
+    NEAT: int = 5

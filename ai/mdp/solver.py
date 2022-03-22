@@ -8,9 +8,14 @@ if TYPE_CHECKING:
 from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
 
-
 class Solver:
-    def __init__(self, game: "Game", rewards: dict[str, float], config: dict[str, object]) -> None:
+    DEFAULT_CONFIG = {
+        "maxIter": 10000,
+        "gamma": 0.90,
+        "epsilon": 0.00005,
+    }
+
+    def __init__(self, game: "Game", rewards: dict[str, float], config: dict[str, object] = DEFAULT_CONFIG) -> None:
         # game
         self.game: Game = game
 

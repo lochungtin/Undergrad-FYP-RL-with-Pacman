@@ -28,13 +28,6 @@ class MDPGuidedTraining:
 
             self.display: Display = Display(self.main)
 
-        # reward constants
-        self.gRewards: dict[str, float] = config["ghostRewards"]
-        self.pRewards: dict[str, float] = config["pacmanRewards"]
-
-        # mdp config
-        self.mdpConfig: float = config["mdpConfig"]
-
         # training config
         self.gameCap: int = config["gameCap"]
 
@@ -74,11 +67,11 @@ class MDPGuidedTraining:
         if True and pType == 0:
             pacman = PacmanDQLAgent(loadNeuralNet("saves", "pacman", choice([50, 52, 55, 60, 63])))
         else:
-            pacman = PacmanMDPAgent(self.pRewards, self.mdpConfig)
+            pacman = PacmanMDPAgent()
 
         return Game(
             pacman=pacman,
-            blinky=BlinkyMDPAgent(self.gRewards, self.mdpConfig),
+            blinky=BlinkyMDPAgent(),
             inky=inky,
             clyde=clyde,
             pinky=pinky,
@@ -132,28 +125,5 @@ class MDPGuidedTraining:
 
 
 if __name__ == "__main__":
-    training: MDPGuidedTraining = MDPGuidedTraining(
-        {
-            "gameCap": 1000,
-            "mdpConfig": {
-                "maxIter": 10000,
-                "gamma": 0.90,
-                "epsilon": 0.00005,
-            },
-            "pacmanRewards": {
-                "timestep": -0.5,
-                "pwrplt": 3,
-                "pellet": 10,
-                "kill": 50,
-                "ghost": -100,
-            },
-            "ghostRewards": {
-                "ghost": 0,
-                "pacmanF": -10,
-                "pacmanR": 20,
-                "timestep": -0.05,
-            },
-        },
-        False,
-    )
+    training: MDPGuidedTraining = MDPGuidedTraining({"gameCap": 1000}, True)
     training.start()
