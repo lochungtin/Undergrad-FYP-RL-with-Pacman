@@ -4,7 +4,7 @@ from typing import List, TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import DirectionAgent
+from agents.base.agent import DirectionAgent
 from agents.base.dql import DQLAgent
 from agents.base.mdp import MDPAgent
 from agents.utils.features import pacmanFeatureExtraction

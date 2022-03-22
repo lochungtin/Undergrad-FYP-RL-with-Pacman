@@ -3,7 +3,7 @@ from typing import Tuple, TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import DirectionAgent, GhostAgent
+from agents.base.agent import DirectionAgent, GhostAgent
 from agents.base.ghost import ClassicGhostAgent, DQLGhostAgent, GhostMDPSolver, MDPGhostAgent
 from agents.base.mdp import MDPAgent
 from ai.deepq.neuralnet import NeuralNet

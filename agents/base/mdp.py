@@ -3,7 +3,7 @@ from typing import Tuple, TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import DirectionAgent
+from agents.base.agent import DirectionAgent
 from utils.coordinate import CPair
 
 

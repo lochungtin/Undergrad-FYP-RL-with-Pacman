@@ -1,15 +1,18 @@
 from random import Random
 from typing import List, Tuple, TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import DirectionAgent, GhostAgent
+from agents.base.agent import DirectionAgent, GhostAgent
 from agents.base.dql import DQLAgent
 from agents.base.mdp import MDPAgent
+from agents.base.neat import NEATAgent
 from agents.utils.features import ghostFeatureExtraction
 from ai.deepq.neuralnet import NeuralNet
 from ai.mdp.solver import Solver
+from ai.neat.genome import Genome
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from game.utils.cell import Cell
@@ -146,7 +149,7 @@ class DQLTGhostAgent(GhostAgent, DirectionAgent):
         return DirectionAgent.getNextPos(self, game)
 
 
-# base class for deep q learning based ghost agnets
+# base class for deep q learning based ghost agents
 class DQLGhostAgent(GhostAgent, DQLAgent):
     def __init__(self, pos: CPair, repId: int, neuralNet: NeuralNet) -> None:
         GhostAgent.__init__(self, pos, repId)
@@ -159,6 +162,13 @@ class DQLGhostAgent(GhostAgent, DQLAgent):
     # get regular movement (not dead)
     def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
         return DQLAgent.getNextPos(self, game)
+
+
+# base class for neuroevolution based ghost agents
+class NEATGhostAgent(GhostAgent, NEATAgent):
+    def __init__(self, pos: CPair, repId: int, genome: Genome) -> None:
+        GhostAgent.__init__(self, pos, repId)
+        DQLAgent.__init__(self, pos, repId, Genome)
 
 
 # placeholder ghost agent

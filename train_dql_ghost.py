@@ -7,7 +7,7 @@ import numpy as np
 import os
 import time
 
-from agents.base.base import GhostAgent
+from agents.base.agent import GhostAgent
 from agents.base.ghost import DQLTGhostAgent
 from agents.pacman import PacmanMDPAgent
 from agents.utils.features import ghostFeatureExtraction

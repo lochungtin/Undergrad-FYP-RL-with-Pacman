@@ -2,7 +2,7 @@ from tkinter import Canvas
 from typing import List, Tuple
 import numpy as np
 
-from agents.base.base import DirectionAgent, GhostAgent
+from agents.base.agent import DirectionAgent, GhostAgent
 from agents.blinky import BlinkyClassicAgent, BlinkyClassicAggrAgent, BlinkyDQLAgent, BlinkyMDPAgent
 from agents.clyde import ClydeClassicAgent, ClydeClassicAggrAgent, ClydeStaticAgent
 from agents.inky import InkyClassicAgent, InkyClassicAggrAgent, InkyStaticAgent

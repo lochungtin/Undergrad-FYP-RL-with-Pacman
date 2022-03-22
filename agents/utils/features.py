@@ -4,7 +4,7 @@ from typing import List, TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import GhostAgent
+from agents.base.agent import GhostAgent
 from data.config import BOARD
 from data.data import GHOST_MODE
 from game.utils.cell import Cell

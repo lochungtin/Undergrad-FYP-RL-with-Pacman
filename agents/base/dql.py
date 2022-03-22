@@ -4,7 +4,7 @@ import numpy as np
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import DirectionAgent
+from agents.base.agent import DirectionAgent
 from ai.deepq.neuralnet import NeuralNet
 from utils.coordinate import CPair
 
@@ -17,19 +17,20 @@ class DQLAgent(DirectionAgent):
 
     # get next position of agent
     def getNextPos(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
-        # get action vals
-        state: List[int] = self.processGameState(game)
-        qVals: List[float] = self.neuralNet.predict(np.array([state]))
-
-        # get optimal action
-        action: int = np.argmax(qVals)
-
-        # selection action direction
-        self.setDir(action)
-
+        # selection optimal direction
+        self.setDir(
+            # select optimal action
+            np.argmax(
+                # get q values
+                self.neuralNet.predict(
+                    # parse game state to feature vector
+                    np.array([self.processGameState(game)]),
+                )
+            )
+        )
         return super().getNextPos(game)
 
     # ===== REQUIRED TO OVERRIDE =====
     # preprocess game state for neural network
-    def processGameState(self, game: "Game") -> List[int]:
+    def processGameState(self, game: "Game") -> List[float]:
         raise NotImplementedError
