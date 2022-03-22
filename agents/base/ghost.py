@@ -87,11 +87,11 @@ class ClassicGhostAgent(GhostAgent):
 
 # base mdp solver for mdp based ghost agnets
 class GhostMDPSolver(Solver):
-    def __init__(self, game: "Game", rewards: dict[str, float], gId: int) -> None:
+    def __init__(self, game: "Game", rewards: dict[str, float], repId: int) -> None:
         super().__init__(game, rewards)
 
         # ghost id
-        self.gId: int = gId
+        self.repId: int = repId
 
     # set rewards
     def makeRewardGrid(self) -> List[List[float]]:
@@ -101,13 +101,13 @@ class GhostMDPSolver(Solver):
         pPos: CPair = self.game.pacman.pos
 
         pacmanReward: float = self.rewards["pacmanR"]
-        if self.game.ghosts[self.gId].isFrightened:
+        if self.game.ghosts[self.repId].isFrightened:
             pacmanReward = self.rewards["pacmanF"]
         rewardGrid[pPos.row][pPos.col] = pacmanReward
 
         # set ghost neighbour reward
         for ghost in self.game.ghostList:
-            if ghost.repId != self.gId:
+            if ghost.repId != self.repId:
                 if not ghost.isDead:
                     rewardGrid[ghost.pos.row][ghost.pos.col] = self.rewards["ghost"]
 
@@ -168,7 +168,15 @@ class DQLGhostAgent(GhostAgent, DQLAgent):
 class NEATGhostAgent(GhostAgent, NEATAgent):
     def __init__(self, pos: CPair, repId: int, genome: Genome) -> None:
         GhostAgent.__init__(self, pos, repId)
-        DQLAgent.__init__(self, pos, repId, Genome)
+        DQLAgent.__init__(self, pos, repId, genome)
+
+    # preprocess game staet for genome
+    def processGameState(self, game: "Game") -> List[int]:
+        return ghostFeatureExtraction(game, self.repId)
+
+    # get regular movement (not dead)
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return NEATAgent.getNextPos(self, game)
 
 
 # placeholder ghost agent

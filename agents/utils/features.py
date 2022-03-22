@@ -81,11 +81,11 @@ def pacmanFeatureExtraction(game: "Game") -> List[float]:
 
 
 # ghost feature extraction function
-def ghostFeatureExtraction(game: "Game", gId: int) -> List[float]:
+def ghostFeatureExtraction(game: "Game", repId: int) -> List[float]:
     features: List[float] = [0, 0, 0, 0]
 
     # ghost data
-    ghost: GhostAgent = game.ghosts[gId]
+    ghost: GhostAgent = game.ghosts[repId]
     bPos: CPair = ghost.pos
     bCell: Cell = game.getCell(bPos)
 
