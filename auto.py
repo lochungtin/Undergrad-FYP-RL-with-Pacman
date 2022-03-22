@@ -1,33 +1,19 @@
 from tkinter import Tk
 import _thread
 
-import numpy as np
-from agents.base import StaticGhostAgent
-
-from agents.blinky import BlinkyClassicAgent, BlinkyDQLAgent, blinkyFeatureExtraction
-from agents.clyde import ClydeClassicAgent
-from agents.inky import InkyClassicAgent
-from agents.pinky import PinkyClassicAgent
-from agents.pacman import PacmanDQLAgent
+from agents.blinky import blinkyFeatureExtraction
 from data.data import AGENT_CLASS_TYPE, REP
-from data.config import POS
 from game.game import Game
 from gui.controller import TimeController
 from gui.display import Display
-from utils.file import loadNeuralNet
-from utils.game import newGame, newRndORGLGhostGame
+from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
 class App:
     def __init__(self, config: dict[str, object]) -> None:
         # create game
-        self.game: Game = newGame(
-            config["ghosts"],
-            config["enablePwrPlt"],
-            config["neuralnets"],
-            config["genomes"],
-        )
+        self.game: Game = newGame(config["agents"], config["enablePwrPlt"], config["neuralnets"], config["genomes"])
 
         # creat gui
         self.main: Tk = Tk()
@@ -61,18 +47,17 @@ if __name__ == "__main__":
 
     app: App = App(
         {
+            "agents": {
+                REP.PACMAN: AGENT_CLASS_TYPE.GDQL,
+                REP.BLINKY: AGENT_CLASS_TYPE.GDQL,
+                "secondary": AGENT_CLASS_TYPE.RAND,
+            },
             "enablePwrPlt": True,
             "gameSpeed": 0.10,
             "genomes": {},
-            "ghosts": {
-                REP.BLINKY: AGENT_CLASS_TYPE.GDQL,
-                REP.INKY: AGENT_CLASS_TYPE.NONE,
-                REP.CLYDE: AGENT_CLASS_TYPE.NONE,
-                REP.PINKY: AGENT_CLASS_TYPE.OGNL,
-            },
             "neuralnets": {
-                "pacman": ("saves", "pacman", 63),
-                REP.BLINKY: ("out", "RL2103_1506", 9000),
+                REP.PACMAN: ("saves", "pacman", 63),
+                REP.BLINKY: ("out", "RL2103_1506", 10000),
             },
         }
     )

@@ -1,18 +1,22 @@
+from re import A
 from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game
-from utils.game import newGame, newRndAGGRGhostGame, newRndORGLGhostGame, newRndSubGhostGame
+from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
 class App:
     def __init__(self, config: dict[str, object]) -> None:
+        # agent config
+        self.agents: dict[str, object] = config["agents"]
+
         # game config
         self.enablePwrPlt: bool = config["enablePwrPlt"]
 
-        # neural net
+        # neural net config files
         self.neuralnets: dict[str, str] = config["neuralnets"]
 
-        # genomes
+        # genomes config files
         self.genomes: dict[str, str] = config["genomes"]
 
         # iterations
@@ -27,8 +31,8 @@ class App:
         print("Average Completion Rate: {}".format(average / self.iterations))
 
     def runGame(self) -> float:
-        game: Game = newRndSubGhostGame(
-            AGENT_CLASS_TYPE.GDQL,
+        game: Game = newGame(
+            self.agents,
             self.enablePwrPlt,
             self.neuralnets,
             self.genomes,
@@ -45,11 +49,16 @@ class App:
 if __name__ == "__main__":
     app: App = App(
         {
+            "agents": {
+                REP.PACMAN: AGENT_CLASS_TYPE.SMDP,
+                REP.BLINKY: AGENT_CLASS_TYPE.GDQL,
+                "secondary": AGENT_CLASS_TYPE.RAND,
+            },
             "enablePwrPlt": True,
             "genomes": {},
             "iterations": 1000,
             "neuralnets": {
-                "pacman": ("saves", "pacman", 63),
+                # REP.PACMAN: ("saves", "pacman", 63),
                 REP.BLINKY: ("out", "RL2103_1506", 10000),
             },
         }

@@ -76,16 +76,20 @@ class REP:
 # agent class types
 class AGENT_CLASS_TYPE:
     # none type (doesnt exist)
-    NONE: int = 0
-    # original type (classic)
+    NONE: int = -1
+    # playable type (pacman main)
+    CTRL: int = 0
+    # original type (ghost variant 1)
     OGNL: int = 1
-    # hyper-aggressive type (variant 2)
+    # hyper-aggressive type (ghost variant 2)
     AGGR: int = 2
     # simple mdp type (pretraining)
     SMDP: int = 3
-    # guided deep q learning type (variant 3)
+    # guided deep q learning type (ghost variant 3)
     GDQL: int = 4
-    # neuroevolution of augmenting topologies type (variant 4)
+    # neuroevolution of augmenting topologies type (ghost variant 4)
     NEAT: int = 5
-    # static type (placeholder)
+    # static type (ghost placeholder)
     STTC: int = 6
+    # random flag
+    RAND: int = 7
