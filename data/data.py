@@ -75,9 +75,17 @@ class REP:
 
 # agent class types
 class AGENT_CLASS_TYPE:
+    # none type (doesnt exist)
     NONE: int = 0
+    # original type (classic)
     OGNL: int = 1
+    # hyper-aggressive type (variant 2)
     AGGR: int = 2
+    # simple mdp type (pretraining)
     SMDP: int = 3
+    # guided deep q learning type (variant 3)
     GDQL: int = 4
+    # neuroevolution of augmenting topologies type (variant 4)
     NEAT: int = 5
+    # static type (placeholder)
+    STTC: int = 6
