@@ -47,12 +47,12 @@ if __name__ == "__main__":
     app: App = App(
         {
             "agents": {
-                REP.PACMAN: AGENT_CLASS_TYPE.GDQL,
-                REP.BLINKY: AGENT_CLASS_TYPE.GDQL,
+                REP.PACMAN: AGENT_CLASS_TYPE.SMDP,
+                REP.BLINKY: AGENT_CLASS_TYPE.SMDP,
                 "secondary": AGENT_CLASS_TYPE.RAND,
             },
             "enablePwrPlt": True,
-            "gameSpeed": 0.10,
+            "gameSpeed": 0.025,
             "genomes": {},
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),

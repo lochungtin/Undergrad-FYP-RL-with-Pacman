@@ -50,7 +50,7 @@ class BlinkyMDPSolver(GhostMDPSolver):
 
 # mdp agent for blinky
 class BlinkyMDPAgent(MDPGhostAgent):
-    def __init__(self, solver: type = BlinkyMDPSolver, rewards: dict[str, float] = ...) -> None:
+    def __init__(self, solver: type = BlinkyMDPSolver, rewards: dict[str, float] = MDPGhostAgent.REWARDS) -> None:
         MDPGhostAgent.__init__(self, POS.BLINKY, REP.BLINKY, solver, rewards)
 
     # get regular movements (not dead)

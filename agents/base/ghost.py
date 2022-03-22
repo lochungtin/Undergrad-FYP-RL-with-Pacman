@@ -4,7 +4,7 @@ from typing import List, Tuple, TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.base import DirectionAgent, GhostAgent
+from agents.base.base import GhostAgent
 from agents.base.dql import DQLAgent
 from agents.base.mdp import MDPAgent
 from agents.utils.features import ghostFeatureExtraction
@@ -113,17 +113,19 @@ class GhostMDPSolver(Solver):
 
 # base class for mdp based ghost agents
 class MDPGhostAgent(GhostAgent, MDPAgent):
+    REWARDS = {
+        "ghost": 5,
+        "pacmanR": 20,
+        "pacmanF": -10,
+        "timestep": -0.5,
+    }
+
     def __init__(
         self,
         pos: CPair,
         repId: int,
         solver: type,
-        rewards: dict[str, float] = {
-            "ghost": 5,
-            "pacmanR": 20,
-            "pacmanF": -10,
-            "timestep": -0.5,
-        },
+        rewards: dict[str, float] = REWARDS,
     ) -> None:
         GhostAgent.__init__(self, pos, repId)
         MDPAgent.__init__(self, pos, repId, solver, rewards)
@@ -134,7 +136,7 @@ class MDPGhostAgent(GhostAgent, MDPAgent):
 
 
 # base class for deep q learning based ghost agnets
-class DQLGhostAgent(GhostAgent, DirectionAgent):
+class DQLGhostAgent(GhostAgent, DQLAgent):
     def __init__(self, pos: CPair, repId: int, neuralNet: NeuralNet) -> None:
         GhostAgent.__init__(self, pos, repId)
         DQLAgent.__init__(self, pos, repId, neuralNet)
