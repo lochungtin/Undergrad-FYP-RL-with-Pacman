@@ -7,18 +7,15 @@ import numpy as np
 import os
 import time
 
-from agents.pacman import PacmanDQLTAgent
 from agents.utils.features import pacmanFeatureExtraction
 from ai.deepq.adam import Adam
 from ai.deepq.neuralnet import NeuralNet
 from ai.deepq.replaybuf import ReplayBuffer
 from ai.deepq.utils import NNUtils
-from agents.blinky import BlinkyClassicAgent
 from data.data import AGENT_CLASS_TYPE, REP
-from game.game import Game
+from game.game import Game, newGame
 from gui.display import Display
 from utils.file import loadNeuralNet
-from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 

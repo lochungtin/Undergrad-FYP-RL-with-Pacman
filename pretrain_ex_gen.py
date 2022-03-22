@@ -7,9 +7,8 @@ import os
 
 from agents.utils.features import ghostFeatureExtraction, pacmanFeatureExtraction
 from data.data import AGENT_CLASS_TYPE, REP
-from game.game import Game
+from game.game import Game, newGame
 from gui.display import Display
-from utils.game import newGame
 from utils.printer import printPacmanPerfomance
 
 
