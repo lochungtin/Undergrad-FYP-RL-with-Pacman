@@ -19,10 +19,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Batch Analysis Script",
+            "name": "Batch Experiment Script",
             "type": "python",
             "request": "launch",
-            "program": "batch.py",
+            "program": "experiment.py",
             "console": "integratedTerminal"
         },
         {

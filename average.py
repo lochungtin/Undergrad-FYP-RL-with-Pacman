@@ -20,13 +20,18 @@ class App:
         # iterations
         self.iterations: int = config["iterations"]
 
-    def start(self) -> None:
+    def start(self, verbose: bool = False) -> float:
         average: float = 0
 
         for i in range(self.iterations):
             average += self.runGame(i)
 
-        print("Average Completion Rate: {}".format(average / self.iterations))
+        average /= self.iterations
+
+        if verbose:
+            print("Average Completion Rate: {}".format(average))
+
+        return average
 
     def runGame(self, iteration: int) -> float:
         game: Game = newGame(self.agents, self.enablePwrPlt, self.neuralnets, self.genomes)
