@@ -107,9 +107,11 @@ class NEATTraining:
         fitness: float = (
             self.fCoef["lowestDistance"] * lowestDist
             + self.fCoef["pelletProgress"] * (BOARD.TOTAL_PELLET_COUNT - game.pelletProgress)
-            + self.fCoef["loss"] * game.timesteps * (not won)
-            + self.fCoef["won"] * game.timesteps * won
+            + self.fCoef["loss"] * gameover
+            + self.fCoef["won"] * won
         )
+
+        print(fitness)
 
         return fitness
 
@@ -165,7 +167,7 @@ class NEATTraining:
     # ===== main evoluation function =====
     def evolution(self) -> None:
         runPref: str = "NE{}".format(datetime.now().strftime("%d%m_%H%M"))
-        os.mkdir("out/{}".format(runPref))
+        # os.mkdir("out/{}".format(runPref))
 
         # initialise population and innovation map
         pop, innovMap = self.newPopulation()
@@ -227,10 +229,10 @@ if __name__ == "__main__":
                 },
                 "crossOpt": GenomeUtils.CROSS_OPTIONS["MAX"],
                 "fitnessCoeff": {
-                    "pelletProgress": -10,
-                    "lowestDistance": -5,
-                    "won": -1000,
-                    "loss": 1000,
+                    "pelletProgress": -5,
+                    "lowestDistance": -3,
+                    "won": -100,
+                    "loss": 100,
                 },
                 "generationCap": 10000,
                 "genomeConfig": {
