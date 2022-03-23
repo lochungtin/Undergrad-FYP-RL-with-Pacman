@@ -27,7 +27,7 @@ class Experiment:
         }
 
     def runPass(self, config: dict[str, object]) -> float:
-        return App(config).start()
+        return App(config).start(True)
 
     def start(self) -> None:
         filename: str = "./log/EXP{}.txt".format(datetime.now().strftime("%d%m_%H%M"))
