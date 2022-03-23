@@ -28,4 +28,4 @@ def loadGenome(parentFolder: str, prefix: str, index: int) -> Genome:
     if parentFolder == "saves":
         indicator = "avgc"
 
-    return GenomeUtils.load("./{}/{}/ne-genome-{}{}.json".format(parentFolder, prefix, indicator, index))
+    return GenomeUtils.load("./{}/{}/ne_genome_{}{}.json".format(parentFolder, prefix, indicator, index))

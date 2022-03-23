@@ -127,7 +127,7 @@ class GenomeUtils:
         data["cStruct"] = genome.cStruct
         data["layers"] = genome.layers
 
-        filename: str = "./out/{}/ne-genome-gen{}.json".format(runPref, generation)
+        filename: str = "./out/{}/ne_genome_gen{}.json".format(runPref, generation)
         with open(filename, "w+") as outfile:
             json.dump(data, outfile)
 
@@ -135,7 +135,7 @@ class GenomeUtils:
 
     # save innovation map data
     def saveInnov(innov: dict[str, int], runPref: str, generation: int, parentFolder: str = "out") -> str:
-        filename: str = "./{}/{}/ne-innov-gen{}.json".format(parentFolder, runPref, generation)
+        filename: str = "./{}/{}/ne_innov_gen{}.json".format(parentFolder, runPref, generation)
         with open(filename, "w+") as outfile:
             json.dump(innov, outfile)
 
