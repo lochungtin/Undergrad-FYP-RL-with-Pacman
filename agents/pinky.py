@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from game.game import Game
 
-from agents.base.ghost import ClassicGhostAgent, StaticGhostAgent
+from agents.base.ghost import *
 from data.config import POS
 from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
@@ -58,3 +58,31 @@ class PinkyClassicAggrAgent(ClassicGhostAgent):
 class PinkyStaticAgent(StaticGhostAgent):
     def __init__(self) -> None:
         StaticGhostAgent.__init__(self, POS.PINKY, REP.PINKY)
+
+
+# mdp solver for pinky
+class PinkyMDPSolver(GhostMDPSolver):
+    def __init__(self, game: "Game", rewards: dict[str, float]) -> None:
+        GhostMDPSolver.__init__(self, game, rewards, REP.PINKY)
+
+
+# mdp agent for pinky
+class PinkyMDPAgent(MDPGhostAgent):
+    def __init__(self, solver: type = PinkyMDPSolver, rewards: dict[str, float] = MDPGhostAgent.REWARDS) -> None:
+        MDPGhostAgent.__init__(self, POS.PINKY, REP.PINKY, solver, rewards)
+
+    # get regular movements (not dead)
+    def regularMovement(self, game: "Game") -> Tuple[CPair, CPair, CPair]:
+        return MDPAgent.getNextPos(self, game)
+
+
+# deep q learning agent for pinky
+class PinkyDQLAgent(DQLGhostAgent):
+    def __init__(self, neuralNet: NeuralNet) -> None:
+        DQLGhostAgent.__init__(self, POS.PINKY, REP.PINKY, neuralNet)
+
+
+# neuroevolution agent for pinky
+class PinkyNEATAgent(NEATGhostAgent):
+    def __init__(self, genome: Genome) -> None:
+        NEATGhostAgent.__init__(self, POS.PINKY, REP.PINKY, genome)
