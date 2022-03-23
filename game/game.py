@@ -248,8 +248,13 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
         pacman: PacmanMDPAgent = PacmanMDPAgent()
     elif agents[REP.PACMAN] == AGENT_CLASS_TYPE.TRNG:
         pacman: PacmanDQLTAgent = PacmanDQLTAgent()
-    else:
+    elif agents[REP.PACMAN] == AGENT_CLASS_TYPE.GDQL:
         pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets[REP.PACMAN]))
+    else:
+        if np.random.randint(0, 2):
+            pacman: PacmanDQLAgent = PacmanDQLAgent(loadNeuralNetT(neuralnets[REP.PACMAN]))
+        else:
+            pacman: PacmanDQLTAgent = PacmanMDPAgent()
 
     # create blank ghost agents
     blinky: GhostAgent = None

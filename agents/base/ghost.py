@@ -167,7 +167,7 @@ class DQLGhostAgent(GhostAgent, DQLAgent):
 class NEATGhostAgent(GhostAgent, NEATAgent):
     def __init__(self, pos: CPair, repId: int, genome: Genome) -> None:
         GhostAgent.__init__(self, pos, repId)
-        DQLAgent.__init__(self, pos, repId, genome)
+        NEATAgent.__init__(self, pos, repId, genome)
 
     # preprocess game staet for genome
     def processGameState(self, game: "Game") -> List[int]:

@@ -29,7 +29,7 @@ class NEATAgent(DirectionAgent):
                 )
             )
         )
-        return DirectionAgent().getNextPos(game)
+        return DirectionAgent.getNextPos(self, game)
 
     # ===== REQUIRED TO OVERRIDE =====
     # preprocess game state for neural network

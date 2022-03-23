@@ -1,6 +1,5 @@
 from copy import deepcopy
 from random import random
-from datetime import datetime
 from typing import List
 import json
 
@@ -143,8 +142,8 @@ class GenomeUtils:
         return filename
 
     # load genome config file
-    def load(filename: str, parentFolder: str = "out", plain: bool = False) -> Genome:
-        with open("./{}/{}".format(parentFolder, filename), "r") as infile:
+    def load(filename, plain: bool = False) -> Genome:
+        with open(filename, "r") as infile:
             data: dict[str, object] = json.load(infile)
             if plain:
                 return data

@@ -19,13 +19,13 @@ def loadNeuralNet(parentFolder: str, prefix: str, index: int) -> NeuralNet:
 
 
 # load genome from config json
-def loadGenomeT(tuple: Tuple[str, str, int]) -> NeuralNet:
+def loadGenomeT(tuple: Tuple[str, str, int]) -> Genome:
     return loadGenome(tuple[0], tuple[1], tuple[2])
 
 
 def loadGenome(parentFolder: str, prefix: str, index: int) -> Genome:
-    indicator: str = "ep"
+    indicator: str = "gen"
     if parentFolder == "saves":
         indicator = "avgc"
 
-    return GenomeUtils.load("./{}/{}/ga_nnconf_{}{}.json".format(parentFolder, prefix, indicator, index))
+    return GenomeUtils.load("./{}/{}/ne-genome-{}{}.json".format(parentFolder, prefix, indicator, index))
