@@ -16,11 +16,13 @@ class Experiment:
             "enablePwrPlt": True,
             "genomes": {
                 REP.BLINKY: ("saves", "ghost", 33),
+                REP.PINKY: ("saves", "ghost", 33),
             },
-            "iterations": 2,
+            "iterations": 1000,
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),
                 REP.BLINKY: ("saves", "ghost", 35),
+                REP.PINKY: ("saves", "ghost", 35),
             },
         }
 
@@ -28,7 +30,7 @@ class Experiment:
         return App(config).start()
 
     def start(self) -> None:
-        filename: str = "./log/experiment_{}.txt".format(datetime.now().strftime("%d%m_%H%M"))
+        filename: str = "./log/EXP{}.txt".format(datetime.now().strftime("%d%m_%H%M"))
         open(filename, "x")
 
         for set in self.combinations:

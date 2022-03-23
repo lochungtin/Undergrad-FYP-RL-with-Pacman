@@ -324,5 +324,11 @@ def newGame(agents: dict[str, int], enablePwrPlt: bool, neuralnets: dict[str, st
             pinky = PinkyClassicAggrAgent()
         elif agents["secondary"][REP.PINKY] == AGENT_CLASS_TYPE.STTC:
             pinky = PinkyStaticAgent()
+        elif agents["secondary"][REP.PINKY] == AGENT_CLASS_TYPE.SMDP:
+            pinky = PinkyMDPAgent()
+        elif agents["secondary"][REP.PINKY] == AGENT_CLASS_TYPE.GDQL:
+            pinky = PinkyDQLAgent(loadNeuralNetT(neuralnets[REP.PINKY]))
+        elif agents["secondary"][REP.PINKY] == AGENT_CLASS_TYPE.NEAT:
+            pinky = PinkyNEATAgent(loadGenomeT(genomes[REP.PINKY]))
 
     return Game(pacman, blinky, inky, clyde, pinky, enablePwrPlt)
