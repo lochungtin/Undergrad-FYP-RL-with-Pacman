@@ -44,7 +44,7 @@ if __name__ == "__main__":
         {
             "agents": {
                 REP.PACMAN: AGENT_CLASS_TYPE.RAND,
-                REP.BLINKY: AGENT_CLASS_TYPE.NEAT,
+                REP.BLINKY: AGENT_CLASS_TYPE.GDQL,
                 "secondary": AGENT_CLASS_TYPE.RAND,
             },
             "enablePwrPlt": True,

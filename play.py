@@ -82,7 +82,7 @@ if __name__ == "__main__":
         {
             "agents": {
                 REP.PACMAN: AGENT_CLASS_TYPE.CTRL,
-                REP.BLINKY: AGENT_CLASS_TYPE.OGNL,
+                REP.BLINKY: AGENT_CLASS_TYPE.NEAT,
                 "secondary": {
                     REP.INKY: AGENT_CLASS_TYPE.NONE,
                     REP.CLYDE: AGENT_CLASS_TYPE.NONE,
@@ -91,8 +91,12 @@ if __name__ == "__main__":
             },
             "enablePwrPlt": True,
             "gameSpeed": 0.1,
-            "genomes": {},
-            "neuralnets": {},
+            "genomes": {
+                REP.BLINKY: ("out", "NE2303_0111", 380),
+            },
+            "neuralnets": {
+                REP.BLINKY: ("out", "RL2103_1506", 10000),
+            },
         },
         manualControl=True,
         retroColors=False,

@@ -3,6 +3,7 @@ from typing import Tuple
 
 from ai.neat.gene import NodeType
 from ai.neat.utils import GenomeUtils
+from utils.file import loadGenome
 
 BACKGROUND: str = "#1E1E1E"
 LINE_S: str = "#909090"
@@ -35,7 +36,7 @@ class Visualiser:
     # load neural network from data file
     def load(self, filename: str) -> None:
         # load data
-        self.raw: dict[str, object] = GenomeUtils.load(filename, plain=True)
+        self.raw: dict[str, object] = GenomeUtils.load(filename, True)
         self.data: dict[int, object] = {}
 
         maxSize: int = 0
@@ -103,7 +104,7 @@ class Visualiser:
 
 
 if __name__ == "__main__":
-    filename: str = "NP-NG_GENOME_GEN50.json"
+    filename: str = "./saves/blinky/ne_genome_avgc33.json"
     viz: Visualiser = Visualiser()
     viz.load(filename)
     viz.display()
