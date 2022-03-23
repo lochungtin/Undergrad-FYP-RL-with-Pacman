@@ -161,7 +161,7 @@ class NEATTraining:
     # ===== main evoluation function =====
     def evolution(self) -> None:
         runPref: str = "NE{}".format(datetime.now().strftime("%d%m_%H%M"))
-        os.mkdir("out/{}".format(runPref))
+        # os.mkdir("out/{}".format(runPref))
 
         # initialise population and innovation map
         pop, innovMap = self.newPopulation()
@@ -243,6 +243,6 @@ if __name__ == "__main__":
                 "populationSize": 50,
                 "selectionSize": 10,
             },
-            False,
+            True,
         )
         training.start()

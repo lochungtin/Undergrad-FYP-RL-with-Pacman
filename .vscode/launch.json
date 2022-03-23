@@ -47,6 +47,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Ghost NEAT Training Script",
+            "type": "python",
+            "request": "launch",
+            "program": "train_neat_ghost.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "DQL Example Generation Script",
             "type": "python",
             "request": "launch",
