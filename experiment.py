@@ -18,7 +18,7 @@ class Experiment:
                 REP.BLINKY: ("saves", "ghost", 33),
                 REP.PINKY: ("saves", "ghost", 33),
             },
-            "iterations": 1000,
+            "iterations": 3,
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),
                 REP.BLINKY: ("saves", "ghost", 35),
@@ -26,7 +26,7 @@ class Experiment:
             },
         }
 
-    def runPass(self, config: dict[str, object]) -> float:
+    def runPass(self, config: dict[str, object]) -> Tuple[float, int, int]:
         return App(config).start(True)
 
     def start(self) -> None:
@@ -37,10 +37,10 @@ class Experiment:
             label: str = set[0]
             agents: dict[str, object] = set[1]
 
-            average: float = self.runPass(self.createConfig(agents))
+            avgC, avgT, avgD = self.runPass(self.createConfig(agents))
 
             logFile = open(filename, "a")
-            logFile.write("{}: {}\n".format(label, average))
+            logFile.write("{}: C[{}] T[{}] D[{}]\n".format(label, avgC, avgT, avgD))
             logFile.close()
 
 
