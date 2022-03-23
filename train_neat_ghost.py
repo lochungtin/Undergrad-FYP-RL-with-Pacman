@@ -7,6 +7,8 @@ import _thread
 import os
 import time
 
+import numpy as np
+
 from agents.utils.features import ghostFeatureExtraction
 from ai.neat.gene import ConnGene
 from ai.neat.genome import Genome
@@ -78,17 +80,19 @@ class NEATTraining:
         if self.hasDisplay:
             self.display.newGame(game)
 
-        lowestDist: int = int("inf")
+        lowestDist: int = float("inf")
         gameover: bool = False
         won: bool = False
-        while not gameover and not won or game.timesteps > 400:
+        while not gameover and not won and game.timesteps < 200:
             # perform next step
-            action: int = genome.predict(ghostFeatureExtraction(game))
+            qVals: List[float] = genome.predict(ghostFeatureExtraction(game, REP.BLINKY))
+            action: int = np.argmax(qVals)
+
             game.ghosts[REP.BLINKY].setDir(action)
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
 
             # update shortest distance achieved
-            dist: int = game.pacman.pos.manDist(game.ghosts[REP.BLINKY])
+            dist: int = game.pacman.pos.manDist(game.ghosts[REP.BLINKY].pos)
             if dist < lowestDist:
                 lowestDist = dist
 
@@ -161,7 +165,7 @@ class NEATTraining:
     # ===== main evoluation function =====
     def evolution(self) -> None:
         runPref: str = "NE{}".format(datetime.now().strftime("%d%m_%H%M"))
-        # os.mkdir("out/{}".format(runPref))
+        os.mkdir("out/{}".format(runPref))
 
         # initialise population and innovation map
         pop, innovMap = self.newPopulation()
@@ -243,6 +247,6 @@ if __name__ == "__main__":
                 "populationSize": 50,
                 "selectionSize": 10,
             },
-            True,
+            False,
         )
         training.start()

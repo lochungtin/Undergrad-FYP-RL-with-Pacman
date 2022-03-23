@@ -123,7 +123,7 @@ class DeepQLTraining:
                 if self.hasDisplay:
                     self.display.newGame(game)
 
-                action = self.agentInit(ghostFeatureExtraction(game))
+                action = self.agentInit(ghostFeatureExtraction(game, REP.BLINKY))
                 game.ghosts[REP.BLINKY].setDir(action)
 
             else:
