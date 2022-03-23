@@ -25,7 +25,7 @@ class DeepQLTraining:
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
             self.main: Tk = Tk()
-            self.main.title("DEEP Q Training")
+            self.main.title("DQL Pacman Training")
 
             self.display: Display = Display(self.main)
 
@@ -70,7 +70,7 @@ class DeepQLTraining:
     def newGame(self) -> Game:
         return newGame(
             {
-                REP.PACMAN: AGENT_CLASS_TYPE.DQLT,
+                REP.PACMAN: AGENT_CLASS_TYPE.TRNG,
                 REP.BLINKY: AGENT_CLASS_TYPE.OGNL,
                 "secondary": AGENT_CLASS_TYPE.RAND,
                 "randType": AGENT_CLASS_TYPE.OGNL,

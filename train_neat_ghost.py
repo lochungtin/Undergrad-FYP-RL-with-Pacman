@@ -7,12 +7,15 @@ import _thread
 import os
 import time
 
+from agents.utils.features import ghostFeatureExtraction
 from ai.neat.gene import ConnGene
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
+from data.config import BOARD
 from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game, newGame
-from gui.display import Display 
+from gui.display import Display
+from utils.printer import printPacmanPerfomance 
 
 
 class NEATTraining:
@@ -21,13 +24,9 @@ class NEATTraining:
         self.hasDisplay: bool = hasDisplay
         if hasDisplay:
             self.main: Tk = Tk()
-            self.main.title("NEAT Training")
+            self.main.title("NEAT Ghost Training")
 
             self.display: Display = Display(self.main)
-
-        # simulation config
-        self.enableGhost: bool = config["simulationConfig"]["ghost"]
-        self.enablePwrPlt: bool = config["simulationConfig"]["pwrplt"]
 
         # training config
         self.popSize: int = config["populationSize"]
@@ -49,9 +48,6 @@ class NEATTraining:
         # crossing option
         self.cOpt: int = config["crossOpt"]
 
-        # generations per genome saving
-        self.saving: int = config["saveOpt"]
-
     # create mutation config
     def mutationConfig(self) -> dict[str, bool]:
         return {
@@ -61,9 +57,9 @@ class NEATTraining:
             "mutWeight": random() < self.mProb["mutWeight"],
             "mutConn": random() < self.mProb["mutConn"],
         }
-
+    
     # run genome against simluation and get fitness value
-    def runSim(self, genome: Genome) -> float:
+    def runSim(self, genome: Genome, gen: int, index: int) -> float:
         game: Game = newGame(
             {
                 REP.PACMAN: AGENT_CLASS_TYPE.SMDP,
@@ -82,24 +78,36 @@ class NEATTraining:
         if self.hasDisplay:
             self.display.newGame(game)
 
+        lowestDist: int = int("inf")
         gameover: bool = False
         won: bool = False
-        while not gameover and not won or game.timesteps > 200:
+        while not gameover and not won or game.timesteps > 400:
+            # perform next step
+            action: int = genome.predict(ghostFeatureExtraction(game))
+            game.ghosts[REP.BLINKY].setDir(action)
             gameover, won, atePellet, atePwrPlt, ateGhost = game.nextStep()
+
+            # update shortest distance achieved
+            dist: int = game.pacman.pos.manDist(game.ghosts[REP.BLINKY])
+            if dist < lowestDist:
+                lowestDist = dist
 
             # enable display
             if self.hasDisplay:
                 self.display.rerender()
                 time.sleep(0.01)
 
+        # print game performance
+        printPacmanPerfomance("{}.{}".format(gen, index), game)
+
         fitness: float = (
-            self.fCoef["p"] * pellets
-            + self.fCoef["t"] * timesteps
-            + self.fCoef["w"] * won
-            + self.fCoef["l"] * (gameover or game.pelletDrought >= 45)
+            self.fCoef["lowestDistance"] * lowestDist
+            + self.fCoef["pelletProgress"] * (BOARD.TOTAL_PELLET_COUNT - game.pelletProgress)
+            + self.fCoef["loss"] * game.timesteps * (not won)
+            + self.fCoef["won"] * game.timesteps * won
         )
 
-        return fitness, gameover
+        return fitness
 
     # start training (main function)
     def start(self) -> None:
@@ -159,25 +167,16 @@ class NEATTraining:
         pop, innovMap = self.newPopulation()
         # pop, innovMap = self.loadPopulation("NP-NG_GENOME_GEN50.json", "NP-NG_INNOV_GEN50.json")
 
-        # best score so far
-        bestScore: float = float("-inf")
-
         # evolution process
         for gen in range(self.genCap):
             # evaluate population perfomance
             perf: List[Tuple[int, float]] = []
             for i, genome in enumerate(pop):
                 # run simulation
-                fitness, gameover = self.runSim(genome)
+                fitness = self.runSim(genome, gen, i)
 
                 # adjust fitness to topology
-                fitness /= GenomeUtils.fitnessAdj(genome, pop, self.cConf)
-
-                if fitness > bestScore:
-                    bestScore = fitness
-
-                # print run result
-                print("Gen: {}  \tgId: {}  \tfV: {} \tfM:{} \tGO: {}".format(gen, i, fitness, bestScore, gameover))
+                fitness /= GenomeUtils.fitnessAdj(genome, pop, self.cConf)              
 
                 # save fitness value
                 perf.append((i, fitness))
@@ -187,7 +186,7 @@ class NEATTraining:
             tGenomes: List[Genome] = [deepcopy(pop[p[0]]) for p in perf]
 
             # save genome config every N generations
-            if gen % self.saving == 0 and gen != 0:
+            if gen % 20 == 0 and gen != 0:
                 GenomeUtils.save(tGenomes[0], runPref, gen)
                 GenomeUtils.saveInnov(innovMap, runPref, gen)
 
@@ -224,10 +223,10 @@ if __name__ == "__main__":
                 },
                 "crossOpt": GenomeUtils.CROSS_OPTIONS["MAX"],
                 "fitnessCoeff": {
-                    "p": 2,
-                    "t": 1,
-                    "w": -1000,
-                    "l": 1000,
+                    "pelletProgress": -10,
+                    "lowestDistance": -5,
+                    "won": -1000,
+                    "loss": 1000,
                 },
                 "generationCap": 10000,
                 "genomeConfig": {
@@ -236,18 +235,13 @@ if __name__ == "__main__":
                 },
                 "mutationConfig": {
                     "addNode": 0.2,
-                    "addConn": 0.75,
-                    "mutBias": 0.5,
-                    "mutWeight": 0.85,
-                    "mutConn": 0.6,
+                    "addConn": 0.6,
+                    "mutBias": 0.7,
+                    "mutWeight": 0.7,
+                    "mutConn": 0.5,
                 },
                 "populationSize": 50,
-                "saveOpt": 20,
-                "selectionSize": 15,
-                "simulationConfig": {
-                    "ghost": True,
-                    "pwrplt": False,
-                },
+                "selectionSize": 10,
             },
             False,
         )
