@@ -18,7 +18,7 @@ class Experiment:
                 REP.BLINKY: ("saves", "ghost", 33),
                 REP.PINKY: ("saves", "ghost", 33),
             },
-            "iterations": 3,
+            "iterations": 1000,
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),
                 REP.BLINKY: ("saves", "ghost", 35),
