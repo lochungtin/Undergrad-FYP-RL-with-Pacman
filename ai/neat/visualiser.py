@@ -1,8 +1,8 @@
 from tkinter import Canvas, Tk
 from typing import Tuple
 
-from ai.neat.gene import NodeType
-from ai.neat.utils import GenomeUtils
+from gene import NodeType
+from utils import GenomeUtils
 
 BACKGROUND: str = "#1E1E1E"
 LINE_S: str = "#909090"
