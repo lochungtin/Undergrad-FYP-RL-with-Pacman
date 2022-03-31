@@ -11,6 +11,7 @@ from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
 
+
 # pacman feature extraction function
 def pacmanFeatureExtraction(game: "Game") -> List[float]:
     features: List[float] = [0, 0, 0, 0, (game.pwrpltEffectCounter + 1) / GHOST_MODE.GHOST_FRIGHTENED_STEP_COUNT]

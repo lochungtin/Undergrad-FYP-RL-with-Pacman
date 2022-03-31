@@ -2,7 +2,7 @@ from tkinter import Canvas, Tk
 from typing import Tuple
 
 from gene import NodeType
-from utils import GenomeUtils
+from neat.utils import GenomeUtils
 
 BACKGROUND: str = "#1E1E1E"
 LINE_S: str = "#909090"

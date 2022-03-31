@@ -8,6 +8,7 @@ from agents.base.agent import DirectionAgent
 from ai.deepq.neuralnet import NeuralNet
 from utils.coordinate import CPair
 
+
 # base class for all (pacman and ghosts) deep q learning based agents
 class DQLAgent(DirectionAgent):
     def __init__(self, pos: CPair, repId: int, neuralNet: NeuralNet) -> None:

@@ -5,6 +5,7 @@ from ai.deepq.utils import NNUtils
 from ai.neat.genome import Genome
 from ai.neat.utils import GenomeUtils
 
+
 # load neural network from config json
 def loadNeuralNetT(tuple: Tuple[str, str, int]) -> NeuralNet:
     return loadNeuralNet(tuple[0], tuple[1], tuple[2])

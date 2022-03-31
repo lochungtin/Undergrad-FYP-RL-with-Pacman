@@ -3,10 +3,10 @@ import _thread
 
 from data.color import COLOR
 from data.data import AGENT_CLASS_TYPE, REP
-from utils.direction import DIR
 from game.game import Game, newGame
 from gui.controller import TimeController
 from gui.display import Display
+from utils.direction import DIR
 
 
 # app class

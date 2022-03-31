@@ -1,5 +1,6 @@
 from tkinter import Canvas, Tk
 from typing import List
+
 from data.color import COLOR
 from data.data import DIM, REP
 from game.game import Game

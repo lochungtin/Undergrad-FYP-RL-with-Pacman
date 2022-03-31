@@ -1,6 +1,6 @@
-from cmath import isnan
-import sys, getopt
+from math import isnan
 from typing import Tuple
+import sys, getopt
 
 from data.data import AGENT_CLASS_TYPE, REP
 from scripts.auto import App as Auto

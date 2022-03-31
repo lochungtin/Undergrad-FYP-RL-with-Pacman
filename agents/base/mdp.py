@@ -7,6 +7,7 @@ from agents.base.agent import DirectionAgent
 from utils.coordinate import CPair
 
 
+# base class for all mdp based agents
 class MDPAgent(DirectionAgent):
     def __init__(self, pos: CPair, repId: int, solver: type, rewards: dict[str, float]) -> None:
         super().__init__(pos, repId)

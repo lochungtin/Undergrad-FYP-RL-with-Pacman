@@ -9,6 +9,7 @@ from data.data import GHOST_MODE, REP
 from utils.coordinate import CPair
 from utils.direction import DIR
 
+
 # original agent for inky
 class InkyClassicAgent(ClassicGhostAgent):
     def __init__(self) -> None:

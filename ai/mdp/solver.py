@@ -1,4 +1,3 @@
-from time import sleep
 from typing import List, Tuple, TYPE_CHECKING
 import numpy as np
 
@@ -7,6 +6,7 @@ if TYPE_CHECKING:
 
 from utils.coordinate import CPair
 from utils.grid import createGameSizeGrid
+
 
 class Solver:
     DEFAULT_CONFIG = {

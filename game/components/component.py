@@ -1,4 +1,5 @@
 from copy import deepcopy
+
 from gui.displayable import Displayable
 from utils.coordinate import CPair
 
