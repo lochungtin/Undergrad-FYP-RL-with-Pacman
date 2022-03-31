@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Tuple
 
-from average import App
+from scripts.average import App
 from data.data import AGENT_CLASS_TYPE, REP
 
 
@@ -19,7 +19,7 @@ class Experiment:
                 REP.BLINKY: ("saves", "ghost", 33),
                 REP.PINKY: ("saves", "ghost", 33),
             },
-            "iterations": self.iterations,
+            "iterations": 1000,
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),
                 REP.BLINKY: ("saves", "ghost", 35),
@@ -49,7 +49,6 @@ class Experiment:
 
 if __name__ == "__main__":
     experiment: Experiment = Experiment(
-        1000,
         [
             # control run
             # original implementation

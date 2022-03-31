@@ -5,7 +5,6 @@ from data.data import AGENT_CLASS_TYPE, REP
 from game.game import Game, newGame
 from gui.controller import TimeController
 from gui.display import Display
-from utils.printer import printPacmanPerfomance
 
 
 class App:
@@ -30,9 +29,7 @@ class App:
         gameover, won, atePellet, atePwrPlt, ateGhost = self.game.nextStep()
         self.display.rerender()
 
-        if gameover or won:
-            printPacmanPerfomance(0, self.game)
-
+        if gameover or won:           
             self.tc.end()
             self.main.destroy()
 

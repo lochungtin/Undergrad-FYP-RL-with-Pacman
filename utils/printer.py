@@ -8,7 +8,7 @@ def printPacmanPerfomance(ep: int, game: Game, verbose: bool = True) -> None:
     
     if verbose:
         print(
-            "ep: {}\tt: {}\tl: {}\tc: {}/68 = {}%".format(
+            "ep: {}\tt: {}\tpellets left: {}\tpellets consumed: {}/68 = {}%".format(
                 ep,
                 game.timesteps,
                 game.pelletProgress,

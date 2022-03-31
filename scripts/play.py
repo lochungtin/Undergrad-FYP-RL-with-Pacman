@@ -11,7 +11,7 @@ from gui.display import Display
 
 # app class
 class App:
-    def __init__(self, config: dict[str, object], manualControl: bool = False, retroColors: bool = False) -> None:
+    def __init__(self, config: dict[str, object], manualControl: bool = False, retroColors: bool = True) -> None:
         # agent config
         self.agents: dict[str, object] = config["agents"]
 
@@ -73,7 +73,7 @@ class App:
         self.display.rerender()
 
     # run main loop of application
-    def run(self) -> None:
+    def start(self) -> None:
         self.main.mainloop()
 
 
@@ -101,7 +101,5 @@ if __name__ == "__main__":
                 REP.PINKY: ("saves", "ghost", 35),
             },
         },
-        manualControl=True,
-        retroColors=False,
     )
-    app.run()
+    app.start()
