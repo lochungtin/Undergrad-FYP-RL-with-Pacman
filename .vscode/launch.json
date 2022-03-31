@@ -19,52 +19,17 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Batch Experiment Script",
+            "name": "Experiment Script",
             "type": "python",
             "request": "launch",
             "program": "experiment.py",
             "console": "integratedTerminal"
         },
         {
-            "name": "Completion Average Script",
+            "name": "Run Average N Script",
             "type": "python",
             "request": "launch",
             "program": "average.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Pacman DQL Training Script",
-            "type": "python",
-            "request": "launch",
-            "program": "train_dql_pacman.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Ghost DQL Training Script",
-            "type": "python",
-            "request": "launch",
-            "program": "train_dql_ghost.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Ghost NEAT Training Script",
-            "type": "python",
-            "request": "launch",
-            "program": "train_neat_ghost.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "DQL Example Generation Script",
-            "type": "python",
-            "request": "launch",
-            "program": "pretrain_ex_gen.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "DQL Pretraining Script",
-            "type": "python",
-            "request": "launch",
-            "program": "pretrain_dql_neuralnet.py",
             "console": "integratedTerminal"
         },
     ]
