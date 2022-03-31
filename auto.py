@@ -42,7 +42,6 @@ class App:
 
 
 if __name__ == "__main__":
-
     app: App = App(
         {
             "agents": {
@@ -56,7 +55,7 @@ if __name__ == "__main__":
                 REP.BLINKY: ("out", "NE2303_0111", 280),
             },
             "neuralnets": {
-                # REP.PACMAN: ("saves", "pacman", 63),
+                REP.PACMAN: ("saves", "pacman", 63),
                 REP.BLINKY: ("out", "RL2103_1506", 10000),
             },
         }
