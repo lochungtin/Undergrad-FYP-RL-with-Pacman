@@ -1,3 +1,5 @@
+import sys, getopt
+
 from scripts.auto import App as Auto
 from scripts.average import App as Average
 from scripts.experiment import App as Experiment
@@ -12,5 +14,6 @@ class Launcher:
 
 
 if __name__ == "__main__":
+    print(sys.argv)
     launcher: Launcher = Launcher()
     launcher.run()
