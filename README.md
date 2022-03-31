@@ -1,4 +1,4 @@
-## How to run project
+## How to run the project
 
 ---
 Install Python 3
