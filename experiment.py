@@ -1,5 +1,4 @@
 from datetime import datetime
-import os
 from typing import List, Tuple
 
 from average import App
@@ -7,9 +6,11 @@ from data.data import AGENT_CLASS_TYPE, REP
 
 
 class Experiment:
-    def __init__(self, combinations: List[Tuple[str, dict[str, object]]]) -> None:
-        self.combinations = combinations
+    def __init__(self, iterations: int, combinations: List[Tuple[str, dict[str, object]]]) -> None:
+        self.iterations: int = iterations
+        self.combinations: List[Tuple[str, dict[str, object]]] = combinations
 
+    # create new average run config
     def createConfig(self, agents: dict[str, object]) -> dict[str, object]:
         return {
             "agents": agents,
@@ -18,7 +19,7 @@ class Experiment:
                 REP.BLINKY: ("saves", "ghost", 33),
                 REP.PINKY: ("saves", "ghost", 33),
             },
-            "iterations": 1000,
+            "iterations": self.iterations,
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),
                 REP.BLINKY: ("saves", "ghost", 35),
@@ -26,9 +27,11 @@ class Experiment:
             },
         }
 
+    # run sub-experiment
     def runPass(self, config: dict[str, object]) -> Tuple[float, int, int]:
         return App(config).start(True)
 
+    # start experiment
     def start(self) -> None:
         filename: str = "./log/EXP{}.txt".format(datetime.now().strftime("%d%m_%H%M"))
         open(filename, "x")
@@ -46,6 +49,7 @@ class Experiment:
 
 if __name__ == "__main__":
     experiment: Experiment = Experiment(
+        1000,
         [
             # control run
             # original implementation

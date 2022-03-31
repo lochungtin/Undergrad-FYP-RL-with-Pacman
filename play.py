@@ -54,6 +54,7 @@ class App:
         else:
             _thread.start_new_thread(self.timeController.start, ())
 
+    # create new game
     def newGame(self):
         return newGame(self.agents, self.enablePwrPlt, self.neuralnets, self.genomes)
 

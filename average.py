@@ -21,6 +21,7 @@ class App:
         # iterations
         self.iterations: int = config["iterations"]
 
+    # start average run
     def start(self, verbose: bool = False) -> Tuple[float, int, int]:
         avgC: float = 0
         avgT: float = 0
@@ -43,6 +44,7 @@ class App:
 
         return avgC, avgT, avgD
 
+    # run game
     def runGame(self, iteration: int) -> Tuple[float, int, int]:
         game: Game = newGame(self.agents, self.enablePwrPlt, self.neuralnets, self.genomes)
 
