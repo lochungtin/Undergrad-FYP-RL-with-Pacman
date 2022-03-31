@@ -70,12 +70,14 @@ if __name__ == "__main__":
             },
             "enablePwrPlt": True,
             "genomes": {
-                REP.BLINKY: ("out", "NE2303_0111", 280),
+                REP.BLINKY: ("saves", "ghost", 33),
+                REP.PINKY: ("saves", "ghost", 33),
             },
             "iterations": 1000,
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),
-                REP.BLINKY: ("out", "RL2103_1506", 10000),
+                REP.BLINKY: ("saves", "ghost", 35),
+                REP.PINKY: ("saves", "ghost", 35),
             },
         }
     )

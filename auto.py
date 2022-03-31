@@ -50,13 +50,15 @@ if __name__ == "__main__":
                 "secondary": AGENT_CLASS_TYPE.RAND,
             },
             "enablePwrPlt": True,
-            "gameSpeed": 0.025,
+            "gameSpeed": 0.05,
             "genomes": {
-                REP.BLINKY: ("out", "NE2303_0111", 280),
+                REP.BLINKY: ("saves", "ghost", 33),
+                REP.PINKY: ("saves", "ghost", 33),
             },
             "neuralnets": {
                 REP.PACMAN: ("saves", "pacman", 63),
-                REP.BLINKY: ("out", "RL2103_1506", 10000),
+                REP.BLINKY: ("saves", "ghost", 35),
+                REP.PINKY: ("saves", "ghost", 35),
             },
         }
     )
