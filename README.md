@@ -19,7 +19,7 @@ Install required packages
 pip3 install -r requirement.txt
 ```
 
-Run test file
+Run playable script
 ```bash
-python3 play.py
+python3 launcher.py -a play
 ```
