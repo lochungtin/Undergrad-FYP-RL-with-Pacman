@@ -14,6 +14,6 @@ class Launcher:
 
 
 if __name__ == "__main__":
-    print(sys.argv)
+    print(sys.argv[1:])
     launcher: Launcher = Launcher()
     launcher.run()
