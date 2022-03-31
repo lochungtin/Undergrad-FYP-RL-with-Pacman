@@ -8,6 +8,7 @@ from scripts.average import App as Average
 from scripts.play import App as Play
 
 
+# parse console arguments
 def parseOptions(opts, args) -> Tuple[type, dict[str, object], int]:
     app: type = None
     p: int = AGENT_CLASS_TYPE.CTRL
@@ -56,8 +57,6 @@ def parseOptions(opts, args) -> Tuple[type, dict[str, object], int]:
                 g2 = AGENT_CLASS_TYPE.GDQL
             elif arg in ("5", "ne"):
                 g2 = AGENT_CLASS_TYPE.NEAT
-            elif arg == "random":
-                g2 = AGENT_CLASS_TYPE.RAND
 
         # set iterations
         elif opt in ("-i", "--iterations"):
@@ -76,9 +75,31 @@ def parseOptions(opts, args) -> Tuple[type, dict[str, object], int]:
 
     return app, {REP.PACMAN: p, REP.BLINKY: g1, "secondary": secondary}, itr
 
-
+# print help text
 def printHelp() -> None:
     print("launch.py -a <app name> -f <first ghost variant> -s <secont ghost variant> -i <iterations>")
+
+    print("\n-a --app <app name> options: (required)")
+    print("\tplay [player control app]")
+    print("\tauto [baseline agent app]")
+    print("\taverage [average performance app w/o gui]")
+
+    print("\n-f --ghostF <first ghost variant> options: (optional, default = 1)")
+    print("\t1 [variant 1 - original]")
+    print("\t2 [variant 2 - hyperaggressive]")
+    print("\t3 [variant 3 - mdp based]")
+    print("\t4 [variant 4 - td learning based]")
+    print("\t5 [variant 5 - neuroevolutionary based]\n")
+
+    print("\n-s --ghostS <second ghost variant> options: (optional, default = \"random\")")
+    print("\t2 [variant 2 - hyperaggressive]")
+    print("\t3 [variant 3 - mdp based]")
+    print("\t4 [variant 4 - td learning based]")
+    print("\t5 [variant 5 - neuroevolutionary based]")
+    print("\trandom [random original variant - inky, clyde, or pinky]\n")
+
+    print("\n-i --iterations (optional, default = 1)")
+    print("\t<any integer value>")
 
 
 class Launcher:
@@ -98,7 +119,7 @@ if __name__ == "__main__":
         printHelp()
         sys.exit(2)
 
-    if len(opts) < 3:
+    if len(opts) < 1:
         printHelp()
         sys.exit(2)
 
@@ -108,7 +129,7 @@ if __name__ == "__main__":
     # create base config
     baseConfig: dict[str, object] = {
         "enablePwrPlt": True,
-        "gameSpeed": 0.1,
+        "gameSpeed": 0.2,
         "genomes": {
             REP.BLINKY: ("saves", "ghost", 33),
             REP.PINKY: ("saves", "ghost", 33),
