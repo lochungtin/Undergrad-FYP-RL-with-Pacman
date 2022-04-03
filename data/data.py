@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 from data.config import BOARD
 
+
 # ghost ai modes
 class GHOST_MODE:
     CHASE: int = 0

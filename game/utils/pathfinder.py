@@ -4,7 +4,7 @@ from typing import List, Tuple
 import math
 
 from data.config import BOARD, POS
-from data.data import BOARD, REP
+from data.data import BOARD
 from game.utils.cell import Cell
 from utils.coordinate import CPair
 from utils.direction import DIR

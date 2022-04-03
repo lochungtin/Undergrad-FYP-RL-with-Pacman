@@ -3,7 +3,6 @@ from tkinter import Tk
 from typing import List, Tuple
 import _thread
 import numpy as np
-import os
 
 from agents.utils.features import ghostFeatureExtraction, pacmanFeatureExtraction
 from data.data import AGENT_CLASS_TYPE, REP

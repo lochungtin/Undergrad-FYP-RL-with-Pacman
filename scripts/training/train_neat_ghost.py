@@ -4,10 +4,9 @@ from random import random
 from tkinter import Tk
 from typing import List, Tuple
 import _thread
+import numpy as np
 import os
 import time
-
-import numpy as np
 
 from agents.utils.features import ghostFeatureExtraction
 from ai.neat.gene import ConnGene

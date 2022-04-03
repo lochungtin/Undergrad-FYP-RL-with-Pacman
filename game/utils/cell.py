@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List
-from data.data import REP
 
+from data.data import REP
 from utils.coordinate import CPair
 from utils.direction import DIR
 

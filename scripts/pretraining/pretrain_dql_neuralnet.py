@@ -71,7 +71,7 @@ def main(config: dict[str, object]):
             net.setVals(adam.updateVals(net.getVals(), update))
 
     # save network
-    # os.mkdir("./out/BLINKY_DQL_PRE")
+    os.mkdir("./out/BLINKY_DQL_PRE")
     NNUtils.save(net, i * config["batchSize"] + j + 1, "BLINKY_DQL_PRE")
 
 
