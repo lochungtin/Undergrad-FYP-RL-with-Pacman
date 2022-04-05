@@ -77,9 +77,9 @@ def parseOptions(opts, args) -> Tuple[type, dict[str, object], int]:
 
 # print help text
 def printHelp() -> None:
-    print("launch.py -a <app name> -f <first ghost variant> -s <secont ghost variant> -i <iterations>")
+    print("launch.py -a <app option> -f <first ghost variant> -s <secont ghost variant> -i <number of games>")
 
-    print("\n-a --app <app name> options: (required)")
+    print("\n-a --app <app option> options: (required)")
     print("\tplay [player control app]")
     print("\tauto [baseline agent app]")
     print("\taverage [average performance app w/o gui]")
